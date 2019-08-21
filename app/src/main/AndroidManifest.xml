@@ -39,7 +39,8 @@
         <activity android:name=".EmailVerification" />
         <activity android:name=".ProfileSetup" />
         <activity android:name=".PasswordRecovery" />
-        <activity android:name=".SignInAfterPasswordRecovery"></activity>
+        <activity android:name=".SignInAfterPasswordRecovery" />
+        <activity android:name=".SetProfilePicture"></activity>
     </application>
 
 </manifest>
