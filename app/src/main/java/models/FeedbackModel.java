@@ -1,0 +1,90 @@
+package models;
+
+import com.google.firebase.firestore.IgnoreExtraProperties;
+import com.google.firebase.firestore.PropertyName;
+
+@IgnoreExtraProperties
+public class FeedbackModel {
+
+    @PropertyName("hre")
+    private boolean hasReview;
+
+    @PropertyName("r")
+    private float rating;
+
+    @PropertyName("re")
+    private String review;
+
+    @PropertyName("t")
+    private int type;
+
+    @PropertyName("w")
+    private String who;
+
+    @PropertyName("wh")
+    private String where;
+
+    public FeedbackModel(){
+
+    }
+
+    @PropertyName("hre")
+    public boolean getHasReview() {
+        return hasReview;
+    }
+
+    @PropertyName("hre")
+    public void setHasReview(boolean hasReview) {
+        this.hasReview = hasReview;
+    }
+
+    @PropertyName("r")
+    public float getRating() {
+        return rating;
+    }
+
+    @PropertyName("r")
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
+    @PropertyName("re")
+    public String getReview() {
+        return review;
+    }
+
+    @PropertyName("re")
+    public void setReview(String review) {
+        this.review = review;
+    }
+
+    @PropertyName("t")
+    public int getType() {
+        return type;
+    }
+
+    @PropertyName("t")
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    @PropertyName("w")
+    public String getWho() {
+        return who;
+    }
+
+    @PropertyName("w")
+    public void setWho(String who) {
+        this.who = who;
+    }
+
+    @PropertyName("wh")
+    public String getWhere() {
+        return where;
+    }
+
+    @PropertyName("wh")
+    public void setWhere(String where) {
+        this.where = where;
+    }
+}

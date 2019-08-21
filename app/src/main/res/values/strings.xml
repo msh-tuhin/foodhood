@@ -1,0 +1,61 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="name_hint">Name</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="password_confirm_hint">Confirm Password</string>
+    <string name="sign_in_button">Log In</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="post_header">Lorem ipsum dolor sit amet,
+        consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+        labore et dolore magna aliqua</string>
+    <string name="post_caption">
+        Duis aute irure dolor in reprehenderit in voluptate velit
+        esse cillum dolore eu fugiat nulla pariatur.
+        Excepteur sint occaecat cupidatat non proident,
+        sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </string>
+
+    <string name="see_feedbacks">See Feedbacks</string>
+    <string name="like_tag_header">Bla Babbot like/tag</string>
+    <string name="rest_feed_like_header">Fano Resto liked this</string>
+    <string name="post_comment_header">Bla Babbot commented</string>
+    <string name="commenter_name">Eager Commenter</string>
+    <string name="replier_name">Eager Replier</string>
+    <string name="post_reply_header">Bla Babbot replied</string>
+    <string name="long_dummy_string">Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Laoreet sit amet cursus sit amet. At quis risus sed vulputate odio ut enim blandit volutpat.
+        Maecenas ultricies mi eget mauris. A iaculis at erat pellentesque.
+        Cursus eget nunc scelerisque viverra mauris in aliquam sem. Eu nisl nunc mi ipsum faucibus vitae.
+        Cras adipiscing enim eu turpis egestas pretium. Porta non pulvinar neque laoreet suspendisse
+        interdum consectetur libero id. Diam maecenas ultricies mi eget mauris pharetra et.
+        Nisl purus in mollis nunc sed id semper. Habitasse platea dictumst vestibulum rhoncus.
+        Eget gravida cum sociis natoque.Non blandit massa enim nec.
+        Et ultrices neque ornare aenean euismod elementum nisi quis.Egestas dui id ornare arcu odio ut
+        sem nulla pharetra. Nulla porttitor massa id neque aliquam vestibulum morbi blandit. Dictumst quisque
+        sagittis purus sit amet volutpat consequat. Vel fringilla est ullamcorper eget nulla facilisi
+        etiam dignissim. Leo integer malesuada nunc vel risus commodo. Rhoncus mattis
+        rhoncus urna neque viverra justo. Vel </string>
+
+    <string name="medium_dummy_string">Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Laoreet sit amet cursus sit amet. At quis risus sed vulputate odio ut enim blandit volutpat.
+        Maecenas ultricies mi eget mauris. A iaculis at erat pellentesque.
+        Cursus eget nunc scelerisque viverra mauris in aliquam sem. Eu nisl nunc mi ipsum faucibus vitae.
+        Cras adipiscing enim eu turpis egestas pretium. Porta non pulvinar neque laoreet suspendisse
+        interdum consectetur libero id. Diam maecenas ultricies mi eget mauris pharetra et. </string>
+
+    <string name="email_verification_header">
+        We have sent you a verification email. Please verify your email and then click the following link.
+    </string>
+
+    <string name="email_verification_header2">
+        We have sent you a verification email. Please verify your email and then Sign In again.
+    </string>
+
+    <string name="sign_in_after_password_recovery_header">
+        We have sent you a recovery email. Please set a new password and then sign in again.
+    </string>
+
+</resources>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.tuhin.myapplication">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".home" />
+        <activity android:name=".PersonDetail" />
+        <activity android:name=".DishDetail" />
+        <activity android:name=".RestDetail" />
+        <activity android:name=".AllDishes" />
+        <activity android:name=".MorePeole" />
+        <activity android:name=".CreatePost" />
+        <activity android:name=".CreatePostSelectImages" />
+        <activity android:name=".CreatePostSelectPlace" />
+        <activity android:name=".CreatePostAddDishes" />
+        <activity android:name=".CreatePostDishSelectReview" />
+        <activity android:name=".CreatePostAddPeople" />
+        <activity android:name=".CreatePostPreview" />
+        <activity android:name=".FullPost" />
+        <activity android:name=".WriteComment" />
+        <activity android:name=".CommentDetail" />
+        <activity android:name=".SignUp" />
+        <activity android:name=".EmailVerification" />
+        <activity android:name=".ProfileSetup" />
+        <activity android:name=".PasswordRecovery" />
+        <activity android:name=".SignInAfterPasswordRecovery"></activity>
+    </application>
+
+</manifest>
