@@ -34,6 +34,7 @@ public class SetProfilePicture extends AppCompatActivity {
     final int IMAGE_CHOOSE_REQUEST_CODE = 1;
     final int REQUEST_EXTERNAL_STORAGE_READ_PERM = 1;
 
+    Uri uri = null;
     Toolbar toolbar;
     ImageButton captureImage, chooseFrom, deleteImage;
     ConstraintLayout imageSourceChooser;
@@ -92,6 +93,7 @@ public class SetProfilePicture extends AppCompatActivity {
         deleteImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                uri = null;
                 profilePicture.setImageURI(null);
                 deleteImage.setClickable(false);
                 imageSourceChooser.setVisibility(View.VISIBLE);
@@ -115,46 +117,31 @@ public class SetProfilePicture extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Uri uri;
+        Uri contentUri;
         if(resultCode == Activity.RESULT_OK ){
             if(requestCode == IMAGE_CHOOSE_REQUEST_CODE){
-
                 if(data.getClipData() != null){
                     Log.i("image-source", "clipdata");
                     ClipData clipData = data.getClipData();
-                    for(int i=0; i<clipData.getItemCount(); i++){
-                        ClipData.Item item = clipData.getItemAt(i);
-                        Uri contentUri = item.getUri();
-                        Log.i("Content-Uri", contentUri.toString());
-                        String path = getPathFromContentUri(contentUri);
-                        uri = Uri.fromFile(new File(path));
-                        Log.i("Uri", uri.toString());
-                        try{
-                            File compressedFile = new Compressor(this).compressToFile(new File(path));
-                            Uri compressedFileUri = Uri.fromFile(compressedFile);
-                            Log.i("compressed_uri", compressedFileUri.toString());
-                            profilePicture.setImageURI(compressedFileUri);
-                        }catch (IOException e){
-                            Log.e("error", e.getMessage());
-                            profilePicture.setImageURI(uri);
-                        }
-                    }
+                    ClipData.Item item = clipData.getItemAt(0);
+                    contentUri = item.getUri();
+                    Log.i("Content-Uri", contentUri.toString());
                 }else {
                     Log.i("image-source", "data");
-                    Uri contentUri = data.getData();
+                    contentUri = data.getData();
                     Log.i("Content-Uri", contentUri.toString());
-                    String path = getPathFromContentUri(contentUri);
-                    uri = Uri.fromFile(new File(path));
-                    Log.i("Uri", uri.toString());
-                    try{
-                        File compressedFile = new Compressor(this).compressToFile(new File(path));
-                        Uri compressedFileUri = Uri.fromFile(compressedFile);
-                        Log.i("compressed_uri", compressedFileUri.toString());
-                        profilePicture.setImageURI(compressedFileUri);
-                    }catch (IOException e){
-                        Log.e("error", e.getMessage());
-                        profilePicture.setImageURI(uri);
-                    }
+                }
+                String path = getPathFromContentUri(contentUri);
+                uri = Uri.fromFile(new File(path));
+                Log.i("Uri", uri.toString());
+                try{
+                    File compressedFile = new Compressor(this).compressToFile(new File(path));
+                    Uri compressedFileUri = Uri.fromFile(compressedFile);
+                    Log.i("compressed_uri", compressedFileUri.toString());
+                    profilePicture.setImageURI(compressedFileUri);
+                }catch (IOException e){
+                    Log.e("error", e.getMessage());
+                    profilePicture.setImageURI(uri);
                 }
                 imageSourceChooser.setVisibility(View.INVISIBLE);
                 deleteImage.setClickable(true);
