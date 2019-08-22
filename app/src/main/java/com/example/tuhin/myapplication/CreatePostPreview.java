@@ -205,7 +205,8 @@ public class CreatePostPreview extends AppCompatActivity {
                 final List<StorageReference> references = new ArrayList<>();
 
                 for(String stringUri : imagesUri){
-                    StorageReference reference = storage.getReference().child("post-images/" + Uri.parse(stringUri).getLastPathSegment());
+                    StorageReference reference = storage.getReference()
+                            .child("post-images/" + Uri.parse(stringUri).getLastPathSegment());
                     references.add(reference);
                     Log.i("reference", reference.toString());
                     String path = Uri.parse(stringUri).getPath();

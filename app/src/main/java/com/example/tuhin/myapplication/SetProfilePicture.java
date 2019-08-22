@@ -26,6 +26,20 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -34,7 +48,7 @@ public class SetProfilePicture extends AppCompatActivity {
     final int IMAGE_CHOOSE_REQUEST_CODE = 1;
     final int REQUEST_EXTERNAL_STORAGE_READ_PERM = 1;
 
-    Uri uri = null;
+    Uri uploadUri = null;
     Toolbar toolbar;
     ImageButton captureImage, chooseFrom, deleteImage;
     ConstraintLayout imageSourceChooser;
@@ -93,7 +107,7 @@ public class SetProfilePicture extends AppCompatActivity {
         deleteImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uri = null;
+                uploadUri = null;
                 profilePicture.setImageURI(null);
                 deleteImage.setClickable(false);
                 imageSourceChooser.setVisibility(View.VISIBLE);
@@ -109,6 +123,65 @@ public class SetProfilePicture extends AppCompatActivity {
                 // TODO launch next activity
 
                 Log.i("skip_next", "clicked");
+                if(uploadUri != null){
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    final StorageReference storageReference = storage.getReference()
+                            .child("profile-pictures").child(uploadUri.getLastPathSegment());
+                    UploadTask uploadTask = storageReference.putFile(uploadUri);
+
+                    uploadTask.addOnCanceledListener(new OnCanceledListener() {
+                        @Override
+                        public void onCanceled() {
+                            Log.i("upload", "canceled");
+                        }
+                    }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                            Log.i("upload", "paused");
+                        }
+                    }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            Log.i("upload", "running");
+                        }
+                    });
+
+                    uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                        @Override
+                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                            if(!task.isSuccessful()){
+                                throw task.getException();
+                            }
+                            return storageReference.getDownloadUrl();
+                        }
+                    }).continueWithTask(new Continuation<Uri, Task<Void>>() {
+                        @Override
+                        public Task<Void> then(@NonNull Task<Uri> task) throws Exception {
+                            Uri uri = task.getResult();
+                            Log.i("download_uri", uri.toString());
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            if(user == null){
+                                throw new Exception("User null");
+                            }
+                            Log.i("current_user", user.getEmail());
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setPhotoUri(uri)
+                                    .build();
+                            return user.updateProfile(profileUpdates);
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.i("photo_uri", "updated");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // TODO
+                            Log.e("error", e.getMessage());
+                        }
+                    });
+                }
             }
         });
 
@@ -132,16 +205,21 @@ public class SetProfilePicture extends AppCompatActivity {
                     Log.i("Content-Uri", contentUri.toString());
                 }
                 String path = getPathFromContentUri(contentUri);
-                uri = Uri.fromFile(new File(path));
+                Uri uri = Uri.fromFile(new File(path));
                 Log.i("Uri", uri.toString());
+
                 try{
                     File compressedFile = new Compressor(this).compressToFile(new File(path));
                     Uri compressedFileUri = Uri.fromFile(compressedFile);
                     Log.i("compressed_uri", compressedFileUri.toString());
+                    uploadUri = compressedFileUri;
                     profilePicture.setImageURI(compressedFileUri);
                 }catch (IOException e){
+
+                    // TODO handle the unsuccessful image compression
+
                     Log.e("error", e.getMessage());
-                    profilePicture.setImageURI(uri);
+                    // profilePicture.setImageURI(uri);
                 }
                 imageSourceChooser.setVisibility(View.INVISIBLE);
                 deleteImage.setClickable(true);
