@@ -58,4 +58,8 @@
         We have sent you a recovery email. Please set a new password and then sign in again.
     </string>
 
+    <string name="ask_for_profile_picture">
+        Please select a profile picture
+    </string>
+
 </resources>

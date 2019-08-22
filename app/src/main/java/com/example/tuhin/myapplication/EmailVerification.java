@@ -117,7 +117,7 @@ public class EmailVerification extends AppCompatActivity {
                             if(user.isEmailVerified()){
                                 Log.i("sign_in", "Successful");
                                 // TODO send to welcome/ProfileSetup page if new user
-                                Intent intent = new Intent(EmailVerification.this, ProfileSetup.class);
+                                Intent intent = new Intent(EmailVerification.this, SetProfilePicture.class);
                                 startActivity(intent);
                                 finish();
                             }else{
