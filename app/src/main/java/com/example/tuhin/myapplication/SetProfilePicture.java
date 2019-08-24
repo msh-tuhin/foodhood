@@ -124,6 +124,7 @@ public class SetProfilePicture extends AppCompatActivity {
 
                 Log.i("skip_next", "clicked");
                 if(uploadUri != null){
+                    Log.i("upload_uri", "not null");
                     FirebaseStorage storage = FirebaseStorage.getInstance();
                     final StorageReference storageReference = storage.getReference()
                             .child("profile-pictures").child(uploadUri.getLastPathSegment());
@@ -181,7 +182,13 @@ public class SetProfilePicture extends AppCompatActivity {
                             Log.e("error", e.getMessage());
                         }
                     });
-                }
+                } else Log.i("upload_uri", "null");
+
+                // TODO maybe add download_uri of uploaded profile
+                // TODO picture to firestore database
+
+                Intent intent = new Intent(SetProfilePicture.this, SetPhone.class);
+                startActivity(intent);
             }
         });
 

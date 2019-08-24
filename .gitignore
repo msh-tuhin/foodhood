@@ -9,4 +9,5 @@
 /build
 /captures
 .externalNativeBuild
-diff.txt
+git-diff.txt
+git-log.txt

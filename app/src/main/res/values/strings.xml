@@ -62,4 +62,12 @@
         Please select a profile picture
     </string>
 
+    <string name="ask_for_phone">
+        Please set phone number
+    </string>
+
+    <string name="phone_hint">
+        Phone
+    </string>
+
 </resources>
