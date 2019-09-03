@@ -14,8 +14,12 @@ import android.widget.TextView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class SetPhone extends AppCompatActivity {
 
+    String phoneNumber = null;
     Toolbar toolbar;
     TextInputLayout phoneInputLayout;
     TextInputEditText phoneEditText;
@@ -38,10 +42,23 @@ public class SetPhone extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i("skip_next_phone", "clicked");
+                if(((TextView)v).getText() == "Next"){
+                    phoneNumber = phoneEditText.getText().toString();
+                    phoneNumber = phoneNumber.replaceAll("[\\s-]", "");
+                    String regex = "\\A\\+88";
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(phoneNumber);
+                    if(matcher.find()){
+                        Log.i("group", matcher.group());
+                        Log.i("match_start", Integer.toString(matcher.start()));
+                        Log.i("match_end", Integer.toString(matcher.end()));
+                        phoneNumber = matcher.replaceFirst("");
+                    } else Log.i("match", "not found");
+                    Log.i("new_phone_number", phoneNumber);
+                }
 
-                // TODO add phone number to firestore database
+                // TODO send phone number to next activity
                 // TODO launch new activity
-
             }
         });
 
