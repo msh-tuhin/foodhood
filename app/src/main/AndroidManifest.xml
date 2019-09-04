@@ -41,15 +41,15 @@
         <activity android:name=".ProfileSetup" />
         <activity android:name=".PasswordRecovery" />
         <activity android:name=".SignInAfterPasswordRecovery" />
-        <activity android:name=".SetProfilePicture">
+        <activity android:name=".SetProfilePicture"/>
+        <activity android:name=".SetPhone" />
+        <activity android:name=".AdvancedSearchDish">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SetPhone" />
-        <activity android:name=".AdvancedSearchDish"></activity>
     </application>
 
 </manifest>
