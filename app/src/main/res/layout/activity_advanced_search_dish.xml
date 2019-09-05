@@ -29,29 +29,30 @@
         android:paddingEnd="16dp"
         android:layout_marginTop="?attr/actionBarSize">
 
-        <com.algolia.instantsearch.ui.views.SearchBox
-            android:id="@+id/searchBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:queryHint="Search Dish"
-            app:submitButtonEnabled="false"
-            android:layout_marginTop="16dp" />
+        <!--<com.algolia.instantsearch.ui.views.SearchBox-->
+            <!--android:id="@+id/searchBox"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--app:queryHint="Search Dish"-->
+            <!--app:submitButtonEnabled="false"-->
+            <!--android:layout_marginTop="16dp" />-->
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="8dp">
 
             <TextView
-                style="@style/Headings"
+                android:textColor="#000000"
+                android:textSize="16sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Price:"/>
 
             <EditText
                 android:id="@+id/min_price_edittext"
-                android:layout_width="48dp"
+                android:layout_width="96dp"
                 android:layout_height="wrap_content"
                 android:hint="min"
                 android:inputType="numberDecimal"
@@ -60,7 +61,7 @@
 
             <EditText
                 android:id="@+id/max_price_edittext"
-                android:layout_width="48dp"
+                android:layout_width="96dp"
                 android:layout_height="wrap_content"
                 android:hint="max"
                 android:inputType="numberDecimal"
@@ -73,24 +74,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="8dp">
 
             <TextView
-                style="@style/Headings"
+                android:textColor="#000000"
+                android:textSize="16sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Rating:"/>
 
             <EditText
                 android:id="@+id/rating_edittext"
-                android:layout_width="48dp"
+                android:layout_width="96dp"
                 android:layout_height="wrap_content"
-                android:hint="min"
+                android:hint="rating"
                 android:inputType="numberDecimal"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"/>
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center_horizontal"/>
 
         <LinearLayout
             android:id="@+id/searchLayout"
