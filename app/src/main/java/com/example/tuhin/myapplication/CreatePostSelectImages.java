@@ -75,6 +75,7 @@ public class CreatePostSelectImages extends AppCompatActivity {
         toolbar.setTitle("Create Post");
         setSupportActionBar(toolbar);
 
+        // TODO add api version (>=23) check
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             Log.i("Permission", "Denied");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
