@@ -9,6 +9,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import myapp.utils.AlgoliaCredentials;
+import myapp.utils.AnimationUtils;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -23,6 +24,9 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -30,6 +34,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,24 +76,27 @@ public class AdvancedSearchDish extends AppCompatActivity{
     private boolean locationPermissionGranted = false;
     private boolean isGoogleApiAvailable = false;
     private boolean isLocationSettingsEnabled = false;
+    private boolean isFilterOptionsCollapsed = false;
     private LocationRequest locationRequest;
-    private String selectedDistrict;
+    private String selectedDistrict, selectedCategory;
 
-    boolean previousCheckboxChecked = false;
-    String previousSelectedDistrict;
+    double minPrice = 0.0, maxPrice = 0.0, rating = 0.0;
+    boolean previousCheckboxChecked = false, previousCategoryCheckboxChecked = false;
+    String previousSelectedDistrict, previousSelectedCategory="none";
     Double previousLatitude=0.0, previousLongitude=0.0;
     NumericRefinement minPriceFilter, maxPriceFilter, ratingFilter;
     Double previousMinPrice = 0.0, previousMaxPrice = 0.0, previousRating = 0.0;
 
     Toolbar toolbar;
     CoordinatorLayout coordinatorLayout;
+    LinearLayout filterLayout, searchLayout;
     Searcher searcher;
     InstantSearch instantSearch;
     SearchBox searchBox;
     Hits hits;
 
-    CheckBox checkBox;
-    Spinner districtSpinner;
+    CheckBox checkBox, foodCategoryCheckbox;
+    Spinner districtSpinner, foodCategorySpinner;
     Button searchButton;
     EditText minPriceEditText, maxPriceEditText, ratingEditText;
 
@@ -97,11 +105,16 @@ public class AdvancedSearchDish extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_advanced_search_dish);
 
-        coordinatorLayout = findViewById(R.id.coordinatorLayout);
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Food Frenzy");
         setSupportActionBar(toolbar);
 
+        filterLayout = findViewById(R.id.filter_layout);
+        searchLayout = findViewById(R.id.search_layout);
+        coordinatorLayout = findViewById(R.id.coordinatorLayout);
+
+        foodCategoryCheckbox = findViewById(R.id.food_category_checkbox);
+        foodCategorySpinner = findViewById(R.id.food_category_spinner);
         districtSpinner = findViewById(R.id.district_spinner);
         checkBox = findViewById(R.id.checkbox);
         searchButton = findViewById(R.id.search);
@@ -114,6 +127,8 @@ public class AdvancedSearchDish extends AppCompatActivity{
         searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, ALGOLIA_INDEX_NAME);
         instantSearch = new InstantSearch(this, searcher);
 
+        // TODO handle clicking on a search hit item
+
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,6 +136,17 @@ public class AdvancedSearchDish extends AppCompatActivity{
                     districtSpinner.setEnabled(true);
                 } else{
                     districtSpinner.setEnabled(false);
+                }
+            }
+        });
+
+        foodCategoryCheckbox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(((CheckBox)v).isChecked()){
+                    foodCategorySpinner.setEnabled(true);
+                } else{
+                    foodCategorySpinner.setEnabled(false);
                 }
             }
         });
@@ -135,6 +161,24 @@ public class AdvancedSearchDish extends AppCompatActivity{
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.i("district", parent.getItemAtPosition(position).toString());
                 selectedDistrict = parent.getItemAtPosition(position).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        foodCategorySpinner.setEnabled(false);
+        ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(this,
+                R.array.food_categories, android.R.layout.simple_spinner_item);
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        foodCategorySpinner.setAdapter(categoryAdapter);
+        foodCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.i("category", parent.getItemAtPosition(position).toString());
+                selectedCategory = parent.getItemAtPosition(position).toString();
             }
 
             @Override
@@ -183,6 +227,27 @@ public class AdvancedSearchDish extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
         checkGoogleApiAvailability();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.advanced_search_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.filter_options:
+                if(isFilterOptionsCollapsed){
+                    expandFilterOptions();
+                } else{
+                    collapseFilterOptions();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -338,80 +403,24 @@ public class AdvancedSearchDish extends AppCompatActivity{
         // hiding the soft keyboard
         hideKeyboard();
 
-        boolean shouldSearch = false;
-        double minPrice = 0.0, maxPrice = 0.0, rating = 0.0;
-        searcher.clearFacetRefinements();
-        searcher.removeNumericRefinement("price");
-        searcher.removeNumericRefinement("rating");
-        searcher.getQuery().setAroundLatLng(null);
+        clearRefinements();
+        setNumericValues();
+        addRefinements();
 
-        String minPriceString = minPriceEditText.getText().toString();
-        if (!minPriceString.isEmpty()) {
-            minPrice = Double.valueOf(minPriceString);
-            if (minPrice != 0.0) {
-                minPriceFilter = new NumericRefinement("price", 4, minPrice);
-                searcher.addNumericRefinement(minPriceFilter);
-            } else {
-                minPrice = 0.0;
-            }
+        boolean allZero = minPrice == 0.0 && maxPrice == 0.0 && rating == 0.0;
+//        allZero = allZero && !foodCategoryCheckbox.isChecked();
 
-        } else {
-            minPrice = 0.0;
-        }
-
-        if (!previousMinPrice.equals(minPrice)) {
-            previousMinPrice = minPrice;
-            shouldSearch = true;
-        }
-
-        String maxPriceString = maxPriceEditText.getText().toString();
-        if (!maxPriceString.isEmpty()) {
-            maxPrice = Double.valueOf(maxPriceString);
-            if (maxPrice != 0.0) {
-                maxPriceFilter = new NumericRefinement("price", 1, maxPrice);
-                searcher.addNumericRefinement(maxPriceFilter);
-            } else {
-                maxPrice = 0.0;
-            }
-        } else {
-            maxPrice = 0.0;
-        }
-        if (!previousMaxPrice.equals(maxPrice)) {
-            previousMaxPrice = maxPrice;
-            shouldSearch = true;
-        }
-
-        String ratingString = ratingEditText.getText().toString();
-        if (!ratingString.isEmpty()) {
-            rating = Double.valueOf(ratingString);
-            if (rating != 0.0) {
-                ratingFilter = new NumericRefinement("rating", 4, rating);
-                searcher.addNumericRefinement(ratingFilter);
-            } else {
-                rating = 0.0;
-            }
-        } else {
-            rating = 0.0;
-        }
-        if (!previousRating.equals(rating)) {
-            previousRating = rating;
-            shouldSearch = true;
-        }
-
-        final boolean allZero = minPrice == 0.0 && maxPrice == 0.0 && rating == 0.0;
-        shouldSearch = shouldSearch && !allZero;
-        final boolean finalShouldSearch = shouldSearch;
-
-        if(allZero){
-            hits.clear();
-            // TODO evaluate if this is needed or not
-            // searcher.reset();
-            return;
-        }
+        // don't delete this code
+//        if(allZero){
+//            hits.clear();
+//            // TODO evaluate if this is needed or not
+//            // searcher.reset();
+//            return;
+//        }
 
         if(checkBox.isChecked()){
             Log.i("district_selected", selectedDistrict);
-            searchWithoutLocation(shouldSearch);
+            searchWithoutLocation();
         } else{
             if(checkLocationPermissions()){
                 Task<LocationSettingsResponse> task = getLocationSettingsResponseTask();
@@ -427,10 +436,10 @@ public class AdvancedSearchDish extends AppCompatActivity{
                                         @Override
                                         public void onSuccess(Location location) {
                                             if(location != null){
-                                                searchWithLocation(location, finalShouldSearch);
+                                                searchWithLocation(location);
                                             } else{
                                                 Log.i("location", "null");
-                                                // TODO no location
+                                                // no location
                                                 handleNoLocation();
                                             }
                                         }
@@ -438,12 +447,12 @@ public class AdvancedSearchDish extends AppCompatActivity{
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     e.printStackTrace();
-                                    // TODO no location
+                                    // no location
                                     handleNoLocation();
                                 }
                             });
                         } else{
-                            // TODO no location
+                            // no location
                             // TODO maybe get location by legacy methods
                             handleNoLocation();
                         }
@@ -457,14 +466,109 @@ public class AdvancedSearchDish extends AppCompatActivity{
                     }
                 });
             } else{
-                // TODO no location
+                // no location
                 Log.i("location", "permission denied");
                 handleNoLocation();
             }
         }
     }
 
-    private void searchWithoutLocation(boolean shouldSearch){
+    private void clearRefinements(){
+        searcher.clearFacetRefinements();
+        searcher.removeNumericRefinement("price");
+        searcher.removeNumericRefinement("rating");
+        searcher.getQuery().setAroundLatLng(null);
+    }
+
+    private void setNumericValues(){
+        String minPriceString = minPriceEditText.getText().toString();
+        if (!minPriceString.isEmpty()) {
+            minPrice = Double.valueOf(minPriceString);
+        } else {
+            minPrice = 0.0;
+        }
+
+        String maxPriceString = maxPriceEditText.getText().toString();
+        if (!maxPriceString.isEmpty()) {
+            maxPrice = Double.valueOf(maxPriceString);
+        } else {
+            maxPrice = 0.0;
+        }
+
+        String ratingString = ratingEditText.getText().toString();
+        if (!ratingString.isEmpty()) {
+            rating = Double.valueOf(ratingString);
+        } else {
+            rating = 0.0;
+        }
+    }
+
+    private void addRefinements(){
+        if (minPrice != 0.0) {
+            minPriceFilter = new NumericRefinement("price", 4, minPrice);
+            searcher.addNumericRefinement(minPriceFilter);
+        }
+
+        if (maxPrice != 0.0) {
+            maxPriceFilter = new NumericRefinement("price", 1, maxPrice);
+            searcher.addNumericRefinement(maxPriceFilter);
+        }
+
+        if (rating != 0.0) {
+            ratingFilter = new NumericRefinement("rating", 4, rating);
+            searcher.addNumericRefinement(ratingFilter);
+        }
+
+        if(checkBox.isChecked()){
+//            searcher.addFacetRefinement("district", selectedDistrict);
+        }
+
+        if(foodCategoryCheckbox.isChecked()){
+            searcher.addFacetRefinement("category", selectedCategory);
+        }
+    }
+
+    private boolean getShouldSearch(){
+        boolean shouldSearch = false;
+        if (!previousMinPrice.equals(minPrice)) {
+            previousMinPrice = minPrice;
+            shouldSearch = true;
+        }
+
+        if (!previousMaxPrice.equals(maxPrice)) {
+            previousMaxPrice = maxPrice;
+            shouldSearch = true;
+        }
+
+        if (!previousRating.equals(rating)) {
+            previousRating = rating;
+            shouldSearch = true;
+        }
+
+        if(foodCategoryCheckbox.isChecked()){
+            if(previousCategoryCheckboxChecked){
+                if(!previousSelectedCategory.equals(selectedCategory)){
+                    previousSelectedCategory = selectedCategory;
+                    shouldSearch = true;
+                }
+            } else{
+                shouldSearch = true;
+                previousSelectedCategory = selectedCategory;
+                previousCategoryCheckboxChecked = true;
+            }
+        } else{
+            if(previousCategoryCheckboxChecked){
+                shouldSearch = true;
+                previousCategoryCheckboxChecked = false;
+            }
+        }
+
+        return shouldSearch;
+    }
+
+    private void searchWithoutLocation(){
+        collapseFilterOptions();
+        boolean shouldSearch = getShouldSearch();
         if(previousCheckboxChecked){ // because of this check previousSelectedDistrict is never null
             // so no null check here for previousSelectedDistrict
             if(!previousSelectedDistrict.equals(selectedDistrict)){
@@ -483,7 +587,9 @@ public class AdvancedSearchDish extends AppCompatActivity{
         }
     }
 
-    private void searchWithLocation(Location location, boolean finalShouldSearch){
+    private void searchWithLocation(Location location){
+        collapseFilterOptions();
+        boolean shouldSearch = getShouldSearch();
         Log.i("Provider", location.getProvider());
         Log.i("Latitude", String.valueOf(location.getLatitude()));
         Log.i("Longitude", String.valueOf(location.getLongitude()));
@@ -497,17 +603,15 @@ public class AdvancedSearchDish extends AppCompatActivity{
             previousLatitude = location.getLatitude();
             previousLongitude = location.getLongitude();
             Log.i("search", "yes");
-            previousCheckboxChecked = false;
             instantSearch.search();
-        } else if(finalShouldSearch){
+        } else if(shouldSearch){
             Log.i("search", "yes");
-            previousCheckboxChecked = false;
             instantSearch.search();
         } else if(previousCheckboxChecked){
             Log.i("search", "yes");
-            previousCheckboxChecked = false;
             instantSearch.search();
         }
+        previousCheckboxChecked = false;
     }
 
     private void handleNoLocation(){
@@ -518,7 +622,7 @@ public class AdvancedSearchDish extends AppCompatActivity{
 //        districtSpinner.setEnabled(true);
 
         final Snackbar snackbar = Snackbar.make(coordinatorLayout,
-                "Can't use precise location\n" +
+                "Can't use precise location.\n" +
                         "Select district instead?", Snackbar.LENGTH_LONG);
         snackbar.setAction("Yes", new View.OnClickListener() {
             @Override
@@ -538,7 +642,19 @@ public class AdvancedSearchDish extends AppCompatActivity{
         try{
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         } catch (NullPointerException e){
-            e.printStackTrace();
+//            e.printStackTrace();
         }
+    }
+
+    private void collapseFilterOptions(){
+        AnimationUtils.collapse(filterLayout);
+        searchLayout.setVisibility(View.VISIBLE);
+        isFilterOptionsCollapsed = true;
+    }
+
+    private void expandFilterOptions(){
+//        searchLayout.setVisibility(View.GONE);
+        AnimationUtils.expand(filterLayout);
+        isFilterOptionsCollapsed = false;
     }
 }

@@ -8,6 +8,7 @@
 .DS_Store
 /build
 /captures
+/app/src/main/res/drawable
 .externalNativeBuild
 git-diff.txt
 git-log.txt
