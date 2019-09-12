@@ -24,6 +24,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -80,6 +81,7 @@ public class AdvancedSearchDish extends AppCompatActivity{
     private LocationRequest locationRequest;
     private String selectedDistrict, selectedCategory;
 
+    boolean isMaxPriceEmpty;
     double minPrice = 0.0, maxPrice = 0.0, rating = 0.0;
     boolean previousCheckboxChecked = false, previousCategoryCheckboxChecked = false;
     String previousSelectedDistrict, previousSelectedCategory="none";
@@ -404,7 +406,21 @@ public class AdvancedSearchDish extends AppCompatActivity{
         hideKeyboard();
 
         clearRefinements();
-        setNumericValues();
+
+        try {
+            setNumericValues();
+        } catch (Exception e){
+            showToast(e.getMessage(), true);
+            return;
+        }
+
+        try{
+            validateNumericValues();
+        } catch (MyInvalidInputException e){
+            showToast(e.getMessage(), true);
+            return;
+        }
+
         addRefinements();
 
         boolean allZero = minPrice == 0.0 && maxPrice == 0.0 && rating == 0.0;
@@ -491,8 +507,10 @@ public class AdvancedSearchDish extends AppCompatActivity{
         String maxPriceString = maxPriceEditText.getText().toString();
         if (!maxPriceString.isEmpty()) {
             maxPrice = Double.valueOf(maxPriceString);
+            isMaxPriceEmpty = false;
         } else {
             maxPrice = 0.0;
+            isMaxPriceEmpty = true;
         }
 
         String ratingString = ratingEditText.getText().toString();
@@ -503,18 +521,37 @@ public class AdvancedSearchDish extends AppCompatActivity{
         }
     }
 
+    private void validateNumericValues () throws MyInvalidInputException{
+        if(minPrice < 0.0){
+            throw new MyInvalidInputException("Invalid minimum price");
+        }
+
+        if(!isMaxPriceEmpty && maxPrice <= 0.0){
+            throw new MyInvalidInputException("Invalid maximum price");
+        }
+
+        if(!isMaxPriceEmpty && maxPrice < minPrice){
+            throw new MyInvalidInputException("Maximum price should be greater than " +
+                    "minimum price");
+        }
+
+        if(rating < 0.0 || rating > 5.0){
+            throw new MyInvalidInputException("Rating should be between 0 and 5");
+        }
+    }
+
     private void addRefinements(){
-        if (minPrice != 0.0) {
+        if (minPrice > 0.0) {
             minPriceFilter = new NumericRefinement("price", 4, minPrice);
             searcher.addNumericRefinement(minPriceFilter);
         }
 
-        if (maxPrice != 0.0) {
+        if (maxPrice > 0.0) {
             maxPriceFilter = new NumericRefinement("price", 1, maxPrice);
             searcher.addNumericRefinement(maxPriceFilter);
         }
 
-        if (rating != 0.0) {
+        if (rating > 0.0) {
             ratingFilter = new NumericRefinement("rating", 4, rating);
             searcher.addNumericRefinement(ratingFilter);
         }
@@ -656,5 +693,18 @@ public class AdvancedSearchDish extends AppCompatActivity{
 //        searchLayout.setVisibility(View.GONE);
         AnimationUtils.expand(filterLayout);
         isFilterOptionsCollapsed = false;
+    }
+
+    private void showToast(String message, boolean onTop){
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.TOP, 0, getSupportActionBar().getHeight() + 16);
+        toast.show();
+
+    }
+
+    private class MyInvalidInputException extends Exception{
+        MyInvalidInputException(String message){
+            super(message);
+        }
     }
 }
