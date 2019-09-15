@@ -16,12 +16,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 public class home extends AppCompatActivity {
 
     Toolbar toolbar;
     ViewPager viewPager;
     TabLayout tabLayout;
+
+    private int[] drawables_unselected = {
+            R.drawable.outline_home_black_24dp,
+            R.drawable.baseline_notifications_none_black_24dp,
+            R.drawable.outline_search_black_24dp,
+            R.drawable.outline_insert_invitation_black_24dp,
+            R.drawable.outline_menu_black_24dp
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +43,17 @@ public class home extends AppCompatActivity {
 
         toolbar.setTitle("Food Frenzy");
         setSupportActionBar(toolbar);
-        viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
+
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        // maybe not needed: IDK
+        adapter.notifyDataSetChanged();
+        viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
+
+        // adapter.notifyDataSetChanged();
+        for(int i=0; i<tabLayout.getTabCount(); i++){
+            tabLayout.getTabAt(i).setIcon(drawables_unselected[i]);
+        }
 
     }
 
@@ -59,6 +77,7 @@ public class home extends AppCompatActivity {
         }
     }
 
+
     private class ViewPagerAdapter extends FragmentPagerAdapter{
 
         ViewPagerAdapter(FragmentManager fm){
@@ -74,30 +93,39 @@ public class home extends AppCompatActivity {
                     return new HomeFeedFragment();
                 case 1:
                     return new AllNotificationsFragment();
+                case 2:
+                    return new SearchFragment();
+                case 3:
+                    return new InvitationsFragment();
                 default:
-                    return new BlankFragment();
+                    return new MoreOptionsFragment();
 
             }
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 5;
         }
 
         @Nullable
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position){
-                case 0:
-                    return "Home";
-                case 1:
-                    return "Notifications";
-                    default:
-                        return "Others";
-
-            }
+            return null;
 //            return super.getPageTitle(position);
+//            switch (position){
+//                case 0:
+//                    return "Home";
+//                case 1:
+//                    return "Notifications";
+//                case 2:
+//                    return "Search";
+//                case 3:
+//                    return "Invitations";
+//                default:
+//                    return "More";
+//
+//            }
         }
     }
 

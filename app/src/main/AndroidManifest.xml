@@ -14,15 +14,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" />
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.intent.action.MAIN" /> -->
+        <activity android:name=".MainActivity">
+             <intent-filter>
+             <action android:name="android.intent.action.MAIN" />
 
 
-        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-        <!-- </intent-filter> -->
-        <!-- </activity> -->
-        <activity android:name=".home" />
+             <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
+        </activity>
+        <activity android:name=".home"/>
         <activity android:name=".PersonDetail" />
         <activity android:name=".DishDetail" />
         <activity android:name=".RestDetail" />
@@ -45,13 +45,7 @@
         <activity android:name=".SignInAfterPasswordRecovery" />
         <activity android:name=".SetProfilePicture"/>
         <activity android:name=".SetPhone" />
-        <activity android:name=".AdvancedSearchDish">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".AdvancedSearchDish"/>
     </application>
 
 </manifest>

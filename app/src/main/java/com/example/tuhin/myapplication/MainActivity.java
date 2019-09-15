@@ -93,39 +93,42 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(AuthResult authResult) {
                         FirebaseUser user = authResult.getUser();
                         if(user != null){
-                            if(user.isEmailVerified()){
-                                Log.i("sign_in", "Successful");
-                                // TODO send to welcome/ProfileSetup page if new user
-                                Intent intent = new Intent(MainActivity.this, home.class);
-                                startActivity(intent);
-                                finish();
-                            }else{
-                                Log.i("sign_in", "Email not verified");
-                                user.sendEmailVerification()
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Log.i("email_verification", "sent");
-                                                Intent intent = new Intent(MainActivity.this, EmailVerification.class);
-                                                // maybe not needed
-                                                intent.putExtra("email", email);
-                                                startActivity(intent);
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                // TODO show a dialog with the error message
-                                                // TODO there are some quota limitations
-                                                // TODO handle those
-                                                // TODO add a firestore collection for saving
-                                                // TODO verification email not sent error messages
-                                                // TODO so that they can be checked by an admin later
-                                                Log.i("email_verification", e.getMessage());
-                                                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                                            }
-                                        });
-                            }
+                            Intent intent = new Intent(MainActivity.this, home.class);
+                            startActivity(intent);
+                            finish();
+//                            if(user.isEmailVerified()){
+//                                Log.i("sign_in", "Successful");
+//                                // TODO send to welcome/ProfileSetup page if new user
+//                                Intent intent = new Intent(MainActivity.this, home.class);
+//                                startActivity(intent);
+//                                finish();
+//                            }else{
+//                                Log.i("sign_in", "Email not verified");
+//                                user.sendEmailVerification()
+//                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                            @Override
+//                                            public void onSuccess(Void aVoid) {
+//                                                Log.i("email_verification", "sent");
+//                                                Intent intent = new Intent(MainActivity.this, EmailVerification.class);
+//                                                // maybe not needed
+//                                                intent.putExtra("email", email);
+//                                                startActivity(intent);
+//                                            }
+//                                        })
+//                                        .addOnFailureListener(new OnFailureListener() {
+//                                            @Override
+//                                            public void onFailure(@NonNull Exception e) {
+//                                                // TODO show a dialog with the error message
+//                                                // TODO there are some quota limitations
+//                                                // TODO handle those
+//                                                // TODO add a firestore collection for saving
+//                                                // TODO verification email not sent error messages
+//                                                // TODO so that they can be checked by an admin later
+//                                                Log.i("email_verification", e.getMessage());
+//                                                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+//                                            }
+//                                        });
+//                            }
                         }else{
                             // maybe this never happens
                             Log.i("sign_in", "User is null");
