@@ -6,26 +6,36 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
 
-    TextView name, restNameAddress, rating, price, description;
-    Button addToWishlist;
+    private TextView name, restNameAddress, rating, price, description;
+    private Button addToWishlist;
     private final FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+    private String personLink;
 
     public DishDetailHeaderHolder(@NonNull View v) {
         super(v);
+        mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         name = v.findViewById(R.id.dish_name);
         addToWishlist = v.findViewById(R.id.add_to_wishlist_button);
@@ -36,6 +46,7 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindTo(final String dishLink){
+        personLink = mAuth.getCurrentUser().getUid();
         db.collection("dish_vital").document(dishLink)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -64,14 +75,50 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
                     DocumentSnapshot dishExtra = task.getResult();
                     if(dishExtra.exists()){
                         Double dishPrice = dishExtra.getDouble("p");
-                        price.setText(Double.toString(dishPrice));
+                        String priceText = Double.toString(dishPrice) + " BDT";
+                        price.setText(priceText);
                         String dishDescription = dishExtra.getString("d");
                         description.setText(dishDescription);
+                        try{
+                            ArrayList<String> inWishlistOf = (ArrayList<String>) dishExtra.get("in_wishlist_of");
+                            if(inWishlistOf.contains(personLink)){
+                                addToWishlist.setText("ADDED TO WISHLIST");
+                            }
+                        } catch (NullPointerException e){
+                            Log.i("in_wishlist_of", e.getMessage());
+                        }
+                        addToWishlist.setVisibility(View.VISIBLE);
                     }
                 }
             }
         });
 
+        addToWishlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DocumentReference personRef = db.collection("person_extra")
+                        .document(personLink);
+                DocumentReference dishRef = db.collection("dish_extra")
+                        .document(dishLink);
+                switch (((Button)v).getText().toString()){
+                    case "ADD TO WISHLIST":
+                        // TODO: this should be done if the updates are successful
+                        addToWishlist.setText("ADDED TO WISHLIST");
+                        personRef.update("wishlist", FieldValue.arrayUnion(dishLink));
+
+                        dishRef.update("in_wishlist_of", FieldValue.arrayUnion(personLink),
+                                        "num_wishlist", FieldValue.increment(1));
+                        break;
+                    case "ADDED TO WISHLIST":
+                        // TODO: this should be done if the updates are successful
+                        addToWishlist.setText("ADD TO WISHLIST");
+                        personRef.update("wishlist", FieldValue.arrayRemove(dishLink));
+                        dishRef.update("in_wishlist_of", FieldValue.arrayRemove(personLink),
+                                        "num_wishlist", FieldValue.increment(-1));
+                        break;
+                }
+            }
+        });
 
     }
 

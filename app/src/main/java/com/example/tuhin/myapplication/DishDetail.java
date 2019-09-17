@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,8 +66,9 @@ public class DishDetail extends AppCompatActivity {
 
         // needs composite index
         // TODO maybe separate dish and restaurant feedbacks in firebase
-        Query bQuery = FirebaseFirestore.getInstance().collection("feedbacks").whereEqualTo("t", 0)
-                .orderBy("ts", Query.Direction.DESCENDING);
+        Query bQuery = FirebaseFirestore.getInstance().collection("feedbacks")
+                .whereEqualTo("t", 0);
+//                .orderBy("ts", Query.Direction.DESCENDING);
         PagedList.Config config = new PagedList.Config.Builder()
                 .setEnablePlaceholders(false)
                 .setPrefetchDistance(10)
@@ -77,7 +80,10 @@ public class DishDetail extends AppCompatActivity {
         adapter = new FirestorePagingAdapter<FeedbackModel, RecyclerView.ViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position, @NonNull FeedbackModel model) {
-//                if(position == getItemCount()-1) return;
+//                if(position == getItemCount()-1){
+//                    Log.i("hoorah", "end reached");
+//                    return;
+//                }
                 if(holder instanceof DishDetailHeaderHolder){
                     ((DishDetailHeaderHolder) holder).bindTo(dishLink);
                     return;

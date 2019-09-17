@@ -1,119 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp">
+    android:orientation="vertical"
+    android:paddingBottom="16dp">
 
     <TextView
+        android:textColor="#000000"
+        android:textSize="24sp"
+        android:textStyle="bold"
         android:id="@+id/dish_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Dish Name"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintBaseline_toBaselineOf="@+id/add_to_wishlist_button"
-        app:layout_constraintEnd_toStartOf="@+id/add_to_wishlist_button"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+        android:layout_marginLeft="16dp"
+        android:layout_gravity="center_horizontal"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/baseline_room_black_24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"/>
+
+        <TextView
+            android:id="@+id/rest_name_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:text="Restaurant Name+Address"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/baseline_star_black_24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"/>
+
+        <TextView
+            android:id="@+id/rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:text="Rating" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/baseline_euro_symbol_black_24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"/>
+        <TextView
+            android:id="@+id/price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:text="Price" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/add_to_wishlist_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ADD TO WISHLIST"
-        app:layout_constraintStart_toEndOf="@+id/dish_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="1"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"/>
-
-    <TextView
-        android:id="@+id/rest_name_address"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constrainedWidth="true"
-        android:layout_marginTop="16dp"
-        android:text="Restaurant Name+Address"
-        app:layout_constraintStart_toStartOf="@+id/dish_name"
-        app:layout_constraintTop_toBottomOf="@+id/dish_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"/>
-
-    <TextView
-        android:id="@+id/rating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
-        android:text="Rating"
-        app:layout_constraintStart_toStartOf="@+id/dish_name"
-        app:layout_constraintTop_toBottomOf="@+id/rest_name_address" />
-
-    <TextView
-        android:id="@+id/price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Price"
-        app:layout_constraintStart_toStartOf="@+id/dish_name"
-        app:layout_constraintTop_toBottomOf="@+id/rating"/>
+        android:text="ADD TO WISHLIST"
+        android:visibility="gone" />
 
     <View
         android:id="@+id/divider_below_price"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="16dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/price" />
+        android:background="?android:attr/listDivider" />
 
     <TextView
         android:id="@+id/description_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
         android:text="Description:"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/dish_name"
-        app:layout_constraintTop_toBottomOf="@+id/divider_below_price" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/dish_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:text="Pharetra et ultrices neque ornare aenean euismod elementum. Eget magna fermentum iaculis eu"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/dish_name"
-        app:layout_constraintTop_toBottomOf="@+id/description_header" />
+        android:text="Pharetra et ultrices neque ornare aenean euismod elementum. Eget magna fermentum iaculis eu" />
 
     <View
         android:id="@+id/divider_below_description"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="16dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dish_description" />
+        android:background="?android:attr/listDivider" />
 
     <TextView
         android:id="@+id/feedbacks_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
-        android:text="Feedbacks"
-        app:layout_constraintStart_toStartOf="@+id/dish_name"
-        app:layout_constraintTop_toBottomOf="@+id/divider_below_description" />
+        android:text="Feedbacks" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
