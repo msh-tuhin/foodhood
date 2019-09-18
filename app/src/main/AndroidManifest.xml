@@ -4,8 +4,8 @@
     package="com.example.tuhin.myapplication">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -15,14 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
-             <intent-filter>
-             <action android:name="android.intent.action.MAIN" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-
-             <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-        <activity android:name=".home"/>
+        <activity android:name=".home" />
         <activity android:name=".PersonDetail" />
         <activity android:name=".DishDetail" />
         <activity android:name=".RestDetail" />
@@ -43,9 +42,16 @@
         <activity android:name=".ProfileSetup" />
         <activity android:name=".PasswordRecovery" />
         <activity android:name=".SignInAfterPasswordRecovery" />
-        <activity android:name=".SetProfilePicture"/>
+        <activity android:name=".SetProfilePicture" />
         <activity android:name=".SetPhone" />
-        <activity android:name=".AdvancedSearchDish"/>
+        <activity android:name=".AdvancedSearchDish" />
+        <activity
+            android:name=".Wishlist"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
     </application>
 
 </manifest>

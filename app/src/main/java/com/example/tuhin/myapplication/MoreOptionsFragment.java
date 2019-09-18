@@ -62,11 +62,15 @@ public class MoreOptionsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Activity parentActivity = MoreOptionsFragment.this.getActivity();
+                Intent intent;
                 switch (position){
                     case 3:
-                        Intent intent = new Intent(parentActivity, AdvancedSearchDish.class);
+                        intent = new Intent(parentActivity, AdvancedSearchDish.class);
                         startActivity(intent);
                         break;
+                    case 2:
+                        intent = new Intent(parentActivity, Wishlist.class);
+                        startActivity(intent);
                 }
             }
         });
