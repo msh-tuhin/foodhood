@@ -14,8 +14,6 @@
         android:layout_height="wrap_content"
         android:text="Dish Name"
         android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_gravity="center_horizontal"/>
 
     <LinearLayout

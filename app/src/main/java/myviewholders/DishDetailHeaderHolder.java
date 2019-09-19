@@ -87,39 +87,12 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
                         } catch (NullPointerException e){
                             Log.i("in_wishlist_of", e.getMessage());
                         }
-                        addToWishlist.setVisibility(View.VISIBLE);
                     }
                 }
+                addToWishlist.setVisibility(View.VISIBLE);
+                addToWishlist.setOnClickListener(getAddToWishlistOnClickListener(dishLink));
             }
         });
-
-        addToWishlist.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DocumentReference personRef = db.collection("person_extra")
-                        .document(personLink);
-                DocumentReference dishRef = db.collection("dish_extra")
-                        .document(dishLink);
-                switch (((Button)v).getText().toString()){
-                    case "ADD TO WISHLIST":
-                        // TODO: this should be done if the updates are successful
-                        addToWishlist.setText("ADDED TO WISHLIST");
-                        personRef.update("wishlist", FieldValue.arrayUnion(dishLink));
-
-                        dishRef.update("in_wishlist_of", FieldValue.arrayUnion(personLink),
-                                        "num_wishlist", FieldValue.increment(1));
-                        break;
-                    case "ADDED TO WISHLIST":
-                        // TODO: this should be done if the updates are successful
-                        addToWishlist.setText("ADD TO WISHLIST");
-                        personRef.update("wishlist", FieldValue.arrayRemove(dishLink));
-                        dishRef.update("in_wishlist_of", FieldValue.arrayRemove(personLink),
-                                        "num_wishlist", FieldValue.increment(-1));
-                        break;
-                }
-            }
-        });
-
     }
 
     private void setRestaurantNameAddress(final String restaurantName, String restaurantLink){
@@ -141,5 +114,34 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
                 }
             }
         });
+    }
+
+    private View.OnClickListener getAddToWishlistOnClickListener(final String dishLink){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DocumentReference personRef = db.collection("person_extra")
+                        .document(personLink);
+                DocumentReference dishRef = db.collection("dish_extra")
+                        .document(dishLink);
+                switch (((Button)v).getText().toString()){
+                    case "ADD TO WISHLIST":
+                        // TODO: this should be done if and only if the updates are successful
+                        addToWishlist.setText("ADDED TO WISHLIST");
+                        personRef.update("wishlist", FieldValue.arrayUnion(dishLink));
+
+                        dishRef.update("in_wishlist_of", FieldValue.arrayUnion(personLink),
+                                "num_wishlist", FieldValue.increment(1));
+                        break;
+                    case "ADDED TO WISHLIST":
+                        // TODO: this should be done if and only if the updates are successful
+                        addToWishlist.setText("ADD TO WISHLIST");
+                        personRef.update("wishlist", FieldValue.arrayRemove(dishLink));
+                        dishRef.update("in_wishlist_of", FieldValue.arrayRemove(personLink),
+                                "num_wishlist", FieldValue.increment(-1));
+                        break;
+                }
+            }
+        };
     }
 }

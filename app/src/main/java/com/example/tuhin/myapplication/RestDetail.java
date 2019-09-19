@@ -1,8 +1,11 @@
 package com.example.tuhin.myapplication;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.paging.PagedList;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,6 +16,8 @@ import android.view.ViewGroup;
 
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -26,14 +31,22 @@ public class RestDetail extends AppCompatActivity {
     RecyclerView rv;
     FirestorePagingAdapter<FeedbackModel, RecyclerView.ViewHolder> adapter;
     String restaurantLink;
+    public AppBarLayout appBarLayout;
+    public CollapsingToolbarLayout collapsingToolbarLayout;
+    public Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rest_detail);
+
         restaurantLink = getIntent().getExtras().getString("restaurantLink");
+        appBarLayout = findViewById(R.id.appBarLayout);
+        collapsingToolbarLayout = findViewById(R.id.collapsingToolbarLayout);
+        toolbar = findViewById(R.id.toolbar);
         rv = findViewById(R.id.restaurant_detail_rv);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+//        collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rv.setLayoutManager(layoutManager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(), layoutManager.getOrientation());
         rv.addItemDecoration(dividerItemDecoration);

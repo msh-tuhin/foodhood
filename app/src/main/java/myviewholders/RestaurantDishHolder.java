@@ -51,7 +51,7 @@ public class RestaurantDishHolder extends RecyclerView.ViewHolder {
                     DocumentSnapshot dishInfo = task.getResult();
                     if(dishInfo.exists()){
                         Double price = dishInfo.getDouble("p");
-                        dishPrice.setText(Double.toString(price));
+                        dishPrice.setText(Double.toString(price)+" BDT");
                     }else{
                         Log.i(NO_DOCUMENT, "document not found");
                     }

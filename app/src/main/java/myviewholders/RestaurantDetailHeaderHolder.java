@@ -14,9 +14,16 @@ import android.widget.TextView;
 
 import com.example.tuhin.myapplication.AllDishes;
 import com.example.tuhin.myapplication.R;
+import com.example.tuhin.myapplication.RestDetail;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -24,14 +31,18 @@ import java.util.Map;
 
 import myapp.utils.SourceAllDishes;
 
-public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder {
+public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
     TextView restaurantName, restaurantAddress, restaurantPhone, restaurantEmail;
     TextView restaurantWebsite, numFollowedBy, restaurantRating, seeAll;
     Button followRestaurant;
     RecyclerView rv;
+    private FirebaseFirestore db;
+    private final String currentUserUid;
 
     public RestaurantDetailHeaderHolder(@NonNull View v) {
         super(v);
+        db = FirebaseFirestore.getInstance();
+        currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         restaurantName = v.findViewById(R.id.restaurant_name);
         followRestaurant = v.findViewById(R.id.follow_restaurant);
         restaurantAddress = v.findViewById(R.id.restaurant_address);
@@ -47,8 +58,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public void bindTo(final Context context, String restaurantLink){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public void bindTo(final Context context, final String restaurantLink){
         db.collection("rest_vital").document(restaurantLink)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -60,6 +70,8 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder {
                         Double rating = restaurantVital.getDouble("r");
                         restaurantName.setText(name);
                         restaurantRating.setText(Double.toString(rating));
+//                        ((RestDetail)context).toolbar.setTitle(name);
+                        setCollapsedTitle(context, name);
                     }
                 }
             }
@@ -107,6 +119,33 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder {
                 }
             }
         });
+
+        db.collection("rest_followers").document(restaurantLink)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            try{
+                                ArrayList<String> followers = (ArrayList) documentSnapshot.get("a");
+                                if(followers.contains(currentUserUid)){
+                                    followRestaurant.setText("UNFOLLOW");
+                                }
+                            } catch (NullPointerException e){
+                                Log.i("Error", e.getMessage());
+                            }
+                        }
+                        followRestaurant.setVisibility(View.VISIBLE);
+                        followRestaurant.setOnClickListener(getFollowRestaurantOnClickListener(restaurantLink));
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        followRestaurant.setVisibility(View.VISIBLE);
+                        followRestaurant.setOnClickListener(getFollowRestaurantOnClickListener(restaurantLink));
+                    }
+                });
     }
 
     private class RestaurantDishesAdapter extends RecyclerView.Adapter<RestaurantDishHolder>{
@@ -134,5 +173,55 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder {
                     .inflate(R.layout.wishlist_item, viewGroup, false);
             return new RestaurantDishHolder(view);
         }
+    }
+
+    private View.OnClickListener getFollowRestaurantOnClickListener(final String restaurantLink){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DocumentReference personRestFollowRef = db.collection("following_restaurants")
+                        .document(currentUserUid);
+                DocumentReference restaurantFollowerRef = db.collection("rest_followers")
+                        .document(restaurantLink);
+                DocumentReference restRef = db.collection("rest_extra")
+                        .document(restaurantLink);
+                switch (((Button)v).getText().toString()){
+                    case "FOLLOW":
+                        // TODO: this should be done if and only if the updates are successful
+                        followRestaurant.setText("UNFOLLOW");
+                        personRestFollowRef.update("a", FieldValue.arrayUnion(restaurantLink));
+                        restaurantFollowerRef.update("a", FieldValue.arrayUnion(currentUserUid));
+                        restRef.update("nfb", FieldValue.increment(1));
+                        break;
+                    case "UNFOLLOW":
+                        // TODO: this should be done if and only if the updates are successful
+                        followRestaurant.setText("FOLLOW");
+                        personRestFollowRef.update("a", FieldValue.arrayRemove(restaurantLink));
+                        restaurantFollowerRef.update("a", FieldValue.arrayRemove(currentUserUid));
+                        restRef.update("nfb", FieldValue.increment(-1));
+                        break;
+                }
+            }
+        };
+    }
+
+    private void setCollapsedTitle(final Context context, final String name){
+        ((RestDetail)context).appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = true;
+            int scrollRange = -1;
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    ((RestDetail)context).collapsingToolbarLayout.setTitle(name);
+                    isShow = true;
+                } else if(isShow) {
+                    ((RestDetail)context).collapsingToolbarLayout.setTitle(" ");
+                    isShow = false;
+                }
+            }
+        });
     }
 }
