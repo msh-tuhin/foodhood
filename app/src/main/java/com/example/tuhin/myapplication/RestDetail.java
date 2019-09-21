@@ -21,6 +21,11 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import androidx.viewpager.widget.ViewPager;
+import myapp.utils.CoverImagesAdapter;
 import myviewholders.FeedbackHolder;
 import myviewholders.FeedbackWithoutReviewHolder;
 import myviewholders.RestaurantDetailHeaderHolder;
@@ -31,9 +36,11 @@ public class RestDetail extends AppCompatActivity {
     RecyclerView rv;
     FirestorePagingAdapter<FeedbackModel, RecyclerView.ViewHolder> adapter;
     String restaurantLink;
+    ViewPager viewPager;
     public AppBarLayout appBarLayout;
     public CollapsingToolbarLayout collapsingToolbarLayout;
     public Toolbar toolbar;
+    CoverImagesAdapter imagesAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +51,10 @@ public class RestDetail extends AppCompatActivity {
         collapsingToolbarLayout = findViewById(R.id.collapsingToolbarLayout);
         toolbar = findViewById(R.id.toolbar);
         rv = findViewById(R.id.restaurant_detail_rv);
+        viewPager = findViewById(R.id.viewPager);
+
+        imagesAdapter = new CoverImagesAdapter(this, new ArrayList<Integer>(Arrays.asList(R.drawable.restaurant, R.drawable.key_lime_pie)));
+        viewPager.setAdapter(imagesAdapter);
 
 //        collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
