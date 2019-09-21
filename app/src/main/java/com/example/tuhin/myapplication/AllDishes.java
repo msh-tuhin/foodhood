@@ -45,7 +45,7 @@ public class AllDishes extends AppCompatActivity {
         toolbar.setTitle(title);
         setSupportActionBar(toolbar);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rv.setLayoutManager(layoutManager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(), layoutManager.getOrientation());
         rv.addItemDecoration(dividerItemDecoration);
@@ -55,7 +55,6 @@ public class AllDishes extends AppCompatActivity {
 
     }
 
-    // the adapter
     // might use a different adapter later
     private class DishesAdapter extends RecyclerView.Adapter<AllDishesItemHolder>{
         ArrayList<String> dishes;

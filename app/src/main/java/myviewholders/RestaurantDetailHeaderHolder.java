@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.example.tuhin.myapplication.AllDishes;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.RestDetail;
+import com.example.tuhin.myapplication.RestaurantAllDishes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -89,9 +90,10 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                             @Override
                             public void onClick(View v) {
                                 Log.i("CLICKED", "See All Clicked");
-                                Intent intent = new Intent(context, AllDishes.class);
+                                // Intent intent = new Intent(context, AllDishes.class);
+                                Intent intent = new Intent(context, RestaurantAllDishes.class);
                                 intent.putStringArrayListExtra("dishesList", dishes);
-                                intent.putExtra("source", SourceAllDishes.RESTAURANT_ALL_DISHES);
+                                // intent.putExtra("source", SourceAllDishes.RESTAURANT_ALL_DISHES);
                                 context.startActivity(intent);
                             }
                         });
