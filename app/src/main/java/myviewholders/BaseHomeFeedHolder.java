@@ -17,7 +17,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 //  acts as a parent for all viewholders
-//  initializes elements declared in post_q.xml and con_n_like.xml
+//  initializes elements declared in post_q.xml and com_n_like.xml
 public class BaseHomeFeedHolder extends RecyclerView.ViewHolder {
 
     // post_q.xml
