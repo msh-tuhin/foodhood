@@ -103,7 +103,7 @@ public class AdapterCreator {
                     case 0:
                         // a person posts
                         view = LayoutInflater.from(viewGroup.getContext())
-                                .inflate(R.layout.post_half_new, viewGroup, false);
+                                .inflate(R.layout.post_half, viewGroup, false);
                         viewHolder = new HalfPostHolder(view);
                         break;
                     case 2:
@@ -258,7 +258,7 @@ public class AdapterCreator {
                     case 0:
                         // a person posts
                         view = LayoutInflater.from(viewGroup.getContext())
-                                .inflate(R.layout.post_half_new, viewGroup, false);
+                                .inflate(R.layout.post_half, viewGroup, false);
                         viewHolder = new HalfPostHolder(view);
                         break;
                     case 2:

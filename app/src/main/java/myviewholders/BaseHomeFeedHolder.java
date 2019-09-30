@@ -22,7 +22,8 @@ public class BaseHomeFeedHolder extends RecyclerView.ViewHolder {
 
     // post_q.xml
     public CircleImageView profileImage;
-    public TextView postHeader, postTime, postCaption;
+    public TextView namePostedBy, postTime, postCaption;
+    public TextView restaurantName, taggedPeople, dishes;
     public ImageView postImages;
     // com_n_like.xml
     public TextView noOfLikes, noOfComments;
@@ -31,7 +32,10 @@ public class BaseHomeFeedHolder extends RecyclerView.ViewHolder {
     public BaseHomeFeedHolder(@NonNull View v) {
         super(v);
         profileImage = v.findViewById(R.id.profile_image);
-        postHeader = v.findViewById(R.id.post_header);
+        namePostedBy = v.findViewById(R.id.name);
+        restaurantName = v.findViewById(R.id.restaurant_name);
+        taggedPeople = v.findViewById(R.id.tagged_people);
+        dishes = v.findViewById(R.id.dishes);
         postTime = v.findViewById(R.id.post_time);
         postCaption = v.findViewById(R.id.post_caption);
         postImages = v.findViewById(R.id.post_images);

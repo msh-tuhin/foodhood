@@ -45,8 +45,8 @@ public class RestFeedHolder extends BaseHomeFeedHolder{
                         String linkToRestaurant = who.get("l");
                         SpannableString mSpannableString = Helper.getSpannableStringFromRestaurantName
                                 (restaurantName, linkToRestaurant);
-                        postHeader.setText(mSpannableString, TextView.BufferType.SPANNABLE);
-                        postHeader.setMovementMethod(LinkMovementMethod.getInstance());
+//                        postHeader.setText(mSpannableString, TextView.BufferType.SPANNABLE);
+//                        postHeader.setMovementMethod(LinkMovementMethod.getInstance());
                         postCaption.setText(caption);
                     }
                 }

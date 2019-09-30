@@ -13,8 +13,12 @@ import android.widget.TextView;
 
 import com.example.tuhin.myapplication.ActivityResponse;
 import com.example.tuhin.myapplication.ActualActivity;
+import com.example.tuhin.myapplication.AllDishes;
 import com.example.tuhin.myapplication.FullPost;
+import com.example.tuhin.myapplication.MorePeole;
+import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.R;
+import com.example.tuhin.myapplication.RestDetail;
 import com.example.tuhin.myapplication.WriteComment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -32,6 +36,7 @@ import java.util.Map;
 
 import myapp.utils.EntryPoints;
 import myapp.utils.PostBuilder;
+import myapp.utils.SourceAllDishes;
 
 public class HalfPostHolder extends BaseHomeFeedHolder {
 
@@ -71,7 +76,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder {
                 context.startActivity(intent);
             }
         });
-    };
+    }
 
     protected void doYourBit(final Context context, Task<DocumentSnapshot> taskPost, final String postLink){
         final String likedBy = fAuth.getCurrentUser().getUid();
@@ -82,22 +87,64 @@ public class HalfPostHolder extends BaseHomeFeedHolder {
                 if(task.isSuccessful()){
                     DocumentSnapshot post = task.getResult();
                     if(post.exists()){
-//                      Map<String, String> builtPost = Helper.buildPost(post);
-//                      halfPostHolder.getPostHeader().setText(builtPost.get("postHeader"));
-//                      halfPostHolder.getPostCaption().setText(builtPost.get("caption"));
-                        PostBuilder postBuilder = new PostBuilder(context, post);
-                        SpannableStringBuilder mSpannedString = postBuilder.getPostHeader();
-                        postHeader.setText(mSpannedString, TextView.BufferType.SPANNABLE);
-                        postHeader.setMovementMethod(LinkMovementMethod.getInstance());
+                        final PostBuilder postBuilder = new PostBuilder(context, post);
+//                        SpannableStringBuilder mSpannedString = postBuilder.getPostHeader();
+//                        postHeader.setText(mSpannedString, TextView.BufferType.SPANNABLE);
+//                        postHeader.setMovementMethod(LinkMovementMethod.getInstance());
+                        namePostedBy.setText(postBuilder.getNamePostedBy());
+                        restaurantName.setText(postBuilder.getRestaurantName());
+                        taggedPeople.setText(postBuilder.getPeopleText());
+                        dishes.setText(postBuilder.getDishesText());
                         postCaption.setText(postBuilder.getCaption());
-                        List<String> likers = (List<String>) post.get("l");
 
+                        List<String> likers = (List<String>) post.get("l");
                         // find if current user has already liked this post
                         if(likers.contains(likedBy)){
                             like.setImageResource(R.drawable.baseline_favorite_black_24dp);
                         }else{
                             like.setImageResource(R.drawable.outline_favorite_border_black_24dp);
                         }
+
+                        namePostedBy.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(context, PersonDetail.class);
+                                intent.putExtra("personLink",
+                                        postBuilder.getLinkToPostedBy());
+                                context.startActivity(intent);
+                            }
+                        });
+
+                        restaurantName.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(context, RestDetail.class);
+                                intent.putExtra("restaurantLink",
+                                        postBuilder.getRestaurantLink());
+                                context.startActivity(intent);
+                            }
+                        });
+
+                        taggedPeople.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(context, MorePeole.class);
+                                intent.putStringArrayListExtra("personsList",
+                                        postBuilder.getSortedTaggedPeopleLinks());
+                                context.startActivity(intent);
+                            }
+                        });
+
+                        dishes.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(context, AllDishes.class);
+                                intent.putStringArrayListExtra("dishesList",
+                                        postBuilder.getSortedDishLinks());
+                                intent.putExtra("source", SourceAllDishes.POST);
+                                context.startActivity(intent);
+                            }
+                        });
 
                     }
                 }

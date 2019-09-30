@@ -1,60 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
 
-    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:src="@drawable/popeye"
-        app:civ_border_color="#FF0000"
-        app:civ_border_width="1dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:src="@drawable/popeye"/>
 
-    <TextView
-        android:id="@+id/post_header"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:text="@string/post_header"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/profile_image"
-        app:layout_constraintTop_toTopOf="@+id/profile_image" />
-
-    <TextView
-        android:id="@+id/post_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="8 hr"
-        app:layout_constraintStart_toStartOf="@+id/post_header"
-        app:layout_constraintTop_toBottomOf="@+id/post_header" />
-
-    <TextView
-        android:id="@+id/post_caption"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/post_caption"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/post_time" />
-
-    <ImageView
-        android:id="@+id/post_images"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="240dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="@+id/post_caption"
-        app:layout_constraintTop_toBottomOf="@+id/post_caption"
-        app:srcCompat="@drawable/key_lime_pie" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp">
+        <TextView
+            style="@style/TextClickableSimple"
+            android:textStyle="bold"
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name" />
 
+        <TextView
+            android:id="@+id/post_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="8 hr" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/baseline_room_black_24dp"/>
+            <TextView
+                style="@style/TextClickableSimple"
+                android:id="@+id/restaurant_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Place"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/outline_people_outline_black_24dp"/>
+            <TextView
+                style="@style/TextClickableSimple"
+                android:id="@+id/tagged_people"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="People"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/baseline_room_black_24dp"/>
+            <TextView
+                style="@style/TextClickableSimple"
+                android:id="@+id/dishes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dishes"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:id="@+id/post_caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/post_caption" />
+
+        <ImageView
+            android:id="@+id/post_images"
+            app:srcCompat="@drawable/key_lime_pie"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="16dp"
+            android:scaleType="fitXY"/>
+    </LinearLayout>
+
+</LinearLayout>

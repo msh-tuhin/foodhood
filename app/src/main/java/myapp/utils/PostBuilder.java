@@ -29,15 +29,12 @@ import java.util.Set;
 
 
 public class PostBuilder {
-
-    int start, end;
-    int noOfTaggedPeople, noOfDishes;
-    String caption;
-    String restaurantName, restaurantLink, nameOfPostedBy, linkToPostedBy;
-    Map<String, String> restaurant, dishes, who, taggedPeople;
-    ArrayList<String> sortedDishLinks, sortedTaggedPeopleLinks;
-    Fragment fragment;
-    Context context;
+    private int noOfTaggedPeople, noOfDishes;
+    private String caption;
+    private String restaurantName, restaurantLink, nameOfPostedBy, linkToPostedBy;
+    private Map<String, String> restaurant, dishes, who, taggedPeople;
+    private ArrayList<String> sortedDishLinks, sortedTaggedPeopleLinks;
+    private Context context;
 
     public PostBuilder(Context context, DocumentSnapshot post) {
         caption = post.getString("c");
@@ -60,56 +57,48 @@ public class PostBuilder {
         sortedTaggedPeopleLinks = getSortedLinks(taggedPeople.keySet());
     }
 
-    public SpannableStringBuilder getPostHeader(){
-        // TODO mSpannableString can be a class level variable
-        SpannableStringBuilder mSpannableString = new SpannableStringBuilder("");
-//        ArrayList<String> sortedDishLinks = getSortedLinks(dishes.keySet());
-//        ArrayList<String> sortedTaggedPeopleLinks = getSortedLinks(dishes.keySet());
-        updateSpannableString(mSpannableString, nameOfPostedBy, linkToPostedBy, DestinationType.PERSONDETAIL);
-        mSpannableString.append(" enjoying ");
-        String firstDish = dishes.get(sortedDishLinks.get(0));
-        updateSpannableString(mSpannableString, firstDish, sortedDishLinks.get(0), DestinationType.DISHDETAIL);
-        if(noOfDishes > 1) {
-            mSpannableString.append(" and ");
-            if(noOfDishes > 2){
-                String otherDishesString = Integer.toString(noOfDishes-1) + " others";
-                updateSpannableString(mSpannableString, otherDishesString, "", DestinationType.MOREDISHES);
-            } else{
-                String secondDish = dishes.get(sortedDishLinks.get(1));
-                updateSpannableString(mSpannableString, secondDish, sortedDishLinks.get(1), DestinationType.DISHDETAIL);
-            }
-        }
-        mSpannableString.append(" at ");
-        updateSpannableString(mSpannableString, restaurantName, restaurantLink, DestinationType.RESTAURANTDETAIL);
-        mSpannableString.append(" with ");
-        String firstPerson = taggedPeople.get(sortedTaggedPeopleLinks.get(0));
-        updateSpannableString(mSpannableString, firstPerson, sortedTaggedPeopleLinks.get(0), DestinationType.PERSONDETAIL);
-        if(noOfTaggedPeople > 1) {
-            mSpannableString.append(" and ");
-            if(noOfTaggedPeople > 2){
-                String otherPeopleString = Integer.toString(noOfTaggedPeople-1) + " others";
-                updateSpannableString(mSpannableString, otherPeopleString, "", DestinationType.MOREPERSONS);
-            } else{
-                String secondPerson = taggedPeople.get(sortedTaggedPeopleLinks.get(1));
-                updateSpannableString(mSpannableString, secondPerson, sortedTaggedPeopleLinks.get(1), DestinationType.PERSONDETAIL);
-            }
-        }
+    public String getNamePostedBy(){
+        return nameOfPostedBy;
+    }
 
-        return mSpannableString;
+    public String getLinkToPostedBy(){
+        return linkToPostedBy;
+    }
+
+    public String getRestaurantName(){
+        return restaurantName;
+    }
+
+    public String getRestaurantLink(){
+        return restaurantLink;
+    }
+
+    public String getPeopleText(){
+        String text = taggedPeople.get(sortedTaggedPeopleLinks.get(0));
+        if(noOfTaggedPeople > 1){
+            text = text + "  +" + Integer.toString(noOfTaggedPeople - 1);
+        }
+        return text;
+    }
+
+    public String getDishesText(){
+        String text = dishes.get(sortedDishLinks.get(0));
+        if(noOfDishes > 1){
+            text = text + "  +" + Integer.toString(noOfDishes - 1);
+        }
+        return text;
+    }
+
+    public ArrayList<String> getSortedDishLinks(){
+        return sortedDishLinks;
+    }
+
+    public ArrayList<String> getSortedTaggedPeopleLinks(){
+        return sortedTaggedPeopleLinks;
     }
 
     public String getCaption(){
         return caption;
-    }
-
-    private void updateSpannableString(SpannableStringBuilder mSpannableString, String name, String link, int destinationType){
-        // if mSpannableString is made a class level variable
-        // then it will not be passed here
-        start = mSpannableString.length();
-        mSpannableString.append(name);
-        end = mSpannableString.length();
-        mSpannableString.setSpan(new MyClickableSpan(context, link, destinationType), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        mSpannableString.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     private ArrayList<String> getSortedLinks(Set<String> set){
@@ -120,58 +109,5 @@ public class PostBuilder {
         }
         Collections.sort(links);
         return links;
-    }
-
-    private class MyClickableSpan extends ClickableSpan{
-        String link;
-        int destinationType;
-        private Context context;
-        MyClickableSpan(Context context,String link, int destinationType){
-            this.link = link;
-            this.destinationType = destinationType;
-            this.context = context;
-        }
-        @Override
-        public void onClick(@NonNull View widget) {
-            Log.i("CLICKED", "Go To " + link);
-            Log.i("destination", "Type " + Integer.toString(destinationType));
-            Intent intent;
-
-            switch (destinationType){
-                case DestinationType.PERSONDETAIL:
-                    intent = new Intent(context, PersonDetail.class);
-                    intent.putExtra("personLink", link);
-                    context.startActivity(intent);
-                    break;
-                case DestinationType.DISHDETAIL:
-                    intent = new Intent(context, DishDetail.class);
-                    intent.putExtra("dishLink", link);
-                    context.startActivity(intent);
-                    break;
-                case DestinationType.RESTAURANTDETAIL:
-                    intent = new Intent(context, RestDetail.class);
-                    intent.putExtra("restaurantLink", link);
-                    context.startActivity(intent);
-                    break;
-                case DestinationType.MOREPERSONS:
-                    intent = new Intent(context, MorePeole.class);
-                    intent.putStringArrayListExtra("personsList", sortedTaggedPeopleLinks);
-                    context.startActivity(intent);
-                    break;
-                case DestinationType.MOREDISHES:
-                    intent = new Intent(context, AllDishes.class);
-                    intent.putStringArrayListExtra("dishesList", sortedDishLinks);
-                    intent.putExtra("source", SourceAllDishes.POST);
-                    context.startActivity(intent);
-                    break;
-            }
-
-        }
-
-        @Override
-        public void updateDrawState(@NonNull TextPaint ds) {
-            super.updateDrawState(ds);
-            ds.setUnderlineText(false);
-        }
     }
 }

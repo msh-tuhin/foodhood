@@ -13,7 +13,7 @@
 
     <include
         android:id="@+id/included_post_q"
-        layout="@layout/post_q_new"
+        layout="@layout/post_q"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -23,9 +23,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:text="@string/see_feedbacks" />
+        android:text="@string/see_feedbacks"
+        android:layout_marginLeft="64dp"
+        android:layout_marginStart="64dp"/>
 
     <include
         android:id="@+id/included_com_n_like"
