@@ -15,11 +15,13 @@ import myviewholders.BaseHomeFeedHolder;
 import myviewholders.HalfPostHolder;
 import myviewholders.PersonDetailHeaderHolder;
 import myviewholders.PostTagHolder;
+import myviewholders.RestFeedCommentHolder;
 import myviewholders.RestFeedHolder;
 import myviewholders.PostLikeTagHolder;
 import myviewholders.RestFeedLikeHolder;
 import myviewholders.PostCommentHolder;
 import myviewholders.PostReplyHolder;
+import myviewholders.RestFeedReplyHolder;
 
 import com.example.tuhin.myapplication.FeedbackModel;
 import com.example.tuhin.myapplication.R;
@@ -144,7 +146,17 @@ public class AdapterCreator {
                         break;
 
                     case 6:
+                        // a person comments on a rest feed
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.comment_rest_feed, viewGroup, false);
+                        viewHolder = new RestFeedCommentHolder(view);
+                        break;
                     case 8:
+                        // a person replies to comment on rest feed
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.reply_rest_feed, viewGroup, false);
+                        viewHolder = new RestFeedReplyHolder(view);
+                        break;
                     default:
                         view = LayoutInflater.from(viewGroup.getContext())
                                 .inflate(R.layout.person_detail_header, viewGroup, false);

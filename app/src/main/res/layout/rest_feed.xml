@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,28 +9,69 @@
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     android:paddingEnd="8dp"
-    android:paddingTop="8dp"
+    android:paddingTop="16dp"
     android:paddingBottom="@dimen/home_feed_view_holder_bottom_margin">
 
-    <include
-        android:id="@+id/included_post_q_2"
-        layout="@layout/post_q"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/avatar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/popeye"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
+    <TextView
+        style="@style/TextClickableSimple"
+        android:textStyle="bold"
+        android:id="@+id/restaurant_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="Name"
+        app:layout_constraintStart_toEndOf="@id/avatar"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_width="0dp" />
+
+    <TextView
+        android:id="@+id/post_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="8 hr"
+        app:layout_constraintStart_toStartOf="@id/restaurant_name"
+        app:layout_constraintTop_toBottomOf="@id/restaurant_name"/>
+
+    <TextView
+        style="@style/Black16"
+        android:id="@+id/caption"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/post_caption"
+        app:layout_constraintStart_toStartOf="@id/restaurant_name"
+        app:layout_constraintTop_toBottomOf="@id/post_time"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ImageView
+        android:id="@+id/post_images"
+        app:srcCompat="@drawable/key_lime_pie"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toStartOf="@id/restaurant_name"
+        app:layout_constraintTop_toBottomOf="@id/caption"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
     <include
-        android:id="@+id/included_com_n_like_2"
         layout="@layout/com_n_like"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/included_post_q_2" />
-
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/post_images"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

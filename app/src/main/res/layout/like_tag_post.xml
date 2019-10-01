@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="16dp"
-    android:paddingBottom="@dimen/home_feed_view_holder_bottom_margin">
+    android:paddingTop="16dp">
 
 
     <TextView

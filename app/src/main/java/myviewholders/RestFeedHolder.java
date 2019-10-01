@@ -2,33 +2,59 @@ package myviewholders;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+import de.hdodenhof.circleimageview.CircleImageView;
+
+import android.content.Intent;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.ActivityResponse;
-import com.example.tuhin.myapplication.Helper;
+import com.example.tuhin.myapplication.ActualActivity;
+import com.example.tuhin.myapplication.R;
+import com.example.tuhin.myapplication.RestDetail;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class RestFeedHolder extends BaseHomeFeedHolder{
+public class RestFeedHolder extends BaseHomeFeedHolder {
+
+    final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth fAuth = FirebaseAuth.getInstance();
+    FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    CircleImageView avatar;
+    TextView restaurantNameTV, postTimeTV, captionTV;
+    ImageView postImage;
+    // inherited members from BaseHomeFeedHolder:
+    // TextView: noOfLikes, noOfComments
+    // ImageView: like, comment
 
     public RestFeedHolder(@NonNull View v) {
         super(v);
+        avatar = v.findViewById(R.id.avatar);
+        restaurantNameTV = v.findViewById(R.id.restaurant_name);
+        postTimeTV = v.findViewById(R.id.post_time);
+        captionTV = v.findViewById(R.id.caption);
+        postImage = v.findViewById(R.id.post_images);
     }
 
-    @Override
     public void bindTo(final Context context, final DocumentSnapshot activity) {
         // TODO attach a lifecycleobserver to the context and handle lifecycle event
         super.bindTo(context, activity);
-        String restFeedLink = activity.getString("wh");
-        DocumentReference restFeedRef = FirebaseFirestore.getInstance().collection("rest_feed")
+        final String restFeedLink = activity.getString("wh");
+        final DocumentReference restFeedRef = FirebaseFirestore.getInstance().collection("rest_feed")
                 .document(restFeedLink);
         restFeedRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -42,13 +68,102 @@ public class RestFeedHolder extends BaseHomeFeedHolder{
 //                        this is the correct one
 //                        Map<String, String> who = (Map) restFeed.get("w");
                         String restaurantName = who.get("n");
-                        String linkToRestaurant = who.get("l");
-                        SpannableString mSpannableString = Helper.getSpannableStringFromRestaurantName
-                                (restaurantName, linkToRestaurant);
-//                        postHeader.setText(mSpannableString, TextView.BufferType.SPANNABLE);
-//                        postHeader.setMovementMethod(LinkMovementMethod.getInstance());
-                        postCaption.setText(caption);
+                        final String linkToRestaurant = who.get("l");
+
+                        restaurantNameTV.setText(restaurantName);
+                        captionTV.setText(caption);
+
+                        restaurantNameTV.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(context, RestDetail.class);
+                                intent.putExtra("restaurantLink", linkToRestaurant);
+                                context.startActivity(intent);
+                            }
+                        });
                     }
+                }
+            }
+        });
+
+        final String likedBy = fAuth.getCurrentUser().getUid();
+        like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("LIKE", "CLICKED");
+                mFunctions.getHttpsCallable("printMessage").call().addOnCompleteListener(new OnCompleteListener<HttpsCallableResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<HttpsCallableResult> task) {
+                        if(task.isSuccessful()){
+                            String s = (String)task.getResult().getData();
+                            Log.i("function-data", s);
+                        }
+                    }
+                });
+                if(like.getDrawable().getConstantState().equals(ContextCompat.getDrawable(context, R.drawable.outline_favorite_border_black_24dp).getConstantState())){
+                    like.setImageResource(R.drawable.baseline_favorite_black_24dp);
+                    restFeedRef.update("l", FieldValue.arrayUnion(likedBy))
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        Log.i("UPDATE", "SUCCESSFUL");
+                                    }else{
+                                        Exception e = task.getException();
+                                        Log.i("UPDATE", e.getMessage());
+                                    }
+                                }
+                            });
+                    final DocumentReference documentReference = db.collection("liked_once").document(likedBy);
+                    documentReference.get()
+                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if(task.isSuccessful()){
+                                        DocumentSnapshot documentSnapshot = task.getResult();
+                                        if(documentSnapshot.exists()){
+                                            List<String> postsOnceLiked = (List<String>) documentSnapshot.get("a");
+                                            if(postsOnceLiked.contains(restFeedLink)){
+                                                Log.i("LIKED_ALREADY", "YES");
+                                            }else{
+                                                Log.i("LIKED_ALREADY", "NO");
+                                                documentReference.update("a", FieldValue.arrayUnion(restFeedLink));
+                                                ActualActivity likeActivity = new ActualActivity();
+                                                likeActivity.setT(4);
+                                                Map<String, String> who = new HashMap<>();
+                                                who.put("l", likedBy);
+                                                likeActivity.setW(who);
+                                                likeActivity.setWh(restFeedLink);
+                                                db.collection("activities").add(likeActivity)
+                                                        .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<DocumentReference> task) {
+                                                                if(task.isSuccessful()){
+                                                                    DocumentReference docRef = task.getResult();
+                                                                    Log.i("new_activity_at", docRef.getId());
+                                                                }
+                                                            }
+                                                        });
+                                            }
+                                        }
+                                    }
+
+                                }
+                            });
+                }else{
+                    like.setImageResource(R.drawable.outline_favorite_border_black_24dp);
+                    restFeedRef.update("l", FieldValue.arrayRemove(likedBy))
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        Log.i("UPDATE", "SUCCESSFUL");
+                                    }else{
+                                        Exception e = task.getException();
+                                        Log.i("UPDATE", e.getMessage());
+                                    }
+                                }
+                            });
                 }
             }
         });
