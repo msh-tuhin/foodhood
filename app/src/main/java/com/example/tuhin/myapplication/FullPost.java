@@ -41,7 +41,8 @@ import java.util.Timer;
     can have multiple entry points =>
     1) home_feed -> write_comment -> this page
     2) home_feed -> see feedbacks -> this page
-    3) a post link anywhere (can be treated same as 1)
+    3) like_post and comment_post notification
+    4) a post link anywhere (can be treated same as 1)
 */
 
 public class FullPost extends AppCompatActivity {

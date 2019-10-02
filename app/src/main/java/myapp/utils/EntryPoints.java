@@ -16,5 +16,6 @@ public class EntryPoints {
     public static final int NOTIF_LIKE_COMMENT = NOTIF_COMMENT_POST;
     public static final int NOTIF_REPLY_COMMENT = 10;
     public static final int NOTIF_REPLY_REPLY = 11;
+    public static final int HOME_PAGE_RF = 11;
 
 }

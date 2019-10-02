@@ -34,14 +34,18 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.EntryPoints;
 import myapp.utils.ResourceIds;
 
-public class PostCommentHolder extends HalfPostHolder{
+public class PostCommentHolder extends HalfPostHolder
+        implements CommentInterface{
 
     LinearLayout commentLayout;
     TextView postCommentHeader;
     CircleImageView commenterImage;
-    TextView commenterName, theComment;
-    TextView noOfLikesOnComment, noOfRepliesToComment;
-    ImageView likeComment, replyToComment;
+    TextView commenterName;
+    TextView theComment;
+    TextView noOfLikesOnComment;
+    TextView noOfRepliesToComment;
+    ImageView likeComment;
+    ImageView replyToComment;
 
     public PostCommentHolder(@NonNull View v) {
         super(v);
@@ -60,16 +64,101 @@ public class PostCommentHolder extends HalfPostHolder{
     @Override
     public void bindTo(final Context context, final DocumentSnapshot activity) {
         super.bindTo(context, activity);
+
         final Map<String, String> commenter = (Map) activity.get("w");
         String nameOfCommenter = commenter.get("n");
         final Map<String, String> commentData = (Map) activity.get("com");
         final String commentText = commentData.get("text");
         final String commentLink = commentData.get("l");
         final String postLink = activity.getString("wh");
-        postCommentHeader.setText(nameOfCommenter + " commented on this" );
-        commenterName.setText(nameOfCommenter);
-        theComment.setText(commentText);
 
+        postCommentHeader.setText(nameOfCommenter + " commented on this" );
+        bindNameCommentBy(nameOfCommenter);
+        bindComment(commentText);
+        setCommentLayoutOnClickListener(context, postLink, commentLink);
+        setLikeCommentIconOnClickListener(context, commentLink, postLink);
+        setReplyToCommentIconOnClickListener(context, commenter, commentText,
+                commentLink, postLink);
+    }
+
+    @Override
+    public void bindCommentByAvatar() {
+
+    }
+
+    @Override
+    public void setCommentByAvatarOnClickListener() {
+
+    }
+
+    @Override
+    public void bindNameCommentBy(String name) {
+        commenterName.setText(name);
+    }
+
+    @Override
+    public void setNameCommentByOnClickListener() {
+
+    }
+
+    @Override
+    public void bindCommentTime() {
+
+    }
+
+    @Override
+    public void bindComment(String comment) {
+        theComment.setText(comment);
+    }
+
+    @Override
+    public void setRepliesLinkOnClickListener() {
+
+    }
+
+    @Override
+    public void bindLikeCommentIcon() {
+
+    }
+
+    @Override
+    public void setLikeCommentIconOnClickListener(final Context context,
+                                                  final String commentLink,
+                                                  final String postLink) {
+        likeComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("like", "cliked from home comment");
+                String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                DocumentReference commentRef = FirebaseFirestore.getInstance().collection("comments").document(commentLink);
+                if(likeComment.getDrawable().getConstantState().equals(ContextCompat.getDrawable(context, ResourceIds.LIKE_EMPTY).getConstantState())){
+                    likeComment.setImageResource(ResourceIds.LIKE_FULL);
+                    addLikeToComment(commentRef);
+                    sendNotificationLikeCommentCloud(commentLink, postLink);
+                }else{
+                    likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
+                    removeLikeFromComment(commentRef);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void bindNoOfLikeInComment() {
+
+    }
+
+    @Override
+    public void setNoOfLikeInCommentOnClickListener() {
+
+    }
+
+    @Override
+    public void setReplyToCommentIconOnClickListener(final Context context,
+                                                     final Map<String, String> commenter,
+                                                     final String commentText,
+                                                     final String commentLink,
+                                                     final String postLink) {
         replyToComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,7 +178,22 @@ public class PostCommentHolder extends HalfPostHolder{
                 context.startActivity(intent);
             }
         });
+    }
 
+    @Override
+    public void bindNoOfRepliesToComment() {
+
+    }
+
+    @Override
+    public void setNoOfRepliesToCommentOnClickListener() {
+
+    }
+
+    @Override
+    public void setCommentLayoutOnClickListener(final Context context,
+                                                final String postLink,
+                                                final String commentLink) {
         commentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,49 +205,40 @@ public class PostCommentHolder extends HalfPostHolder{
                 context.startActivity(intent);
             }
         });
+    }
 
-        // TODO
-        // maybe add some abstractions over setting this listener
-        // this is copied and pasted in multiple places
-        likeComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("like", "cliked from home comment");
-                String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                DocumentReference commentRef = FirebaseFirestore.getInstance().collection("comments").document(commentLink);
-                if(likeComment.getDrawable().getConstantState().equals(ContextCompat.getDrawable(context, ResourceIds.LIKE_EMPTY).getConstantState())){
-                    likeComment.setImageResource(ResourceIds.LIKE_FULL);
-                    commentRef.update("l", FieldValue.arrayUnion(currentUserLink))
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()){
-                                        Log.i("UPDATE", "LIKE SUCCESSFUL ADDED");
-                                    }else{
-                                        Exception e = task.getException();
-                                        Log.i("UPDATE", e.getMessage());
-                                    }
-                                }
-                            });
-                    sendNotificationLikeCommentCloud(commentLink, postLink);
-                }else{
-                    likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
-                    commentRef.update("l", FieldValue.arrayRemove(currentUserLink))
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()){
-                                        Log.i("UPDATE", "LIKE SUCCESSFULLY REMOVED");
-                                    }else{
-                                        Exception e = task.getException();
-                                        Log.i("UPDATE", e.getMessage());
-                                    }
-                                }
-                            });
-                }
-            }
-        });
+    void addLikeToComment(DocumentReference commentRef){
+        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser()
+                .getUid();
+        commentRef.update("l", FieldValue.arrayUnion(currentUserLink))
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.i("UPDATE", "LIKE SUCCESSFUL ADDED");
+                        }else{
+                            Exception e = task.getException();
+                            Log.i("UPDATE", e.getMessage());
+                        }
+                    }
+                });
+    }
 
+    void removeLikeFromComment(DocumentReference commentRef){
+        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser()
+                .getUid();
+        commentRef.update("l", FieldValue.arrayRemove(currentUserLink))
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.i("UPDATE", "LIKE SUCCESSFULLY REMOVED");
+                        }else{
+                            Exception e = task.getException();
+                            Log.i("UPDATE", e.getMessage());
+                        }
+                    }
+                });
     }
 
     private void sendNotificationLikeCommentCloud(String commentLink, String postLink){

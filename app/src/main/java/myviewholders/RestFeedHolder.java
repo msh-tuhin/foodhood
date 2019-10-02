@@ -2,6 +2,7 @@ package myviewholders;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.ActualActivity;
+import com.example.tuhin.myapplication.FullRestFeed;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.RestDetail;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,6 +36,8 @@ public class RestFeedHolder extends BaseHomeFeedHolder {
     final FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth fAuth = FirebaseAuth.getInstance();
     FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+
+    public ConstraintLayout restFeedLayout;
     CircleImageView avatar;
     TextView restaurantNameTV, postTimeTV, captionTV;
     ImageView postImage;
@@ -43,6 +47,7 @@ public class RestFeedHolder extends BaseHomeFeedHolder {
 
     public RestFeedHolder(@NonNull View v) {
         super(v);
+        restFeedLayout = v.findViewById(R.id.rest_feed_layout);
         avatar = v.findViewById(R.id.avatar);
         restaurantNameTV = v.findViewById(R.id.restaurant_name);
         postTimeTV = v.findViewById(R.id.post_time);
@@ -165,6 +170,16 @@ public class RestFeedHolder extends BaseHomeFeedHolder {
                                 }
                             });
                 }
+            }
+        });
+
+        restFeedLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("layout", "clicked");
+                Intent intent = new Intent(context, FullRestFeed.class);
+                intent.putExtra("restFeedLink", restFeedLink);
+                context.startActivity(intent);
             }
         });
     }

@@ -39,12 +39,10 @@ public class FullPostHeaderHolder extends HalfPostHolder {
     }
 
 
-    public void bindTo(final Context context, Task<DocumentSnapshot> taskPost, final String postLink){
-        // to bind a newly downloaded post
-        // doYourBit(context, FirebaseFirestore.getInstance().collection("posts").document(postLink).get(), postLink);
-        // to use the post downloaded in home page
+    public void bindTo(final Context context,
+                       Task<DocumentSnapshot> taskPost,
+                       final String postLink){
         Log.i("bindTo", this.getClass().toString());
-        doYourBit(context, taskPost, postLink);
         db = FirebaseFirestore.getInstance();
         comment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +50,8 @@ public class FullPostHeaderHolder extends HalfPostHolder {
                 Intent intent = new Intent(context, WriteComment.class);
                 intent.putExtra("postLink", postLink);
                 intent.putExtra("entry_point", EntryPoints.FULL_POST_PAGE);
-                ((FullPost)context).startActivityForResult(intent, ((FullPost)context).REQUEST_COMMENT);
+                ((FullPost)context).startActivityForResult(intent,
+                        ((FullPost)context).REQUEST_COMMENT);
             }
         });
         // adding the feedbacks
