@@ -13,6 +13,7 @@ import java.util.Map;
 public class PostLikeTagHolder extends HalfPostHolder{
 
     TextView postLikeTagHeader;
+    private String mHeader;
 
     public PostLikeTagHolder(@NonNull View v) {
         super(v);
@@ -22,8 +23,17 @@ public class PostLikeTagHolder extends HalfPostHolder{
     @Override
     public void bindTo(Context context, DocumentSnapshot activity) {
         super.bindTo(context, activity);
+        setmHeader(activity);
+    }
+
+    private void setmHeader(DocumentSnapshot activity){
         Map<String, String> postLikedBy = (Map) activity.get("w");
         String nameLikedBy = postLikedBy.get("n");
-        postLikeTagHeader.setText(nameLikedBy + " liked this");
+        mHeader = nameLikedBy + " liked this";
+    }
+
+    @Override
+    public void bindHeader() {
+        postLikeTagHeader.setText(mHeader);
     }
 }

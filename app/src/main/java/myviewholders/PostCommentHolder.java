@@ -47,6 +47,13 @@ public class PostCommentHolder extends HalfPostHolder
     ImageView likeComment;
     ImageView replyToComment;
 
+    private Context mContext;
+    private String mCommentText;
+    private String mCommentLink;
+    private String mPostLink;
+    private String mNameCommentBy;
+    private String mLinkCommentBy;
+
     public PostCommentHolder(@NonNull View v) {
         super(v);
         commentLayout = v.findViewById(R.id.small_comment_layout);
@@ -62,23 +69,87 @@ public class PostCommentHolder extends HalfPostHolder
     }
 
     @Override
-    public void bindTo(final Context context, final DocumentSnapshot activity) {
+    public void bindTo(Context context, DocumentSnapshot activity) {
         super.bindTo(context, activity);
 
+        setPrivateGlobalFields(context, activity);
+        bindValues();
+        setOnClickListeners();
+    }
+
+    private void setPrivateGlobalFields(Context context, DocumentSnapshot activity){
+        setmContext(context);
+
+        // set mNameCommentBy, mLinkCommentBy
         final Map<String, String> commenter = (Map) activity.get("w");
         String nameOfCommenter = commenter.get("n");
+        String linkOfCommenter = commenter.get("l");
+        setmNameCommentBy(nameOfCommenter);
+        setmLinkCommentBy(linkOfCommenter);
+
+        // set mCommentText, mCommentLink
         final Map<String, String> commentData = (Map) activity.get("com");
         final String commentText = commentData.get("text");
         final String commentLink = commentData.get("l");
-        final String postLink = activity.getString("wh");
+        setmCommentText(commentText);
+        setmCommentLink(commentLink);
 
-        postCommentHeader.setText(nameOfCommenter + " commented on this" );
-        bindNameCommentBy(nameOfCommenter);
-        bindComment(commentText);
-        setCommentLayoutOnClickListener(context, postLink, commentLink);
-        setLikeCommentIconOnClickListener(context, commentLink, postLink);
-        setReplyToCommentIconOnClickListener(context, commenter, commentText,
-                commentLink, postLink);
+        final String postLink = activity.getString("wh");
+        setmPostLink(postLink);
+    }
+
+    private void bindValues(){
+        bindHeader();
+        bindCommentByAvatar();
+        bindNameCommentBy();
+        bindCommentTime();
+        bindComment();
+        bindRepliesLink();
+        bindLikeCommentIcon();
+        bindNoOfLikeInComment();
+        bindReplyToCommentIcon();
+        bindNoOfRepliesToComment();
+    }
+
+    private void setOnClickListeners(){
+        setCommentByAvatarOnClickListener();
+        setNameCommentByOnClickListener();
+        setCommentTimeOnClickListener();
+        setCommentOnClickListener();
+        setRepliesLinkOnClickListener();
+        setLikeCommentIconOnClickListener();
+        setNoOfLikeInCommentOnClickListener();
+        setReplyToCommentIconOnClickListener();
+        setNoOfRepliesToCommentOnClickListener();
+        setCommentLayoutOnClickListener();
+    }
+
+    private void setmContext(Context mContext) {
+        this.mContext = mContext;
+    }
+
+    private void setmCommentText(String mCommentText) {
+        this.mCommentText = mCommentText;
+    }
+
+    private void setmCommentLink(String mCommentLink) {
+        this.mCommentLink = mCommentLink;
+    }
+
+    private void setmPostLink(String mPostLink) {
+        this.mPostLink = mPostLink;
+    }
+
+    private void setmNameCommentBy(String mNameCommentBy) {
+        this.mNameCommentBy = mNameCommentBy;
+    }
+
+    private void setmLinkCommentBy(String mLinkCommentBy) {
+        this.mLinkCommentBy = mLinkCommentBy;
+    }
+
+    public void bindHeader(){
+        postCommentHeader.setText(mNameCommentBy + " commented on this");
     }
 
     @Override
@@ -92,8 +163,8 @@ public class PostCommentHolder extends HalfPostHolder
     }
 
     @Override
-    public void bindNameCommentBy(String name) {
-        commenterName.setText(name);
+    public void bindNameCommentBy() {
+        commenterName.setText(mNameCommentBy);
     }
 
     @Override
@@ -107,8 +178,23 @@ public class PostCommentHolder extends HalfPostHolder
     }
 
     @Override
-    public void bindComment(String comment) {
-        theComment.setText(comment);
+    public void setCommentTimeOnClickListener() {
+
+    }
+
+    @Override
+    public void bindComment() {
+        theComment.setText(mCommentText);
+    }
+
+    @Override
+    public void setCommentOnClickListener() {
+
+    }
+
+    @Override
+    public void bindRepliesLink() {
+
     }
 
     @Override
@@ -122,22 +208,18 @@ public class PostCommentHolder extends HalfPostHolder
     }
 
     @Override
-    public void setLikeCommentIconOnClickListener(final Context context,
-                                                  final String commentLink,
-                                                  final String postLink) {
+    public void setLikeCommentIconOnClickListener() {
         likeComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i("like", "cliked from home comment");
-                String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                DocumentReference commentRef = FirebaseFirestore.getInstance().collection("comments").document(commentLink);
-                if(likeComment.getDrawable().getConstantState().equals(ContextCompat.getDrawable(context, ResourceIds.LIKE_EMPTY).getConstantState())){
+                if(likeComment.getDrawable().getConstantState().equals(ContextCompat.getDrawable(mContext, ResourceIds.LIKE_EMPTY).getConstantState())){
                     likeComment.setImageResource(ResourceIds.LIKE_FULL);
-                    addLikeToComment(commentRef);
-                    sendNotificationLikeCommentCloud(commentLink, postLink);
+                    addLikeToComment();
+                    sendNotificationLikeCommentCloud();
                 }else{
                     likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
-                    removeLikeFromComment(commentRef);
+                    removeLikeFromComment();
                 }
             }
         });
@@ -154,28 +236,29 @@ public class PostCommentHolder extends HalfPostHolder
     }
 
     @Override
-    public void setReplyToCommentIconOnClickListener(final Context context,
-                                                     final Map<String, String> commenter,
-                                                     final String commentText,
-                                                     final String commentLink,
-                                                     final String postLink) {
+    public void bindReplyToCommentIcon() {
+
+    }
+
+    @Override
+    public void setReplyToCommentIconOnClickListener() {
         replyToComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Log.i("reply2comment", "from home comment");
                 // needed if reply activity has redundant data for the comment
                 Map<String, Object> commentMap = new HashMap<>();
-                commentMap.put("byl", commenter.get("l"));
-                commentMap.put("text", commentText);
-                commentMap.put("byn", commenter.get("n"));
-                commentMap.put("l", commentLink);
+                commentMap.put("byl", mLinkCommentBy);
+                commentMap.put("text", mCommentText);
+                commentMap.put("byn", mNameCommentBy);
+                commentMap.put("l", mCommentLink);
 
-                Intent intent = new Intent(context, WriteComment.class);
+                Intent intent = new Intent(mContext, WriteComment.class);
                 intent.putExtra("entry_point", EntryPoints.REPLY_TO_COMMENT);
-                intent.putExtra("postLink", postLink);
-                intent.putExtra("commentLink", commentLink);
+                intent.putExtra("postLink", mPostLink);
+                intent.putExtra("commentLink", mCommentLink);
                 intent.putExtra("commentMap", (HashMap)commentMap);
-                context.startActivity(intent);
+                mContext.startActivity(intent);
             }
         });
     }
@@ -191,23 +274,24 @@ public class PostCommentHolder extends HalfPostHolder
     }
 
     @Override
-    public void setCommentLayoutOnClickListener(final Context context,
-                                                final String postLink,
-                                                final String commentLink) {
+    public void setCommentLayoutOnClickListener() {
         commentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i("clicked", "go to comment detail");
-                Intent intent = new Intent(context, CommentDetail.class);
+                Intent intent = new Intent(mContext, CommentDetail.class);
                 intent.putExtra("entry_point", EntryPoints.HOME_PAGE);
-                intent.putExtra("postLink", postLink);
-                intent.putExtra("commentLink", commentLink);
-                context.startActivity(intent);
+                intent.putExtra("postLink", mPostLink);
+                intent.putExtra("commentLink", mCommentLink);
+                mContext.startActivity(intent);
             }
         });
     }
 
-    void addLikeToComment(DocumentReference commentRef){
+    private void addLikeToComment(){
+        DocumentReference commentRef = FirebaseFirestore.getInstance()
+                .collection("comments")
+                .document(mCommentLink);
         String currentUserLink = FirebaseAuth.getInstance().getCurrentUser()
                 .getUid();
         commentRef.update("l", FieldValue.arrayUnion(currentUserLink))
@@ -224,7 +308,10 @@ public class PostCommentHolder extends HalfPostHolder
                 });
     }
 
-    void removeLikeFromComment(DocumentReference commentRef){
+    private void removeLikeFromComment(){
+        DocumentReference commentRef = FirebaseFirestore.getInstance()
+                .collection("comments")
+                .document(mCommentLink);
         String currentUserLink = FirebaseAuth.getInstance().getCurrentUser()
                 .getUid();
         commentRef.update("l", FieldValue.arrayRemove(currentUserLink))
@@ -241,14 +328,14 @@ public class PostCommentHolder extends HalfPostHolder
                 });
     }
 
-    private void sendNotificationLikeCommentCloud(String commentLink, String postLink){
+    private void sendNotificationLikeCommentCloud(){
         String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
         final Map<String, Object> who = new HashMap<>();
         who.put("l", currentUserLink);
 
         final Map<String, Object> notification = new HashMap<>();
-        notification.put("postLink", postLink);
-        notification.put("commentLink", commentLink);
+        notification.put("postLink", mPostLink);
+        notification.put("commentLink", mCommentLink);
         notification.put("w", who);
 
         FirebaseFunctions.getInstance().getHttpsCallable("sendLikeCommentNotification").call(notification)

@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 public class PostTagHolder extends HalfPostHolder {
 
     TextView postTagHeader;
+    private String mHeader;
 
     public PostTagHolder(@NonNull View v) {
         super(v);
@@ -23,8 +24,17 @@ public class PostTagHolder extends HalfPostHolder {
 
     public void bindTo(Context context, DocumentSnapshot activity, ActivityResponse friendsActivity) {
         super.bindTo(context, activity);
+        setmHeader(friendsActivity);
+    }
+
+    private void setmHeader(ActivityResponse friendsActivity){
         Map<String, String> taggedPerson = (Map) friendsActivity.getWho();
         String taggedPersonName = taggedPerson.get("n");
-        postTagHeader.setText(taggedPersonName + " was tagged");
+        mHeader = taggedPersonName + " was tagged";
+    }
+
+    @Override
+    public void bindHeader() {
+        postTagHeader.setText(mHeader);
     }
 }

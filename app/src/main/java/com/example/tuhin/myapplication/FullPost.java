@@ -65,6 +65,7 @@ public class FullPost extends AppCompatActivity {
         // TODO this activity might receive a Task<DocumentSnapshot> instead
         String postLink="";
         postLink = getIntent().getStringExtra("postLink");
+        Log.i("postLink-full", postLink);
         DocumentReference postRef = FirebaseFirestore.getInstance().collection("posts").document(postLink);
         Task<DocumentSnapshot> taskPost = postRef.get();
         adapter = new MyAdapter(FullPost.this, taskPost, postLink);

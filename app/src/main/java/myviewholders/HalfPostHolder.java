@@ -46,7 +46,12 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
-    private boolean likeIconFilled = false;
+
+    private Context mContext;
+    private DocumentReference mPostReference;
+    private String mPostLink;
+    private PostBuilder mPostBuilder;
+    private DocumentSnapshot mPostSnapShot;
 
     public CircleImageView profileImage;
     public TextView namePostedBy;
@@ -81,36 +86,93 @@ public class HalfPostHolder extends BaseHomeFeedHolder
         comment = v.findViewById(R.id.comment);
     }
 
-    public void bindTo(final Context context, final DocumentSnapshot activity) {
+    public void bindTo(final Context context, DocumentSnapshot activity) {
         // TODO attach a lifecycleobserver to the context and handle lifecycle event
-        final String postLink = activity.getString("wh");
-        final DocumentReference postRef = db.collection("posts").document(postLink);
-        postRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        setmContext(context);
+        setmPostLink(activity.getString("wh"));
+        setmPostReference(activity.getString("wh"));
+        bindValuesIndependent();
+        setOnClickListenersIndependent();
+        setBindValuesOnClickListenersDependentOnPostDownload();
+    }
+
+    private void setmContext(Context context){
+        mContext = context;
+    }
+
+    private void setmPostLink(String postLink){
+        mPostLink = postLink;
+    }
+
+    private void setmPostReference(String postLink){
+        mPostReference = db.collection("posts").document(postLink);
+    }
+
+    private void setmPostSnapshot(DocumentSnapshot post){
+        mPostSnapShot = post;
+    }
+
+    private void setmPostBuilder(Context context, DocumentSnapshot post){
+        mPostBuilder = new PostBuilder(context, post);
+    }
+
+    private void setBindValuesOnClickListenersDependentOnPostDownload(){
+        mPostReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 DocumentSnapshot post = task.getResult();
                 if(post.exists()){
-                    bindValuesAndSetOnClickListeners(context, post);
+                    setmPostSnapshot(post);
+                    setmPostBuilder(mContext, post);
+                    bindValuesDependentOnPostDownload();
+                    setOnClickListenersDependentOnPostDownload();
                 }
             }
         });
-        setGoToFullOnClickListener(context, postLink);
-        setLikeIconOnClickListener(postRef, postLink);
-        setCommentIconOnClickListener(context, postLink);
     }
 
-    public void bindValuesAndSetOnClickListeners(final Context context, DocumentSnapshot post) {
-        final PostBuilder postBuilder = new PostBuilder(context, post);
-        bindNamePostedBy(postBuilder);
-        setNamePostedByOnClickListener(context, postBuilder);
-        bindRestaurantName(postBuilder);
-        setRestaurantNameOnClickListener(context, postBuilder);
-        bindDishes(postBuilder);
-        setDishesOnClickListener(context, postBuilder);
-        bindTaggedPeople(postBuilder);
-        setTaggedPeopleOnClickListener(context, postBuilder);
-        bindCaption(postBuilder);
-        bindLikeIcon(post);
+    private void bindValuesDependentOnPostDownload() {
+        bindHeader();
+        bindAvatar();
+        bindNamePostedBy();
+        bindPostTime();
+        bindRestaurantName();
+        bindTaggedPeople();
+        bindDishes();
+        bindCaption();
+        bindImages();
+        bindLikeIcon();
+        bindNoOfLike();
+        bindNoOfComment();
+    }
+
+    private void bindValuesIndependent(){
+        bindGoToFull();
+        bindCommentIcon();
+    }
+
+    private void setOnClickListenersDependentOnPostDownload(){
+        setAvatarOnClickListener();
+        setNamePostedByOnClickListener();
+        setPostTimeOnClickListener();
+        setRestaurantNameOnClickListener();
+        setTaggedPeopleOnClickListener();
+        setDishesOnClickListener();
+        setCaptionOnClickListener();
+        setImagesOnClickListener();
+        setNoOfLikeOnClickListener();
+        setNoOfCommentOnClickListener();
+    }
+
+    private void setOnClickListenersIndependent(){
+        setGoToFullOnClickListener();
+        setLikeIconOnClickListener();
+        setCommentIconOnClickListener();
+    }
+
+    @Override
+    public void bindHeader() {
+
     }
 
     @Override
@@ -124,20 +186,19 @@ public class HalfPostHolder extends BaseHomeFeedHolder
     }
 
     @Override
-    public void bindNamePostedBy(final PostBuilder postBuilder) {
-        namePostedBy.setText(postBuilder.getNamePostedBy());
+    public void bindNamePostedBy() {
+        namePostedBy.setText(mPostBuilder.getNamePostedBy());
     }
 
     @Override
-    public void setNamePostedByOnClickListener(final Context context,
-                                               final PostBuilder postBuilder) {
+    public void setNamePostedByOnClickListener() {
         namePostedBy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, PersonDetail.class);
+                Intent intent = new Intent(mContext, PersonDetail.class);
                 intent.putExtra("personLink",
-                        postBuilder.getLinkToPostedBy());
-                context.startActivity(intent);
+                        mPostBuilder.getLinkToPostedBy());
+                mContext.startActivity(intent);
             }
         });
     }
@@ -148,66 +209,68 @@ public class HalfPostHolder extends BaseHomeFeedHolder
     }
 
     @Override
-    public void bindRestaurantName(final PostBuilder postBuilder) {
-        restaurantName.setText(postBuilder.getRestaurantName());
+    public void setPostTimeOnClickListener() {
+
     }
 
     @Override
-    public void setRestaurantNameOnClickListener(final Context context,
-                                                 final PostBuilder postBuilder) {
+    public void bindRestaurantName() {
+        restaurantName.setText(mPostBuilder.getRestaurantName());
+    }
+
+    @Override
+    public void setRestaurantNameOnClickListener() {
         restaurantName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, RestDetail.class);
+                Intent intent = new Intent(mContext, RestDetail.class);
                 intent.putExtra("restaurantLink",
-                        postBuilder.getRestaurantLink());
-                context.startActivity(intent);
+                        mPostBuilder.getRestaurantLink());
+                mContext.startActivity(intent);
             }
         });
     }
 
     @Override
-    public void bindTaggedPeople(final PostBuilder postBuilder) {
-        taggedPeople.setText(postBuilder.getPeopleText());
+    public void bindTaggedPeople() {
+        taggedPeople.setText(mPostBuilder.getPeopleText());
     }
 
     @Override
-    public void setTaggedPeopleOnClickListener(final Context context,
-                                               final PostBuilder postBuilder) {
+    public void setTaggedPeopleOnClickListener() {
         taggedPeople.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, MorePeole.class);
+                Intent intent = new Intent(mContext, MorePeole.class);
                 intent.putStringArrayListExtra("personsList",
-                        postBuilder.getSortedTaggedPeopleLinks());
-                context.startActivity(intent);
+                        mPostBuilder.getSortedTaggedPeopleLinks());
+                mContext.startActivity(intent);
             }
         });
     }
 
     @Override
-    public void bindDishes(final PostBuilder postBuilder) {
-        dishes.setText(postBuilder.getDishesText());
+    public void bindDishes() {
+        dishes.setText(mPostBuilder.getDishesText());
     }
 
     @Override
-    public void setDishesOnClickListener(final Context context,
-                                         final PostBuilder postBuilder) {
+    public void setDishesOnClickListener() {
         dishes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, AllDishes.class);
+                Intent intent = new Intent(mContext, AllDishes.class);
                 intent.putStringArrayListExtra("dishesList",
-                        postBuilder.getSortedDishLinks());
+                        mPostBuilder.getSortedDishLinks());
                 intent.putExtra("source", SourceAllDishes.POST);
-                context.startActivity(intent);
+                mContext.startActivity(intent);
             }
         });
     }
 
     @Override
-    public void bindCaption(final PostBuilder postBuilder) {
-        postCaption.setText(postBuilder.getCaption());
+    public void bindCaption() {
+        postCaption.setText(mPostBuilder.getCaption());
     }
 
     @Override
@@ -226,34 +289,36 @@ public class HalfPostHolder extends BaseHomeFeedHolder
     }
 
     @Override
-    public void bindLikeIcon(DocumentSnapshot post) {
-        String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        List<String> likers = (List<String>) post.get("l");
-        // find if current user has already liked this post
-        if(likers.contains(likedBy)){
-            like.setImageResource(R.drawable.baseline_favorite_black_24dp);
-            likeIconFilled = true;
-        }else{
-            like.setImageResource(R.drawable.outline_favorite_border_black_24dp);
-            likeIconFilled = false;
-        }
+    public void bindGoToFull() {
+
     }
 
     @Override
-    public void setGoToFullOnClickListener(final Context context, final String postLink) {
+    public void setGoToFullOnClickListener() {
         goToFull.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, FullPost.class);
-                intent.putExtra("postLink", postLink);
-                context.startActivity(intent);
+                Intent intent = new Intent(mContext, FullPost.class);
+                intent.putExtra("postLink", mPostLink);
+                mContext.startActivity(intent);
             }
         });
     }
 
     @Override
-    public void setLikeIconOnClickListener(final DocumentReference postRef,
-                                           final String postLink) {
+    public void bindLikeIcon() {
+        String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        List<String> likers = (List<String>) mPostSnapShot.get("l");
+        // find if current user has already liked this post
+        if(likers.contains(likedBy)){
+            like.setImageResource(R.drawable.baseline_favorite_black_24dp);
+        }else{
+            like.setImageResource(R.drawable.outline_favorite_border_black_24dp);
+        }
+    }
+
+    @Override
+    public void setLikeIconOnClickListener() {
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -267,16 +332,16 @@ public class HalfPostHolder extends BaseHomeFeedHolder
                         }
                     }
                 });
-                // like.getDrawable().getConstantState().equals(ContextCompat.getDrawable(context, R.drawable.outline_favorite_border_black_24dp).getConstantState())
-                if(likeIconFilled){
+                boolean isLikeFilled = like.getDrawable().getConstantState().
+                        equals(ContextCompat.getDrawable(mContext,
+                                R.drawable.baseline_favorite_black_24dp).getConstantState());
+                if(isLikeFilled){
                     like.setImageResource(R.drawable.outline_favorite_border_black_24dp);
-                    likeIconFilled = false;
-                    removeLikeFromPost(postRef);
+                    removeLikeFromPost();
                 }else{
                     like.setImageResource(R.drawable.baseline_favorite_black_24dp);
-                    likeIconFilled = true;
-                    addLikeToPost(postRef);
-                    createActivityForLike(postLink);
+                    addLikeToPost();
+                    createActivityForLike();
                 }
             }
         });
@@ -293,15 +358,19 @@ public class HalfPostHolder extends BaseHomeFeedHolder
     }
 
     @Override
-    public void setCommentIconOnClickListener(final Context context,
-                                              final String postLink) {
+    public void bindCommentIcon() {
+
+    }
+
+    @Override
+    public void setCommentIconOnClickListener() {
         comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, WriteComment.class);
-                intent.putExtra("postLink", postLink);
+                Intent intent = new Intent(mContext, WriteComment.class);
+                intent.putExtra("postLink", mPostLink);
                 intent.putExtra("entry_point", EntryPoints.HOME_PAGE);
-                context.startActivity(intent);
+                mContext.startActivity(intent);
             }
         });
     }
@@ -316,9 +385,9 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     }
 
-    void addLikeToPost(DocumentReference postRef){
+    private void addLikeToPost(){
         String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        postRef.update("l", FieldValue.arrayUnion(likedBy))
+        mPostReference.update("l", FieldValue.arrayUnion(likedBy))
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -332,9 +401,9 @@ public class HalfPostHolder extends BaseHomeFeedHolder
                 });
     }
 
-    void removeLikeFromPost(DocumentReference postRef){
+    private void removeLikeFromPost(){
         String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        postRef.update("l", FieldValue.arrayRemove(likedBy))
+        mPostReference.update("l", FieldValue.arrayRemove(likedBy))
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -348,7 +417,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
                 });
     }
 
-    void createActivityForLike(final String postLink){
+    private void createActivityForLike(){
         final String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
         final DocumentReference postsLikedByUserRef = db.collection("liked_once").document(likedBy);
         postsLikedByUserRef.get()
@@ -359,17 +428,17 @@ public class HalfPostHolder extends BaseHomeFeedHolder
                             DocumentSnapshot documentSnapshot = task.getResult();
                             if(documentSnapshot.exists()){
                                 List<String> postsOnceLiked = (List<String>) documentSnapshot.get("a");
-                                if(postsOnceLiked.contains(postLink)){
+                                if(postsOnceLiked.contains(mPostLink)){
                                     Log.i("LIKED_ALREADY", "YES");
                                 }else{
                                     Log.i("LIKED_ALREADY", "NO");
-                                    postsLikedByUserRef.update("a", FieldValue.arrayUnion(postLink));
+                                    postsLikedByUserRef.update("a", FieldValue.arrayUnion(mPostLink));
                                     ActualActivity likeActivity = new ActualActivity();
                                     likeActivity.setT(3);
                                     Map<String, String> who = new HashMap<>();
                                     who.put("l", likedBy);
                                     likeActivity.setW(who);
-                                    likeActivity.setWh(postLink);
+                                    likeActivity.setWh(mPostLink);
                                     db.collection("activities").add(likeActivity)
                                             .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                                                 @Override
