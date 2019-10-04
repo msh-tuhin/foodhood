@@ -1,7 +1,6 @@
 package myviewholders;
 
 public interface CommentInterface {
-    void bindHeader();
     void bindCommentByAvatar();
     void setCommentByAvatarOnClickListener();
     void bindNameCommentBy();

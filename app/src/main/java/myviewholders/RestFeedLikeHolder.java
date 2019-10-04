@@ -12,6 +12,7 @@ import java.util.Map;
 
 public class RestFeedLikeHolder extends RestFeedHolder {
 
+    private String mNameLikedBy;
     TextView restFeedLikeHeader;
     public RestFeedLikeHolder(@NonNull View v) {
         super(v);
@@ -23,6 +24,11 @@ public class RestFeedLikeHolder extends RestFeedHolder {
         super.bindTo(context, activity);
         Map restFeedLikedBy = (Map) activity.get("w");
         String nameLikedBy = (String) restFeedLikedBy.get("n");
-        restFeedLikeHeader.setText(nameLikedBy + " liked this");
+        mNameLikedBy = nameLikedBy;
+    }
+
+    @Override
+    public void bindHeader() {
+        restFeedLikeHeader.setText(mNameLikedBy + " liked this");
     }
 }

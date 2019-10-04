@@ -26,24 +26,35 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
+import com.google.firestore.v1.Document;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RestFeedHolder extends BaseHomeFeedHolder {
+public class RestFeedHolder extends BaseHomeFeedHolder
+        implements RestFeedInterface{
 
     final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    FirebaseAuth fAuth = FirebaseAuth.getInstance();
-    FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
 
-    public ConstraintLayout restFeedLayout;
+    private Context mContext;
+    private String mRestFeedLink;
+    private DocumentSnapshot mRestFeedSnapshot;
+    private String mRestaurantLink;
+    private String mRestaurantName;
+    private String mCaption;
+
+    ConstraintLayout restFeedLayout;
     CircleImageView avatar;
-    TextView restaurantNameTV, postTimeTV, captionTV;
+    TextView restaurantNameTV;
+    TextView postTimeTV;
+    TextView captionTV;
     ImageView postImage;
-    // inherited members from BaseHomeFeedHolder:
-    // TextView: noOfLikes, noOfComments
-    // ImageView: like, comment
+    ImageView like;
+    TextView noOfLikesTV;
+    ImageView comment;
+    TextView noOfCommentsTV;
 
     public RestFeedHolder(@NonNull View v) {
         super(v);
@@ -53,45 +64,179 @@ public class RestFeedHolder extends BaseHomeFeedHolder {
         postTimeTV = v.findViewById(R.id.post_time);
         captionTV = v.findViewById(R.id.caption);
         postImage = v.findViewById(R.id.post_images);
+        like = v.findViewById(R.id.like);
+        noOfLikesTV = v.findViewById(R.id.no_likes);
+        comment = v.findViewById(R.id.comment);
+        noOfCommentsTV = v.findViewById(R.id.no_comments);
     }
 
     public void bindTo(final Context context, final DocumentSnapshot activity) {
         // TODO attach a lifecycleobserver to the context and handle lifecycle event
-        super.bindTo(context, activity);
-        final String restFeedLink = activity.getString("wh");
-        final DocumentReference restFeedRef = FirebaseFirestore.getInstance().collection("rest_feed")
-                .document(restFeedLink);
+
+        setmContext(context);
+        setmRestFeedLink(activity.getString("wh"));
+
+        setBindValuesOnClickListenersDependentOnPostDownload();
+        bindValuesIndependent();
+        setOnClickListenersIndependent();
+    }
+
+    private void setmContext(Context mContext) {
+        this.mContext = mContext;
+    }
+
+    private void setmRestFeedLink(String mRestFeedLink){
+        this.mRestFeedLink = mRestFeedLink;
+    }
+
+    private void setmRestFeedSnapshot(DocumentSnapshot mRestFeedSnapshot) {
+        this.mRestFeedSnapshot = mRestFeedSnapshot;
+    }
+
+    private void setmRestaurantLink(String mRestaurantLink) {
+        this.mRestaurantLink = mRestaurantLink;
+    }
+
+    private void setmRestaurantName(String mRestaurantName) {
+        this.mRestaurantName = mRestaurantName;
+    }
+
+    private void setmCaption(String mCaption) {
+        this.mCaption = mCaption;
+    }
+
+    private void setBindValuesOnClickListenersDependentOnPostDownload(){
+        DocumentReference restFeedRef = FirebaseFirestore.getInstance()
+                .collection("rest_feed")
+                .document(mRestFeedLink);
         restFeedRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
                     DocumentSnapshot restFeed = task.getResult();
                     if(restFeed.exists()){
+                        Map<String, String> restaurant = (Map) restFeed.get("w");
                         String caption = restFeed.getString("c");
-//                        TODO delete next line after database(rest_feed) is updated
-                        Map<String, String> who = (Map) activity.get("w");
-//                        this is the correct one
-//                        Map<String, String> who = (Map) restFeed.get("w");
-                        String restaurantName = who.get("n");
-                        final String linkToRestaurant = who.get("l");
-
-                        restaurantNameTV.setText(restaurantName);
-                        captionTV.setText(caption);
-
-                        restaurantNameTV.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(context, RestDetail.class);
-                                intent.putExtra("restaurantLink", linkToRestaurant);
-                                context.startActivity(intent);
-                            }
-                        });
+                        setmRestFeedSnapshot(restFeed);
+                        setmRestaurantLink(restaurant.get("l"));
+                        setmRestaurantName(restaurant.get("n"));
+                        setmCaption(caption);
+                        bindValuesDependentOnRestFeedDownload();
+                        setOnClickListenersDependentOnPostDownload();
                     }
                 }
             }
         });
+    }
 
-        final String likedBy = fAuth.getCurrentUser().getUid();
+    private void bindValuesDependentOnRestFeedDownload(){
+        bindHeader();
+        bindAvatar();
+        bindRestaurantName();
+        bindPostTime();
+        bindCaption();
+        bindPostImages();
+        bindLikeIcon();
+        bindNoOfLike();
+        bindCommentIcon();
+        bindNoOfComment();
+    }
+
+    private void bindValuesIndependent(){
+        bindRestFeedLayout();
+    }
+
+    private void setOnClickListenersDependentOnPostDownload(){
+        setHeaderOnClickListener();
+        setAvatarOnClickListener();
+        setRestaurantNameOnClickListener();
+        setPostTimeOnClickListener();
+        setCaptionOnClickListener();
+        setPostImagesOnClickListener();
+        setNoOfLikeOnClickListener();
+        setNoOfCommentOnClickListener();
+    }
+
+    private void setOnClickListenersIndependent(){
+        setLikeIconOnClickListener();
+        setCommentIconOnClickListener();
+        setRestFeedLayoutOnClickListener();
+    }
+
+    @Override
+    public void bindHeader() {
+
+    }
+
+    @Override
+    public void setHeaderOnClickListener() {
+
+    }
+
+    @Override
+    public void bindAvatar() {
+
+    }
+
+    @Override
+    public void setAvatarOnClickListener() {
+
+    }
+
+    @Override
+    public void bindRestaurantName() {
+        restaurantNameTV.setText(mRestaurantName);
+    }
+
+    @Override
+    public void setRestaurantNameOnClickListener() {
+        restaurantNameTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, RestDetail.class);
+                intent.putExtra("restaurantLink", mRestFeedLink);
+                mContext.startActivity(intent);
+            }
+        });
+    }
+
+    @Override
+    public void bindPostTime() {
+
+    }
+
+    @Override
+    public void setPostTimeOnClickListener() {
+
+    }
+
+    @Override
+    public void bindCaption() {
+        captionTV.setText(mCaption);
+    }
+
+    @Override
+    public void setCaptionOnClickListener() {
+
+    }
+
+    @Override
+    public void bindPostImages() {
+
+    }
+
+    @Override
+    public void setPostImagesOnClickListener() {
+
+    }
+
+    @Override
+    public void bindLikeIcon() {
+
+    }
+
+    @Override
+    public void setLikeIconOnClickListener() {
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,81 +250,149 @@ public class RestFeedHolder extends BaseHomeFeedHolder {
                         }
                     }
                 });
-                if(like.getDrawable().getConstantState().equals(ContextCompat.getDrawable(context, R.drawable.outline_favorite_border_black_24dp).getConstantState())){
-                    like.setImageResource(R.drawable.baseline_favorite_black_24dp);
-                    restFeedRef.update("l", FieldValue.arrayUnion(likedBy))
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()){
-                                        Log.i("UPDATE", "SUCCESSFUL");
-                                    }else{
-                                        Exception e = task.getException();
-                                        Log.i("UPDATE", e.getMessage());
-                                    }
-                                }
-                            });
-                    final DocumentReference documentReference = db.collection("liked_once").document(likedBy);
-                    documentReference.get()
-                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    if(task.isSuccessful()){
-                                        DocumentSnapshot documentSnapshot = task.getResult();
-                                        if(documentSnapshot.exists()){
-                                            List<String> postsOnceLiked = (List<String>) documentSnapshot.get("a");
-                                            if(postsOnceLiked.contains(restFeedLink)){
-                                                Log.i("LIKED_ALREADY", "YES");
-                                            }else{
-                                                Log.i("LIKED_ALREADY", "NO");
-                                                documentReference.update("a", FieldValue.arrayUnion(restFeedLink));
-                                                ActualActivity likeActivity = new ActualActivity();
-                                                likeActivity.setT(4);
-                                                Map<String, String> who = new HashMap<>();
-                                                who.put("l", likedBy);
-                                                likeActivity.setW(who);
-                                                likeActivity.setWh(restFeedLink);
-                                                db.collection("activities").add(likeActivity)
-                                                        .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task<DocumentReference> task) {
-                                                                if(task.isSuccessful()){
-                                                                    DocumentReference docRef = task.getResult();
-                                                                    Log.i("new_activity_at", docRef.getId());
-                                                                }
-                                                            }
-                                                        });
-                                            }
-                                        }
-                                    }
-
-                                }
-                            });
-                }else{
+                boolean isLikeFilled = like.getDrawable().getConstantState().
+                        equals(ContextCompat.getDrawable(mContext,
+                                R.drawable.baseline_favorite_black_24dp).getConstantState());
+                if(isLikeFilled){
                     like.setImageResource(R.drawable.outline_favorite_border_black_24dp);
-                    restFeedRef.update("l", FieldValue.arrayRemove(likedBy))
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()){
-                                        Log.i("UPDATE", "SUCCESSFUL");
-                                    }else{
-                                        Exception e = task.getException();
-                                        Log.i("UPDATE", e.getMessage());
-                                    }
-                                }
-                            });
+                    removeLikeFromPost();
+                }else{
+                    like.setImageResource(R.drawable.baseline_favorite_black_24dp);
+                    addLikeToPost();
+                    createActivityForLike();
                 }
             }
         });
+    }
 
+    private void addLikeToPost(){
+        String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DocumentReference restFeedReference = FirebaseFirestore.getInstance()
+                .collection("rest_feed")
+                .document(mRestFeedLink);
+        restFeedReference.update("l", FieldValue.arrayUnion(likedBy))
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.i("UPDATE", "SUCCESSFUL");
+                        }else{
+                            Exception e = task.getException();
+                            Log.i("UPDATE", e.getMessage());
+                        }
+                    }
+                });
+    }
+
+    private void removeLikeFromPost(){
+        String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DocumentReference restFeedReference = FirebaseFirestore.getInstance()
+                .collection("rest_feed")
+                .document(mRestFeedLink);
+        restFeedReference.update("l", FieldValue.arrayRemove(likedBy))
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.i("UPDATE", "SUCCESSFUL");
+                        }else{
+                            Exception e = task.getException();
+                            Log.i("UPDATE", e.getMessage());
+                        }
+                    }
+                });
+    }
+
+    private void createActivityForLike(){
+        final String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final DocumentReference postsLikedByUserRef = db.collection("liked_once").document(likedBy);
+        postsLikedByUserRef.get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            if(documentSnapshot.exists()){
+                                List<String> postsOnceLiked = (List<String>) documentSnapshot.get("a");
+                                if(postsOnceLiked.contains(mRestFeedLink)){
+                                    Log.i("LIKED_ALREADY", "YES");
+                                }else{
+                                    Log.i("LIKED_ALREADY", "NO");
+                                    postsLikedByUserRef.update("a", FieldValue.arrayUnion(mRestFeedLink));
+                                    ActualActivity likeActivity = new ActualActivity();
+                                    likeActivity.setT(4);
+                                    Map<String, String> who = new HashMap<>();
+                                    who.put("l", likedBy);
+                                    likeActivity.setW(who);
+                                    likeActivity.setWh(mRestFeedLink);
+                                    db.collection("activities").add(likeActivity)
+                                            .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<DocumentReference> task) {
+                                                    if(task.isSuccessful()){
+                                                        DocumentReference docRef = task.getResult();
+                                                        Log.i("new_activity_at", docRef.getId());
+                                                    }
+                                                }
+                                            });
+                                }
+                            }
+                        }
+
+                    }
+                });
+    }
+
+
+    @Override
+    public void bindNoOfLike() {
+
+    }
+
+    @Override
+    public void setNoOfLikeOnClickListener() {
+
+    }
+
+    @Override
+    public void bindCommentIcon() {
+
+    }
+
+    @Override
+    public void setCommentIconOnClickListener() {
+        comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("comment", "from home page rest feed");
+            }
+        });
+    }
+
+    @Override
+    public void bindNoOfComment() {
+
+    }
+
+    @Override
+    public void setNoOfCommentOnClickListener() {
+
+    }
+
+    @Override
+    public void bindRestFeedLayout() {
+
+    }
+
+    @Override
+    public void setRestFeedLayoutOnClickListener() {
         restFeedLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i("layout", "clicked");
-                Intent intent = new Intent(context, FullRestFeed.class);
-                intent.putExtra("restFeedLink", restFeedLink);
-                context.startActivity(intent);
+                Intent intent = new Intent(mContext, FullRestFeed.class);
+                intent.putExtra("restFeedLink", mRestFeedLink);
+                mContext.startActivity(intent);
             }
         });
     }

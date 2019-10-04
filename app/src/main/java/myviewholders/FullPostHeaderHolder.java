@@ -171,6 +171,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
     }
 
     private void setOnClickListenersDependentOnPostDownload(){
+        setHeaderOnClickListener();
         setAvatarOnClickListener();
         setNamePostedByOnClickListener();
         setPostTimeOnClickListener();
@@ -191,6 +192,11 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindHeader() {
+
+    }
+
+    @Override
+    public void setHeaderOnClickListener() {
 
     }
 

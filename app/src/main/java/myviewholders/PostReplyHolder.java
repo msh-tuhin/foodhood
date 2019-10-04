@@ -111,7 +111,7 @@ public class PostReplyHolder extends HalfPostHolder
         // set mCommentText, mCommentLink, mNameCommentBy, mLinkCommentBy
         final Map<String, String> commentData = (Map) activity.get("com");
         setmCommentText(commentData.get("text"));
-        setmCommentLink(commentData.get('l'));
+        setmCommentLink(commentData.get("l"));
         setmLinkCommentBy(commentData.get("byl"));
         setmNameCommentBy(commentData.get("byn"));
 

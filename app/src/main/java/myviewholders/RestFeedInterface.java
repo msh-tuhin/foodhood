@@ -1,26 +1,18 @@
 package myviewholders;
 
-public interface PostHolderInterface {
+public interface RestFeedInterface {
     void bindHeader();
     void setHeaderOnClickListener();
     void bindAvatar();
     void setAvatarOnClickListener();
-    void bindNamePostedBy();
-    void setNamePostedByOnClickListener();
-    void bindPostTime();
-    void setPostTimeOnClickListener();
     void bindRestaurantName();
     void setRestaurantNameOnClickListener();
-    void bindTaggedPeople();
-    void setTaggedPeopleOnClickListener();
-    void bindDishes();
-    void setDishesOnClickListener();
+    void bindPostTime();
+    void setPostTimeOnClickListener();
     void bindCaption();
     void setCaptionOnClickListener();
-    void bindImages();
-    void setImagesOnClickListener();
-    void bindGoToFull();
-    void setGoToFullOnClickListener();
+    void bindPostImages();
+    void setPostImagesOnClickListener();
     void bindLikeIcon();
     void setLikeIconOnClickListener();
     void bindNoOfLike();
@@ -29,4 +21,6 @@ public interface PostHolderInterface {
     void setCommentIconOnClickListener();
     void bindNoOfComment();
     void setNoOfCommentOnClickListener();
+    void bindRestFeedLayout();
+    void setRestFeedLayoutOnClickListener();
 }

@@ -86,7 +86,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
         comment = v.findViewById(R.id.comment);
     }
 
-    public void bindTo(final Context context, DocumentSnapshot activity) {
+    public void bindTo(Context context, DocumentSnapshot activity) {
         // TODO attach a lifecycleobserver to the context and handle lifecycle event
         setmContext(context);
         setmPostLink(activity.getString("wh"));
@@ -152,6 +152,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
     }
 
     private void setOnClickListenersDependentOnPostDownload(){
+        setHeaderOnClickListener();
         setAvatarOnClickListener();
         setNamePostedByOnClickListener();
         setPostTimeOnClickListener();
@@ -172,6 +173,11 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     @Override
     public void bindHeader() {
+
+    }
+
+    @Override
+    public void setHeaderOnClickListener() {
 
     }
 
