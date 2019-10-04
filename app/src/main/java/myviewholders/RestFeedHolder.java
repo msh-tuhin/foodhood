@@ -194,7 +194,7 @@ public class RestFeedHolder extends BaseHomeFeedHolder
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, RestDetail.class);
-                intent.putExtra("restaurantLink", mRestFeedLink);
+                intent.putExtra("restaurantLink", mRestaurantLink);
                 mContext.startActivity(intent);
             }
         });
