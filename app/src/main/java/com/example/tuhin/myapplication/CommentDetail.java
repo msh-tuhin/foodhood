@@ -33,12 +33,18 @@ import java.util.Map;
 
 /*
     can come to this from multiple sources and different actions
-    1) from home_feed_comment when user replies to a comment(implemented) home_feed => write_comment => this page
-    2) from home_feed_comment when user goes to comment_detail(implemented) home_feed => this page
-    3) from full_post when user replies to a comment(implemented) full_post => write_comment => this page
-    4) from full_post when user goes to comment_detail(implemented) full_post => this page
-    5) from home_feed_reply when user goes to comment_detail(implemented) home_feed => this page
-    6) from home_feed_reply when user replies to a comment/reply(implemented) home_feed => write_comment => this page
+    1) from home_feed_post_comment when user replies to a comment(implemented)
+                home_feed => write_comment => this page
+    2) from home_feed_post_comment when user goes to comment_detail(implemented)
+                home_feed => this page
+    3) from full_post when user replies to a comment(implemented)
+                full_post => write_comment => this page
+    4) from full_post when user goes to comment_detail(implemented)
+                full_post => this page
+    5) from home_feed_post_reply when user goes to comment_detail(implemented)
+                home_feed => this page
+    6) from home_feed_post_reply when user replies to a comment/reply(implemented)
+                home_feed => write_comment => this page
 
     from this page (user is replying to comment/reply) => WriteComment => this page (implemented)
 */
@@ -46,6 +52,13 @@ public class CommentDetail extends AppCompatActivity{
 
     public final int REQUEST_REPLY = 0;
     public final int REQUEST_REPLY_TO_REPLY = 1;
+
+    private int mEntryPoint;
+    private String mPostLink;
+    private String mCommentLink;
+    private String mReplyLink;
+    private String mReplyToReplyLink;
+    private Task<DocumentSnapshot> mTaskComment;
 
     Toolbar toolbar;
     MyAdapter adapter;
@@ -57,34 +70,50 @@ public class CommentDetail extends AppCompatActivity{
         setContentView(R.layout.activity_comment_detail);
 
         toolbar = findViewById(R.id.toolbar);
+        rv = findViewById(R.id.post_comment_rv);
+
         toolbar.setTitle("Comment");
         setSupportActionBar(toolbar);
 
-        String postLink = getIntent().getStringExtra("postLink");
-        String commentLink = getIntent().getStringExtra("commentLink");
-        final String replyLink = getIntent().getStringExtra("replyLink");
-        final int entryPoint = getIntent().getIntExtra("entry_point", EntryPoints.HOME_PAGE);
-        final String replyToReplyLink = getIntent().getStringExtra("replyToReplyLink");
+        mEntryPoint = getIntent().getIntExtra("entry_point", EntryPoints.HOME_PAGE);
+        mPostLink = getIntent().getStringExtra("postLink");
+        mCommentLink = getIntent().getStringExtra("commentLink");
+        mReplyLink = getIntent().getStringExtra("replyLink");
+        mReplyToReplyLink = getIntent().getStringExtra("replyToReplyLink");
 
-        DocumentReference commentRef = FirebaseFirestore.getInstance().collection("comments").document(commentLink);
-        Task<DocumentSnapshot> taskComment = commentRef.get();
-        adapter = new MyAdapter(this, taskComment, postLink, commentLink);
-        adapter.replyLinks.add(0, commentLink);
+        initializeAdapter();
 
-        switch (entryPoint){
+        DocumentReference commentRef = FirebaseFirestore.getInstance()
+                .collection("comments")
+                .document(mCommentLink);
+        mTaskComment = commentRef.get();
+
+        populateAdapter();
+        decorateRecyclerView();
+    }
+
+    private void initializeAdapter(){
+        // adapter = new MyAdapter();
+        // adapter.notifyDataSetChanged();
+        adapter = new MyAdapter(this, mTaskComment, mPostLink, mCommentLink);
+        adapter.replyLinks.add(0, mCommentLink);
+
+        switch (mEntryPoint){
             case EntryPoints.NOTIF_REPLY_COMMENT:
             case EntryPoints.REPLY_TO_COMMENT:
             case EntryPoints.CD_FROM_HOME_COMMENT_REPLY:
-                adapter.replyLinks.add(1, replyLink);
+                adapter.replyLinks.add(1, mReplyLink);
                 break;
             case EntryPoints.NOTIF_REPLY_REPLY:
             case EntryPoints.REPLY_TO_REPLY_HOME:
-                adapter.replyLinks.add(1, replyLink);
-                adapter.replyLinks.add(2, replyToReplyLink);
+                adapter.replyLinks.add(1, mReplyLink);
+                adapter.replyLinks.add(2, mReplyToReplyLink);
                 break;
         }
+    }
 
-        taskComment.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+    private void populateAdapter(){
+        mTaskComment.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
@@ -93,16 +122,16 @@ public class CommentDetail extends AppCompatActivity{
                         Log.i("replies", "downloaded");
                         List<String> replies = (List<String>)comment.get("r");
 
-                        switch (entryPoint){
+                        switch (mEntryPoint){
                             case EntryPoints.NOTIF_REPLY_COMMENT:
                             case EntryPoints.REPLY_TO_COMMENT:
                             case EntryPoints.CD_FROM_HOME_COMMENT_REPLY:
-                                replies.remove(replyLink);
+                                replies.remove(mReplyLink);
                                 break;
                             case EntryPoints.NOTIF_REPLY_REPLY:
                             case EntryPoints.REPLY_TO_REPLY_HOME:
-                                replies.remove(replyLink);
-                                replies.remove(replyToReplyLink);
+                                replies.remove(mReplyLink);
+                                replies.remove(mReplyToReplyLink);
                                 break;
                         }
                         adapter.replyLinks.addAll(replies);
@@ -112,16 +141,15 @@ public class CommentDetail extends AppCompatActivity{
                 }
             }
         });
+    }
 
-        rv = findViewById(R.id.post_comment_rv);
-
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+    private void decorateRecyclerView(){
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this,
+                RecyclerView.VERTICAL, false);
         rv.setLayoutManager(layoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(), layoutManager.getOrientation());
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(),
+                layoutManager.getOrientation());
         rv.addItemDecoration(dividerItemDecoration);
-//        adapter = new MyAdapter();
-//        adapter.notifyDataSetChanged();
-        // if entry_point is reply to home feed comment
         rv.setAdapter(adapter);
 //        if(entryPoint == EntryPoints.NOTIF_REPLY_REPLY){
 //            layoutManager.smoothScrollToPosition(rv, null, 2);
