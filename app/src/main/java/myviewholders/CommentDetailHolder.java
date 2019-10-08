@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.example.tuhin.myapplication.CommentDetail;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.WriteComment;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,14 +37,29 @@ import models.CommentModel;
 import myapp.utils.EntryPoints;
 import myapp.utils.ResourceIds;
 
-public class CommentDetailHolder extends RecyclerView.ViewHolder {
+public class CommentDetailHolder extends RecyclerView.ViewHolder
+        implements CommentInterface{
+
+    private Context mContext;
+    private String mCommentLink;
+    private DocumentSnapshot mCommentSnapshot;
+    private String mCommentText;
+    private String mCommenterLink;
+    private String mCommenterName;
+    private String mPostLink;
+    private Task<DocumentSnapshot> mTaskComment;
 
     private TextView postLinkTextView;
     private CircleImageView commenterImage;
-    private TextView commenterNameTextView, theCommentTextView;
-    private ImageView likeComment, replyToComment;
-    private TextView numberOfLikesTextView, numberOfRepliesTextView;
-    FirebaseFirestore db;
+    private TextView commenterNameTextView;
+    private TextView theCommentTextView;
+    private ImageView likeComment;
+    private ImageView replyToComment;
+    private TextView numberOfLikesTextView;
+    private TextView numberOfRepliesTextView;
+
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
 
     public CommentDetailHolder(@NonNull View v) {
         super(v);
@@ -56,127 +72,294 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder {
         numberOfLikesTextView = v.findViewById(R.id.number_of_likes);
         numberOfRepliesTextView = v.findViewById(R.id.number_of_replies);
         db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
     }
 
-    public void bindTo(final Context context, final Task<DocumentSnapshot> taskComment, final String postLink, final String commentLink) {
+    public void bindTo(Context context,
+                       Task<DocumentSnapshot> taskComment,
+                       String postLink,
+                       String commentLink) {
+
         Log.i("bindTo", this.getClass().toString());
 
-        final String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        // needed if reply activity has redundant data for the comment
-        final CommentData commentData = new CommentData();
+        mContext = context;
+        mPostLink = postLink;
+        mCommentLink = commentLink;
+        mTaskComment = taskComment;
 
-        // this uses the comment downloaded before
-          taskComment.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        setElementsDependentOnCommentDownload();
+        setElementsDependentOnPersonVitalDownload();
+        setElementsIndependent();
+    }
+
+    private void setElementsDependentOnCommentDownload(){
+        mTaskComment.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot commentSnapshot = task.getResult();
+                    if(commentSnapshot.exists()){
+                        mCommentSnapshot = commentSnapshot;
+                        mCommentText = commentSnapshot.getString("te");
+                        mCommenterLink = commentSnapshot.getString("w");
+                        bindValuesDependentOnCommentDownload();
+                        setOnClickListenersDependentOnCommentDownload();
+                    }
+                }
+            }
+        });
+    }
+
+    private void setElementsDependentOnPersonVitalDownload(){
+        // TODO make the "w" field a map with keys "n", "l"
+        mTaskComment.continueWithTask(new Continuation<DocumentSnapshot, Task<DocumentSnapshot>>() {
+            @Override
+            public Task<DocumentSnapshot> then(@NonNull Task<DocumentSnapshot> task) throws Exception {
+                return getPersonVitalTask(task);
+            }
+        }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot personVital) {
+                if(personVital.exists()){
+                    Log.i("commenter_name", personVital.getString("n"));
+                    mCommenterName = personVital.getString("n");
+                    bindValuesDependentOnPersonVitalDownload();
+                    setOnClickListenersDependentOnPersonVitalDownload();
+                }
+            }
+        });
+    }
+
+    private Task<DocumentSnapshot> getPersonVitalTask(Task<DocumentSnapshot> task){
+        DocumentReference personRef = db
+                .collection("person_vital")
+                .document("abc");
+        if(task.isSuccessful()){
+            DocumentSnapshot commentSnapshot = task.getResult();
+            if(commentSnapshot.exists()){
+                personRef = db
+                        .collection("person_vital")
+                        .document(commentSnapshot.getString("w"));
+            }
+        }
+        return personRef.get();
+    }
+
+    private void bindValuesDependentOnCommentDownload(){
+        bindCommentByAvatar();
+        bindCommentTime();
+        bindComment();
+        bindRepliesLink();
+        bindLikeCommentIcon();
+        bindNoOfLikeInComment();
+        bindReplyToCommentIcon();
+        bindNoOfRepliesToComment();
+    }
+
+    private void setOnClickListenersDependentOnCommentDownload(){
+        setCommentTimeOnClickListener();
+        setCommentByAvatarOnClickListener();
+        setCommentOnClickListener();
+        setRepliesLinkOnClickListener();
+        setLikeCommentIconOnClickListener();
+        setNoOfLikeInCommentOnClickListener();
+        setReplyToCommentIconOnClickListener();
+        setNoOfRepliesToCommentOnClickListener();
+    }
+
+    private void bindValuesDependentOnPersonVitalDownload(){
+        bindNameCommentBy();
+    }
+
+    private void setOnClickListenersDependentOnPersonVitalDownload(){
+        setNameCommentByOnClickListener();
+    }
+
+    private void setElementsIndependent(){
+        bindValuesIndependent();
+        setOnClickListenersIndependent();
+    }
+
+    private void bindValuesIndependent(){
+
+    }
+
+    private void setOnClickListenersIndependent(){
+        setCommentLayoutOnClickListener();
+    }
+
+    @Override
+    public void bindCommentByAvatar() {
+
+    }
+
+    @Override
+    public void setCommentByAvatarOnClickListener() {
+
+    }
+
+    @Override
+    public void bindNameCommentBy() {
+        commenterNameTextView.setText(mCommenterName);
+    }
+
+    @Override
+    public void setNameCommentByOnClickListener() {
+
+    }
+
+    @Override
+    public void bindCommentTime() {
+
+    }
+
+    @Override
+    public void setCommentTimeOnClickListener() {
+
+    }
+
+    @Override
+    public void bindComment() {
+        theCommentTextView.setText(mCommentText);
+    }
+
+    @Override
+    public void setCommentOnClickListener() {
+
+    }
+
+    @Override
+    public void bindRepliesLink() {
+
+    }
+
+    @Override
+    public void setRepliesLinkOnClickListener() {
+
+    }
+
+    @Override
+    public void bindLikeCommentIcon() {
+        List<String> likers = (List<String>) mCommentSnapshot.get("l");
+        String currentUserLink = mAuth.getCurrentUser().getUid();
+        if(likers.contains(currentUserLink)){
+            likeComment.setImageResource(ResourceIds.LIKE_FULL);
+        }else{
+            likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
+        }
+    }
+
+    @Override
+    public void setLikeCommentIconOnClickListener() {
+        likeComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("like", "cliked from comment detail");
+                if(likeComment.getDrawable().getConstantState().equals(ContextCompat.getDrawable(mContext, ResourceIds.LIKE_EMPTY).getConstantState())){
+                    likeComment.setImageResource(ResourceIds.LIKE_FULL);
+                    addLikeToComment();
+                    sendNotificationLikeCommentCloud();
+                }else{
+                    likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
+                    removeLikeFromComment();
+                }
+            }
+        });
+    }
+
+    private void addLikeToComment(){
+        DocumentReference commentRef = db.collection("comments")
+                .document(mCommentLink);
+        String currentUserLink = mAuth.getCurrentUser().getUid();
+        commentRef.update("l", FieldValue.arrayUnion(currentUserLink))
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
-                            DocumentSnapshot commentSnapshot = task.getResult();
-                            if(commentSnapshot.exists()){
-                                commentData.commentText = commentSnapshot.getString("te");
-                                commentData.commenterLink = commentSnapshot.getString("w");
-                                String commenterLink = commentSnapshot.getString("w");
-                                // TODO make the "w" field a map with keys "n", "l"
-                                // so that name does not have to be downloaded
-                                db.collection("person_vital").document(commenterLink).get()
-                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onSuccess(DocumentSnapshot personVital) {
-                                                if(personVital.exists()){
-                                                    commenterNameTextView.setText(personVital.getString("n"));
-                                                    commentData.commenterName = personVital.getString("n");
-                                                }
-                                            }
-                                        }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.i("error", "failed to fetch person name");
-                                    }
-                                });
-                                theCommentTextView.setText(commentSnapshot.getString("te"));
-                                int numberOfReplies = ((List<String>)commentSnapshot.get("r")).size();
-                                numberOfRepliesTextView.setText(Integer.toString(numberOfReplies));
-                                List<String> likers = (List<String>) commentSnapshot.get("l");
-                                if(likers.contains(currentUserLink)){
-                                    likeComment.setImageResource(ResourceIds.LIKE_FULL);
-                                }else{
-                                    likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
-                                }
-                                int numberofLikes = likers.size();
-                                numberOfLikesTextView.setText(Integer.toString(numberofLikes));
-
-                            }
+                            Log.i("UPDATE", "LIKE SUCCESSFUL ADDED");
+                        }else{
+                            Exception e = task.getException();
+                            Log.i("UPDATE", e.getMessage());
                         }
                     }
                 });
+    }
+
+    private void removeLikeFromComment(){
+        DocumentReference commentRef = db.collection("comments")
+                .document(mCommentLink);
+        String currentUserLink = mAuth.getCurrentUser().getUid();
+        commentRef.update("l", FieldValue.arrayRemove(currentUserLink))
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.i("UPDATE", "LIKE SUCCESSFULLY REMOVED");
+                        }else{
+                            Exception e = task.getException();
+                            Log.i("UPDATE", e.getMessage());
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void bindNoOfLikeInComment() {
+        List<String> likers = (List<String>) mCommentSnapshot.get("l");
+        int numberofLikes = likers.size();
+        numberOfLikesTextView.setText(Integer.toString(numberofLikes));
+    }
+
+    @Override
+    public void setNoOfLikeInCommentOnClickListener() {
+
+    }
+
+    @Override
+    public void bindReplyToCommentIcon() {
+
+    }
+
+    @Override
+    public void setReplyToCommentIconOnClickListener() {
         replyToComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i("reply", "from comment detail page");
 
                 // needed if reply activity has redundant data for the comment
-                // commentData might not be populated yet
-                // TODO do something about it
                 // maybe let all this be handled in a cloud function
                 Map<String, Object> commentMap = new HashMap<>();
-                commentMap.put("byl", commentData.commenterLink);
-                commentMap.put("text", commentData.commentText);
-                commentMap.put("byn", commentData.commenterName);
-                commentMap.put("l", commentLink);
+                commentMap.put("byl", mCommenterLink);
+                commentMap.put("text", mCommentText);
+                commentMap.put("byn", mCommenterName);
+                commentMap.put("l", mCommentLink);
 
-                Intent intent = new Intent(context, WriteComment.class);
-                intent.putExtra("postLink", postLink);
-                intent.putExtra("commentLink", commentLink);
+                Intent intent = new Intent(mContext, WriteComment.class);
+                intent.putExtra("postLink", mPostLink);
+                intent.putExtra("commentLink", mCommentLink);
                 intent.putExtra("entry_point", EntryPoints.REPLY_TO_COMMENT_CD);
                 intent.putExtra("commentMap", (HashMap)commentMap);
-                ((CommentDetail)context).startActivityForResult(intent, ((CommentDetail)context).REQUEST_REPLY);
-            }
-        });
-
-        likeComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("like", "clicked from full post(comment)");
-                DocumentReference commentRef = FirebaseFirestore.getInstance().collection("comments").document(commentLink);
-                if(likeComment.getDrawable().getConstantState().equals(ContextCompat.getDrawable(context, ResourceIds.LIKE_EMPTY).getConstantState())){
-                    likeComment.setImageResource(ResourceIds.LIKE_FULL);
-                    commentRef.update("l", FieldValue.arrayUnion(currentUserLink))
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()){
-                                        Log.i("UPDATE", "LIKE SUCCESSFUL ADDED");
-                                    }else{
-                                        Exception e = task.getException();
-                                        Log.i("UPDATE", e.getMessage());
-                                    }
-                                }
-                            });
-//                    sendNotificationLikeComment(commentLink, postLink, commentData.commenterLink);
-                    sendNotificationLikeCommentCloud(commentLink, postLink);
-                }else{
-                    likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
-                    commentRef.update("l", FieldValue.arrayRemove(currentUserLink))
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()){
-                                        Log.i("UPDATE", "LIKE SUCCESSFULLY REMOVED");
-                                    }else{
-                                        Exception e = task.getException();
-                                        Log.i("UPDATE", e.getMessage());
-                                    }
-                                }
-                            });
-                }
+                ((CommentDetail)mContext).startActivityForResult(intent,
+                        ((CommentDetail)mContext).REQUEST_REPLY);
             }
         });
     }
 
-    private class CommentData {
-        String commenterLink = "";
-        String commentText = "";
-        String commenterName = "";
-        String commentLink = "";
+    @Override
+    public void bindNoOfRepliesToComment() {
+        int numberOfReplies = ((List<String>)mCommentSnapshot.get("r")).size();
+        numberOfRepliesTextView.setText(Integer.toString(numberOfReplies));
+    }
+
+    @Override
+    public void setNoOfRepliesToCommentOnClickListener() {
+
+    }
+
+    @Override
+    public void setCommentLayoutOnClickListener() {
+
     }
 
     private void sendNotificationLikeComment(String commentLink, String postLink, final String commenterLink){
@@ -212,17 +395,19 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder {
                 });
     }
 
-    private void sendNotificationLikeCommentCloud(String commentLink, String postLink){
-        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private void sendNotificationLikeCommentCloud(){
+        String currentUserLink = mAuth.getCurrentUser().getUid();
         final Map<String, Object> who = new HashMap<>();
         who.put("l", currentUserLink);
 
         final Map<String, Object> notification = new HashMap<>();
-        notification.put("postLink", postLink);
-        notification.put("commentLink", commentLink);
+        notification.put("postLink", mPostLink);
+        notification.put("commentLink", mCommentLink);
         notification.put("w", who);
 
-        FirebaseFunctions.getInstance().getHttpsCallable("sendLikeCommentNotification").call(notification)
+        FirebaseFunctions.getInstance()
+                .getHttpsCallable("sendLikeCommentNotification")
+                .call(notification)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
                     @Override
                     public void onSuccess(HttpsCallableResult httpsCallableResult) {

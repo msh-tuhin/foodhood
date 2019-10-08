@@ -81,12 +81,12 @@ public class CommentDetail extends AppCompatActivity{
         mReplyLink = getIntent().getStringExtra("replyLink");
         mReplyToReplyLink = getIntent().getStringExtra("replyToReplyLink");
 
-        initializeAdapter();
-
         DocumentReference commentRef = FirebaseFirestore.getInstance()
                 .collection("comments")
                 .document(mCommentLink);
         mTaskComment = commentRef.get();
+
+        initializeAdapter();
 
         populateAdapter();
         decorateRecyclerView();
