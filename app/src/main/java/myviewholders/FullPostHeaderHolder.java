@@ -39,6 +39,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.PostBuilder;
 import myapp.utils.SourceAllDishes;
@@ -386,8 +387,11 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, WriteComment.class);
-                intent.putExtra("postLink", mPostLink);
-                intent.putExtra("entry_point", EntryPoints.FULL_POST_PAGE);
+
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(EntryPoints.COMMENT_ON_FULL_POST);
+                commentIntentExtra.setPostLink(mPostLink);
+                intent.putExtra("comment_extra", commentIntentExtra);
                 ((FullPost)mContext).startActivityForResult(intent,
                         ((FullPost)mContext).REQUEST_COMMENT);
             }

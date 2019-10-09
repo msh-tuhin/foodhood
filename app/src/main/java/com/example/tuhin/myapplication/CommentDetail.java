@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myviewholders.CommentDetailHolder;
 import myviewholders.CommentDetailReplyHolder;
@@ -75,11 +76,13 @@ public class CommentDetail extends AppCompatActivity{
         toolbar.setTitle("Comment");
         setSupportActionBar(toolbar);
 
-        mEntryPoint = getIntent().getIntExtra("entry_point", EntryPoints.HOME_PAGE);
-        mPostLink = getIntent().getStringExtra("postLink");
-        mCommentLink = getIntent().getStringExtra("commentLink");
-        mReplyLink = getIntent().getStringExtra("replyLink");
-        mReplyToReplyLink = getIntent().getStringExtra("replyToReplyLink");
+        CommentIntentExtra commentIntentExtra = (CommentIntentExtra) getIntent()
+                .getSerializableExtra("comment_extra");
+        mEntryPoint = commentIntentExtra.getEntryPoint();
+        mPostLink = commentIntentExtra.getPostLink();
+        mCommentLink = commentIntentExtra.getCommentLink();
+        mReplyLink = commentIntentExtra.getReplyLink();
+        mReplyToReplyLink = commentIntentExtra.getReplyToReplyLink();
 
         DocumentReference commentRef = FirebaseFirestore.getInstance()
                 .collection("comments")
@@ -100,12 +103,13 @@ public class CommentDetail extends AppCompatActivity{
 
         switch (mEntryPoint){
             case EntryPoints.NOTIF_REPLY_COMMENT:
-            case EntryPoints.REPLY_TO_COMMENT:
-            case EntryPoints.CD_FROM_HOME_COMMENT_REPLY:
+            case EntryPoints.R2C_FROM_HOME_POST:
+            case EntryPoints.R2C_FROM_FULL_POST:
+            case EntryPoints.CLICKED_COMMENT_REPLY_BODY_FROM_HOME_POST:
                 adapter.replyLinks.add(1, mReplyLink);
                 break;
             case EntryPoints.NOTIF_REPLY_REPLY:
-            case EntryPoints.REPLY_TO_REPLY_HOME:
+            case EntryPoints.R2R_FROM_HOME_POST:
                 adapter.replyLinks.add(1, mReplyLink);
                 adapter.replyLinks.add(2, mReplyToReplyLink);
                 break;
@@ -124,12 +128,13 @@ public class CommentDetail extends AppCompatActivity{
 
                         switch (mEntryPoint){
                             case EntryPoints.NOTIF_REPLY_COMMENT:
-                            case EntryPoints.REPLY_TO_COMMENT:
-                            case EntryPoints.CD_FROM_HOME_COMMENT_REPLY:
+                            case EntryPoints.R2C_FROM_HOME_POST:
+                            case EntryPoints.R2C_FROM_FULL_POST:
+                            case EntryPoints.CLICKED_COMMENT_REPLY_BODY_FROM_HOME_POST:
                                 replies.remove(mReplyLink);
                                 break;
                             case EntryPoints.NOTIF_REPLY_REPLY:
-                            case EntryPoints.REPLY_TO_REPLY_HOME:
+                            case EntryPoints.R2R_FROM_HOME_POST:
                                 replies.remove(mReplyLink);
                                 replies.remove(mReplyToReplyLink);
                                 break;
@@ -167,7 +172,7 @@ public class CommentDetail extends AppCompatActivity{
                     adapter.notifyItemInserted(1);
                     break;
                 case REQUEST_REPLY_TO_REPLY:
-                    String replyToReplyLink = data.getStringExtra("replyLink");
+                    String replyToReplyLink = data.getStringExtra("replyToReplyLink");
                     int newReplyPosition = data.getIntExtra("newReplyPosition", 1);
                     adapter.replyLinks.add(newReplyPosition+1, replyToReplyLink);
                     adapter.notifyItemInserted(newReplyPosition+1);

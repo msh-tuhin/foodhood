@@ -37,6 +37,7 @@ import java.util.Map;
 
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.PostBuilder;
 import myapp.utils.SourceAllDishes;
@@ -305,6 +306,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, FullPost.class);
+                intent.putExtra("entry_point", EntryPoints.CLICKED_GO_TO_FULL_POST);
                 intent.putExtra("postLink", mPostLink);
                 mContext.startActivity(intent);
             }
@@ -373,9 +375,12 @@ public class HalfPostHolder extends BaseHomeFeedHolder
         comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(EntryPoints.COMMENT_ON_HOME_POST);
+                commentIntentExtra.setPostLink(mPostLink);
+
                 Intent intent = new Intent(mContext, WriteComment.class);
-                intent.putExtra("postLink", mPostLink);
-                intent.putExtra("entry_point", EntryPoints.HOME_PAGE);
+                intent.putExtra("comment_extra", commentIntentExtra);
                 mContext.startActivity(intent);
             }
         });

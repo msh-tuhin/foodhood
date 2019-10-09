@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.ResourceIds;
 
@@ -332,11 +333,14 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
                 Log.i("reply_pos", Integer.toString(replyPosition));
 
                 Intent intent = new Intent(mContext, WriteComment.class);
-                intent.putExtra("entry_point", EntryPoints.REPLY_TO_REPLY_CD);
-                intent.putExtra("postLink", mPostLink);
-                intent.putExtra("commentLink", mCommentLink);
-                intent.putExtra("replyLink", mReplyLink);
-                intent.putExtra("newReplyPosition", replyPosition);
+
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(EntryPoints.R2R_FROM_CD);
+                commentIntentExtra.setPostLink(mPostLink);
+                commentIntentExtra.setCommentLink(mCommentLink);
+                commentIntentExtra.setReplyLink(mReplyLink);
+                commentIntentExtra.setNewReplyPosition(replyPosition);
+                intent.putExtra("comment_extra", commentIntentExtra);
                 ((CommentDetail)mContext).startActivityForResult(intent,
                         ((CommentDetail)mContext).REQUEST_REPLY_TO_REPLY);
             }

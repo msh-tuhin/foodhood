@@ -31,6 +31,7 @@ import java.util.Map;
 
 import androidx.core.content.ContextCompat;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.ResourceIds;
 
@@ -253,11 +254,14 @@ public class PostCommentHolder extends HalfPostHolder
                 commentMap.put("byn", mNameCommentBy);
                 commentMap.put("l", mCommentLink);
 
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(EntryPoints.R2C_FROM_HOME_POST);
+                commentIntentExtra.setCommentLink(mCommentLink);
+                commentIntentExtra.setPostLink(mPostLink);
+                commentIntentExtra.setCommentMap(commentMap);
+
                 Intent intent = new Intent(mContext, WriteComment.class);
-                intent.putExtra("entry_point", EntryPoints.REPLY_TO_COMMENT);
-                intent.putExtra("postLink", mPostLink);
-                intent.putExtra("commentLink", mCommentLink);
-                intent.putExtra("commentMap", (HashMap)commentMap);
+                intent.putExtra("comment_extra", commentIntentExtra);
                 mContext.startActivity(intent);
             }
         });
@@ -279,10 +283,14 @@ public class PostCommentHolder extends HalfPostHolder
             @Override
             public void onClick(View v) {
                 Log.i("clicked", "go to comment detail");
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(
+                        EntryPoints.CLICKED_COMMENT_BODY_FROM_HOME_POST);
+                commentIntentExtra.setCommentLink(mCommentLink);
+                commentIntentExtra.setPostLink(mPostLink);
+
                 Intent intent = new Intent(mContext, CommentDetail.class);
-                intent.putExtra("entry_point", EntryPoints.HOME_PAGE);
-                intent.putExtra("postLink", mPostLink);
-                intent.putExtra("commentLink", mCommentLink);
+                intent.putExtra("comment_extra", commentIntentExtra);
                 mContext.startActivity(intent);
             }
         });

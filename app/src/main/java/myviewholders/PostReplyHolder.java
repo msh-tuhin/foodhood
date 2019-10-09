@@ -31,6 +31,7 @@ import java.util.Map;
 
 import androidx.core.content.ContextCompat;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.ResourceIds;
 
@@ -385,11 +386,14 @@ public class PostReplyHolder extends HalfPostHolder
                 commentMap.put("byn", mNameCommentBy);
                 commentMap.put("l", mCommentLink);
 
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(EntryPoints.R2C_FROM_HOME_POST);
+                commentIntentExtra.setPostLink(mPostLink);
+                commentIntentExtra.setCommentLink(mCommentLink);
+                commentIntentExtra.setCommentMap(commentMap);
+
                 Intent intent = new Intent(mContext, WriteComment.class);
-                intent.putExtra("entry_point", EntryPoints.REPLY_TO_COMMENT);
-                intent.putExtra("postLink", mPostLink);
-                intent.putExtra("commentLink", mCommentLink);
-                intent.putExtra("commentMap", (HashMap)commentMap);
+                intent.putExtra("comment_extra", commentIntentExtra);
                 mContext.startActivity(intent);
             }
         });
@@ -572,11 +576,15 @@ public class PostReplyHolder extends HalfPostHolder
             @Override
             public void onClick(View v) {
                 Log.i("reply2reply", "from home reply");
+
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(EntryPoints.R2R_FROM_HOME_POST);
+                commentIntentExtra.setPostLink(mPostLink);
+                commentIntentExtra.setCommentLink(mCommentLink);
+                commentIntentExtra.setReplyLink(mReplyLink);
+
                 Intent intent = new Intent(mContext, WriteComment.class);
-                intent.putExtra("entry_point", EntryPoints.REPLY_TO_REPLY_HOME);
-                intent.putExtra("postLink", mPostLink);
-                intent.putExtra("commentLink", mCommentLink);
-                intent.putExtra("replyLink", mReplyLink);
+                intent.putExtra("comment_extra", commentIntentExtra);
                 mContext.startActivity(intent);
             }
         });
@@ -602,12 +610,15 @@ public class PostReplyHolder extends HalfPostHolder
             @Override
             public void onClick(View v) {
                 Log.i("comment_detail", "from home post reply");
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(
+                        EntryPoints.CLICKED_COMMENT_REPLY_BODY_FROM_HOME_POST);
+                commentIntentExtra.setPostLink(mPostLink);
+                commentIntentExtra.setCommentLink(mCommentLink);
+                commentIntentExtra.setReplyLink(mReplyLink);
+
                 Intent intent = new Intent(mContext, CommentDetail.class);
-                // EntryPoints.REPLY_TO_COMMENT works but not accurate
-                intent.putExtra("entry_point", EntryPoints.CD_FROM_HOME_COMMENT_REPLY);
-                intent.putExtra("postLink", mPostLink);
-                intent.putExtra("commentLink", mCommentLink);
-                intent.putExtra("replyLink", mReplyLink);
+                intent.putExtra("comment_extra", commentIntentExtra);
                 mContext.startActivity(intent);
             }
         });

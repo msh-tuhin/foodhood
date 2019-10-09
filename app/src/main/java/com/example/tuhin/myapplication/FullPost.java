@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import models.CommentModel;
+import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myviewholders.DishDetailHeaderHolder;
 import myviewholders.FeedbackHolder;
@@ -35,6 +36,7 @@ import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 
 /*
@@ -47,6 +49,8 @@ import java.util.Timer;
 
 public class FullPost extends AppCompatActivity {
 
+    private CommentIntentExtra mCommentIntentExtra;
+
     public final int REQUEST_COMMENT = 0;
     public RecyclerView rv;
 //    FirestorePagingAdapter<CommentModel, RecyclerView.ViewHolder> adapter;
@@ -58,22 +62,37 @@ public class FullPost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_post);
 
-        int entryPoint = getIntent().getIntExtra("entry_point", EntryPoints.HOME_PAGE);
+        mCommentIntentExtra = (CommentIntentExtra) getIntent()
+                .getSerializableExtra("comment_extra");
+
+        int entryPoint;
+        String postLink;
+
+        if(mCommentIntentExtra != null){
+            entryPoint = mCommentIntentExtra.getEntryPoint();
+            postLink = mCommentIntentExtra.getPostLink();
+        } else {
+            entryPoint = getIntent().getIntExtra("entry_point",
+                    EntryPoints.CLICKED_GO_TO_FULL_POST);
+            postLink = getIntent().getStringExtra("postLink");
+        }
+
 
         toolbar = findViewById(R.id.toolbar);
 
         // TODO this activity might receive a Task<DocumentSnapshot> instead
-        String postLink="";
-        postLink = getIntent().getStringExtra("postLink");
         Log.i("postLink-full", postLink);
-        DocumentReference postRef = FirebaseFirestore.getInstance().collection("posts").document(postLink);
+        DocumentReference postRef = FirebaseFirestore.getInstance()
+                .collection("posts")
+                .document(postLink);
         Task<DocumentSnapshot> taskPost = postRef.get();
         adapter = new MyAdapter(FullPost.this, taskPost, postLink);
 
         // fetch the comment links to add to adapter
         switch(entryPoint){
             case EntryPoints.NOTIF_LIKE_POST:
-            case EntryPoints.HOME_PAGE:
+            case EntryPoints.CLICKED_GO_TO_FULL_POST:
+            case EntryPoints.COMMENT_ON_HOME_POST:
                 taskPost.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -91,8 +110,7 @@ public class FullPost extends AppCompatActivity {
                 });
                 break;
             case EntryPoints.NOTIF_COMMENT_POST:
-            case EntryPoints.WRITE_COMMENT_PAGE:
-                String commentLink = getIntent().getStringExtra("commentLink");
+                String commentLink = mCommentIntentExtra.getCommentLink();
                 adapter.commentLinks.add(commentLink);
                 break;
         }
@@ -109,7 +127,8 @@ public class FullPost extends AppCompatActivity {
 //        adapter = new MyAdapter();
 //        adapter.notifyDataSetChanged();
         rv.setAdapter(adapter);
-        if(entryPoint == EntryPoints.WRITE_COMMENT_PAGE || entryPoint == EntryPoints.NOTIF_COMMENT_POST){
+        if(entryPoint == EntryPoints.NOTIF_COMMENT_POST ||
+                entryPoint == EntryPoints.COMMENT_ON_HOME_POST){
 //            rv.scrollToPosition(1);
 //            layoutManager.scrollToPositionWithOffset(1, 50);
 //            layoutManager.setReverseLayout(true);

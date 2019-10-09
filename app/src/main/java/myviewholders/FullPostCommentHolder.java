@@ -40,6 +40,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import models.CommentModel;
+import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.ResourceIds;
 
@@ -129,11 +130,14 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder {
                 commentMap.put("byn", commentData.commenterName);
                 commentMap.put("l", commentLink);
 
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(EntryPoints.R2C_FROM_FULL_POST);
+                commentIntentExtra.setPostLink(postLink);
+                commentIntentExtra.setCommentLink(commentLink);
+                commentIntentExtra.setCommentMap(commentMap);
+
                 Intent intent = new Intent(context, WriteComment.class);
-                intent.putExtra("entry_point", EntryPoints.REPLY_TO_COMMENT);
-                intent.putExtra("postLink", postLink);
-                intent.putExtra("commentLink", commentLink);
-                intent.putExtra("commentMap", (HashMap<String, Object>)commentMap);
+                intent.putExtra("comment_extra", commentIntentExtra);
                 context.startActivity(intent);
             }
         });
@@ -143,9 +147,13 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
                 Log.i("clicked", "go to comment detail");
                 Intent intent = new Intent(context, CommentDetail.class);
-                intent.putExtra("entry_point", EntryPoints.FULL_POST_PAGE);
-                intent.putExtra("postLink", postLink);
-                intent.putExtra("commentLink", commentLink);
+
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(
+                        EntryPoints.CLICKED_COMMENT_BODY_FROM_FULL_POST);
+                commentIntentExtra.setPostLink(postLink);
+                commentIntentExtra.setCommentLink(commentLink);
+                intent.putExtra("comment_extra", commentIntentExtra);
                 context.startActivity(intent);
             }
         });

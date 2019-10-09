@@ -1,8 +1,10 @@
 package models;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 import com.google.firebase.firestore.PropertyName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @IgnoreExtraProperties
@@ -27,6 +29,15 @@ public class CommentModel {
 
     public CommentModel(){
 
+    }
+
+    public CommentModel(String comment, String postLink){
+        this.te = comment;
+        this.wh = postLink;
+        this.w = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        this.l = new ArrayList<>();
+        this.r = new ArrayList<>();
+        this.rb = new ArrayList<>();
     }
 
     public List<String> getR() {
@@ -76,14 +87,6 @@ public class CommentModel {
     public void setL(List<String> l) {
         this.l = l;
     }
-
-//    public Boolean getIsReply() {
-//        return isReply;
-//    }
-//
-//    public void setIsReply(Boolean reply) {
-//        isReply = reply;
-//    }
 
 //    might need later
     public String getReplyTo() {

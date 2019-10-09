@@ -34,6 +34,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import models.CommentModel;
+import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.ResourceIds;
 
@@ -335,11 +336,14 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
                 commentMap.put("byn", mCommenterName);
                 commentMap.put("l", mCommentLink);
 
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(EntryPoints.R2C_FROM_CD);
+                commentIntentExtra.setPostLink(mPostLink);
+                commentIntentExtra.setCommentLink(mCommentLink);
+                commentIntentExtra.setCommentMap(commentMap);
+
                 Intent intent = new Intent(mContext, WriteComment.class);
-                intent.putExtra("postLink", mPostLink);
-                intent.putExtra("commentLink", mCommentLink);
-                intent.putExtra("entry_point", EntryPoints.REPLY_TO_COMMENT_CD);
-                intent.putExtra("commentMap", (HashMap)commentMap);
+                intent.putExtra("comment_extra", commentIntentExtra);
                 ((CommentDetail)mContext).startActivityForResult(intent,
                         ((CommentDetail)mContext).REQUEST_REPLY);
             }
