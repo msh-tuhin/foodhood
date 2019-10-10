@@ -8,9 +8,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.ActualActivity;
+import com.example.tuhin.myapplication.FullPost;
 import com.example.tuhin.myapplication.FullRestFeed;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.RestDetail;
+import com.example.tuhin.myapplication.WriteComment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -31,6 +33,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.CommentIntentExtra;
+import myapp.utils.EntryPoints;
 
 public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
         implements RestFeedInterface{
@@ -71,7 +75,9 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
         noOfCommentsTV = v.findViewById(R.id.no_comments);
     }
 
-    public void bindTo(final Context context, Task<DocumentSnapshot> taskRestFeed, final String restFeedLink){
+    public void bindTo(Context context,
+                       Task<DocumentSnapshot> taskRestFeed,
+                       String restFeedLink){
         Log.i("bindTo", this.getClass().toString());
 
         setmContext(context);
@@ -366,6 +372,14 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
             @Override
             public void onClick(View v) {
                 Log.i("comment", "from full rest feed");
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(EntryPoints.COMMENT_ON_FULL_RF);
+                commentIntentExtra.setPostLink(mRestFeedLink);
+
+                Intent intent = new Intent(mContext, WriteComment.class);
+                intent.putExtra("comment_extra", commentIntentExtra);
+                ((FullRestFeed)mContext).startActivityForResult(intent,
+                        ((FullRestFeed)mContext).REQUEST_COMMENT);
             }
         });
     }

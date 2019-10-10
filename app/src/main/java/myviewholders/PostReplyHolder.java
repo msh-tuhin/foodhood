@@ -575,7 +575,7 @@ public class PostReplyHolder extends HalfPostHolder
         replyTOReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("reply2reply", "from home reply");
+                Log.i("reply2reply", "from home post+reply");
 
                 CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
                 commentIntentExtra.setEntryPoint(EntryPoints.R2R_FROM_HOME_POST);

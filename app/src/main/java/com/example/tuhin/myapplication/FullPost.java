@@ -49,8 +49,6 @@ import java.util.Timer;
 
 public class FullPost extends AppCompatActivity {
 
-    private CommentIntentExtra mCommentIntentExtra;
-
     public final int REQUEST_COMMENT = 0;
     public RecyclerView rv;
 //    FirestorePagingAdapter<CommentModel, RecyclerView.ViewHolder> adapter;
@@ -62,6 +60,7 @@ public class FullPost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_post);
 
+        CommentIntentExtra mCommentIntentExtra;
         mCommentIntentExtra = (CommentIntentExtra) getIntent()
                 .getSerializableExtra("comment_extra");
 

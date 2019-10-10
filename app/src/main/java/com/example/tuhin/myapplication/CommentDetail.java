@@ -105,11 +105,15 @@ public class CommentDetail extends AppCompatActivity{
             case EntryPoints.NOTIF_REPLY_COMMENT:
             case EntryPoints.R2C_FROM_HOME_POST:
             case EntryPoints.R2C_FROM_FULL_POST:
+            case EntryPoints.R2C_FROM_HOME_RF:
+            case EntryPoints.R2C_FROM_FULL_RF:
             case EntryPoints.CLICKED_COMMENT_REPLY_BODY_FROM_HOME_POST:
+            case EntryPoints.CLICKED_COMMENT_REPLY_BODY_FROM_HOME_RF:
                 adapter.replyLinks.add(1, mReplyLink);
                 break;
             case EntryPoints.NOTIF_REPLY_REPLY:
             case EntryPoints.R2R_FROM_HOME_POST:
+            case EntryPoints.R2R_FROM_HOME_RF:
                 adapter.replyLinks.add(1, mReplyLink);
                 adapter.replyLinks.add(2, mReplyToReplyLink);
                 break;
@@ -130,11 +134,15 @@ public class CommentDetail extends AppCompatActivity{
                             case EntryPoints.NOTIF_REPLY_COMMENT:
                             case EntryPoints.R2C_FROM_HOME_POST:
                             case EntryPoints.R2C_FROM_FULL_POST:
+                            case EntryPoints.R2C_FROM_HOME_RF:
+                            case EntryPoints.R2C_FROM_FULL_RF:
                             case EntryPoints.CLICKED_COMMENT_REPLY_BODY_FROM_HOME_POST:
+                            case EntryPoints.CLICKED_COMMENT_REPLY_BODY_FROM_HOME_RF:
                                 replies.remove(mReplyLink);
                                 break;
                             case EntryPoints.NOTIF_REPLY_REPLY:
                             case EntryPoints.R2R_FROM_HOME_POST:
+                            case EntryPoints.R2R_FROM_HOME_RF:
                                 replies.remove(mReplyLink);
                                 replies.remove(mReplyToReplyLink);
                                 break;

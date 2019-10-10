@@ -119,9 +119,16 @@ public class WriteComment extends AppCompatActivity {
             case EntryPoints.COMMENT_ON_FULL_POST:
                 commentOnPostFromFullPost(commentText, newCommentLink);
                 break;
+            case EntryPoints.COMMENT_ON_FULL_RF:
+                commentOnRFFromFullRF(commentText, newCommentLink);
+                break;
             case EntryPoints.R2C_FROM_HOME_POST:
             case EntryPoints.R2C_FROM_FULL_POST:
-                replyToCommentFromPostRF(commentText, newCommentLink);
+                replyToCommentFromPost(commentText, newCommentLink);
+                break;
+            case EntryPoints.R2C_FROM_HOME_RF:
+            case EntryPoints.R2C_FROM_FULL_RF:
+                replyToCommentFromRF(commentText, newCommentLink);
                 break;
             case EntryPoints.R2C_FROM_CD:
                 replyToCommentFromCD(commentText, newCommentLink);
@@ -130,7 +137,10 @@ public class WriteComment extends AppCompatActivity {
                 replyToReplyFromCD(newCommentLink);
                 break;
             case EntryPoints.R2R_FROM_HOME_POST:
-                replyToReplyFromHome(newCommentLink);
+                replyToReplyFromHomePost(newCommentLink);
+                break;
+            case EntryPoints.R2R_FROM_HOME_RF:
+                replyToReplyFromHomeRF(newCommentLink);
                 break;
         }
     }
@@ -153,11 +163,31 @@ public class WriteComment extends AppCompatActivity {
         finish();
     }
 
-    private void replyToCommentFromPostRF(String commentText, String newCommentLink){
+    private void commentOnRFFromFullRF(String commentText, String newCommentLink){
+        addToRestFeed(mPostLink, newCommentLink);
+        addNewCommentToRFActivity(mPostLink, newCommentLink, commentText);
+        Intent intent = new Intent();
+        intent.putExtra("commentLink",newCommentLink);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    private void replyToCommentFromPost(String commentText, String newCommentLink){
         String commentLink =mCommentIntentExtra.getCommentLink();
         addToComment(commentLink, newCommentLink);
         Map<String, Object> commentMap =mCommentIntentExtra.getCommentMap();
         addNewReplyActivity(mPostLink, newCommentLink, commentText, commentMap);
+        mCommentIntentExtra.setReplyLink(newCommentLink);
+        Intent intent = new Intent(WriteComment.this, CommentDetail.class);
+        intent.putExtra("comment_extra", mCommentIntentExtra);
+        startActivity(intent);
+    }
+
+    private void replyToCommentFromRF(String commentText, String newCommentLink){
+        String commentLink =mCommentIntentExtra.getCommentLink();
+        addToComment(commentLink, newCommentLink);
+        Map<String, Object> commentMap =mCommentIntentExtra.getCommentMap();
+        addNewReplyToRFActivity(mPostLink, newCommentLink, commentText, commentMap);
         mCommentIntentExtra.setReplyLink(newCommentLink);
         Intent intent = new Intent(WriteComment.this, CommentDetail.class);
         intent.putExtra("comment_extra", mCommentIntentExtra);
@@ -175,13 +205,25 @@ public class WriteComment extends AppCompatActivity {
         finish();
     }
 
-    private void replyToReplyFromHome(String newCommentLink){
+    private void replyToReplyFromHomePost(String newCommentLink){
         String commentLink = mCommentIntentExtra.getCommentLink();
         String replyLink = mCommentIntentExtra.getReplyLink();
         addToComment(commentLink, newCommentLink);
         addToReply(replyLink, newCommentLink);
         sendReplyToReplyNotification(mPostLink, commentLink,
                 replyLink, newCommentLink);
+        mCommentIntentExtra.setReplyToReplyLink(newCommentLink);
+        Intent intent = new Intent(WriteComment.this, CommentDetail.class);
+        intent.putExtra("comment_extra", mCommentIntentExtra);
+        startActivity(intent);
+    }
+
+    private void replyToReplyFromHomeRF(String newCommentLink){
+        String commentLink = mCommentIntentExtra.getCommentLink();
+        String replyLink = mCommentIntentExtra.getReplyLink();
+        addToComment(commentLink, newCommentLink);
+        addToReply(replyLink, newCommentLink);
+        // TODO send notification
         mCommentIntentExtra.setReplyToReplyLink(newCommentLink);
         Intent intent = new Intent(WriteComment.this, CommentDetail.class);
         intent.putExtra("comment_extra", mCommentIntentExtra);
@@ -284,6 +326,20 @@ public class WriteComment extends AppCompatActivity {
                 });
     }
 
+    private void addToRestFeed(String postLink, String commentLink){
+        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        FirebaseFirestore.getInstance().collection("rest_feed").document(postLink)
+                .update("coms", FieldValue.arrayUnion(commentLink),
+                        "cb", FieldValue.arrayUnion(currentUserLink))
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("Error", e.getMessage());
+                    }
+                });
+    }
+
     private void addNewCommentActivity(String postLink,
                                        String commentLink,
                                        String commentText){
@@ -299,6 +355,34 @@ public class WriteComment extends AppCompatActivity {
         commentMap.put("text", commentText);
 
         newActivity.put("t", 5);
+        newActivity.put("w", who);
+        newActivity.put("wh", postLink);
+        newActivity.put("com", commentMap);
+
+        FirebaseFirestore.getInstance().collection("activities").add(newActivity)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.i("new_activity", documentReference.getId());
+                    }
+                });
+    }
+
+    private void addNewCommentToRFActivity(String postLink,
+                                           String commentLink,
+                                           String commentText){
+        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        Map<String, Object> newActivity = new HashMap<>();
+        Map<String, Object> who = new HashMap<>();
+        Map<String, Object> commentMap = new HashMap<>();
+
+        who.put("l", currentUserLink);
+
+        commentMap.put("l", commentLink);
+        commentMap.put("text", commentText);
+
+        newActivity.put("t", 6);
         newActivity.put("w", who);
         newActivity.put("wh", postLink);
         newActivity.put("com", commentMap);
@@ -328,6 +412,36 @@ public class WriteComment extends AppCompatActivity {
         replytMap.put("text", replyText);
 
         newActivity.put("t", 7);
+        newActivity.put("w", who);
+        newActivity.put("wh", postLink);
+        newActivity.put("com", commentMap);
+        newActivity.put("rep", replytMap);
+
+        FirebaseFirestore.getInstance().collection("activities").add(newActivity)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.i("new_activity", documentReference.getId());
+                    }
+                });
+    }
+
+    private void addNewReplyToRFActivity(String postLink,
+                                     String replyLink,
+                                     String replyText,
+                                     Map<String, Object> commentMap){
+        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        Map<String, Object> newActivity = new HashMap<>();
+        Map<String, Object> who = new HashMap<>();
+        Map<String, Object> replytMap = new HashMap<>();
+
+        who.put("l", currentUserLink);
+
+        replytMap.put("l", replyLink);
+        replytMap.put("text", replyText);
+
+        newActivity.put("t", 8);
         newActivity.put("w", who);
         newActivity.put("wh", postLink);
         newActivity.put("com", commentMap);

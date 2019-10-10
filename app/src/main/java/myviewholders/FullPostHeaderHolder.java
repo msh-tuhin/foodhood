@@ -94,9 +94,9 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
     }
 
 
-    public void bindTo(final Context context,
+    public void bindTo(Context context,
                        Task<DocumentSnapshot> taskPost,
-                       final String postLink){
+                       String postLink){
         Log.i("bindTo", this.getClass().toString());
         db = FirebaseFirestore.getInstance();
 
@@ -386,11 +386,11 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, WriteComment.class);
-
                 CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
                 commentIntentExtra.setEntryPoint(EntryPoints.COMMENT_ON_FULL_POST);
                 commentIntentExtra.setPostLink(mPostLink);
+
+                Intent intent = new Intent(mContext, WriteComment.class);
                 intent.putExtra("comment_extra", commentIntentExtra);
                 ((FullPost)mContext).startActivityForResult(intent,
                         ((FullPost)mContext).REQUEST_COMMENT);

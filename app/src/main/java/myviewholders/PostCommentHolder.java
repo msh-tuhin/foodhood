@@ -246,7 +246,7 @@ public class PostCommentHolder extends HalfPostHolder
         replyToComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("reply2comment", "from home comment");
+                Log.i("reply2comment", "from home post+comment");
                 // needed if reply activity has redundant data for the comment
                 Map<String, Object> commentMap = new HashMap<>();
                 commentMap.put("byl", mLinkCommentBy);
@@ -282,7 +282,7 @@ public class PostCommentHolder extends HalfPostHolder
         commentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("clicked", "go to comment detail");
+                Log.i("comment_detail", "from home post comment");
                 CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
                 commentIntentExtra.setEntryPoint(
                         EntryPoints.CLICKED_COMMENT_BODY_FROM_HOME_POST);
