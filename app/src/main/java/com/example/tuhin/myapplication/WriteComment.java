@@ -116,6 +116,9 @@ public class WriteComment extends AppCompatActivity {
             case EntryPoints.COMMENT_ON_HOME_POST:
                 commentOnPostFromHome(commentText, newCommentLink);
                 break;
+            case EntryPoints.COMMENT_ON_HOME_RF:
+                commentOnRFFromHome(commentText, newCommentLink);
+                break;
             case EntryPoints.COMMENT_ON_FULL_POST:
                 commentOnPostFromFullPost(commentText, newCommentLink);
                 break;
@@ -150,6 +153,15 @@ public class WriteComment extends AppCompatActivity {
         addNewCommentActivity(mPostLink, newCommentLink, commentText);
         mCommentIntentExtra.setCommentLink(newCommentLink);
         Intent intent = new Intent(WriteComment.this, FullPost.class);
+        intent.putExtra("comment_extra",mCommentIntentExtra);
+        startActivity(intent);
+    }
+
+    private void commentOnRFFromHome(String commentText, String newCommentLink){
+        addToRestFeed(mPostLink, newCommentLink);
+        addNewCommentToRFActivity(mPostLink, newCommentLink, commentText);
+        mCommentIntentExtra.setCommentLink(newCommentLink);
+        Intent intent = new Intent(WriteComment.this, FullRestFeed.class);
         intent.putExtra("comment_extra",mCommentIntentExtra);
         startActivity(intent);
     }

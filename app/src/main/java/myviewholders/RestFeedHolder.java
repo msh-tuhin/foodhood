@@ -6,6 +6,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.CommentIntentExtra;
+import myapp.utils.EntryPoints;
 
 import android.content.Intent;
 import android.util.Log;
@@ -17,6 +19,7 @@ import com.example.tuhin.myapplication.ActualActivity;
 import com.example.tuhin.myapplication.FullRestFeed;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.RestDetail;
+import com.example.tuhin.myapplication.WriteComment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -365,6 +368,13 @@ public class RestFeedHolder extends BaseHomeFeedHolder
             @Override
             public void onClick(View v) {
                 Log.i("comment", "from home page rest feed");
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(EntryPoints.COMMENT_ON_HOME_RF);
+                commentIntentExtra.setPostLink(mRestFeedLink);
+
+                Intent intent = new Intent(mContext, WriteComment.class);
+                intent.putExtra("comment_extra", commentIntentExtra);
+                mContext.startActivity(intent);
             }
         });
     }
