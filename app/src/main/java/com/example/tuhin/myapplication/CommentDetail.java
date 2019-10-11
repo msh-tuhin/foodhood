@@ -54,6 +54,7 @@ public class CommentDetail extends AppCompatActivity{
     public final int REQUEST_REPLY = 0;
     public final int REQUEST_REPLY_TO_REPLY = 1;
 
+    LinearLayoutManager mLinearLayoutManager;
     private int mEntryPoint;
     private String mPostLink;
     private String mCommentLink;
@@ -76,6 +77,11 @@ public class CommentDetail extends AppCompatActivity{
         toolbar.setTitle("Comment");
         setSupportActionBar(toolbar);
 
+        mLinearLayoutManager = new LinearLayoutManager(this,
+                RecyclerView.VERTICAL, false);
+        rv.setLayoutManager(mLinearLayoutManager);
+        addItemDecorationToRV();
+
         CommentIntentExtra commentIntentExtra = (CommentIntentExtra) getIntent()
                 .getSerializableExtra("comment_extra");
         mEntryPoint = commentIntentExtra.getEntryPoint();
@@ -90,9 +96,8 @@ public class CommentDetail extends AppCompatActivity{
         mTaskComment = commentRef.get();
 
         initializeAdapter();
-
+        rv.setAdapter(adapter);
         populateAdapter();
-        decorateRecyclerView();
     }
 
     private void initializeAdapter(){
@@ -148,6 +153,12 @@ public class CommentDetail extends AppCompatActivity{
                                 break;
                         }
                         adapter.replyLinks.addAll(replies);
+                        adapter.notifyDataSetChanged();
+                        /*
+                        if(mEntryPoint == EntryPoints.NOTIF_REPLY_REPLY){
+                            mLinearLayoutManager.smoothScrollToPosition(rv, null, 2);
+                        }
+                        */
                     }catch (NullPointerException e){
                         Log.i("ERROR", e.getMessage());
                     }
@@ -156,17 +167,10 @@ public class CommentDetail extends AppCompatActivity{
         });
     }
 
-    private void decorateRecyclerView(){
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this,
-                RecyclerView.VERTICAL, false);
-        rv.setLayoutManager(layoutManager);
+    private void addItemDecorationToRV(){
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(),
-                layoutManager.getOrientation());
+                mLinearLayoutManager.getOrientation());
         rv.addItemDecoration(dividerItemDecoration);
-        rv.setAdapter(adapter);
-//        if(entryPoint == EntryPoints.NOTIF_REPLY_REPLY){
-//            layoutManager.smoothScrollToPosition(rv, null, 2);
-//        }
     }
 
     @Override

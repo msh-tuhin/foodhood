@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -34,6 +35,13 @@ import java.util.List;
 public class FullRestFeed extends AppCompatActivity {
 
     public final int REQUEST_COMMENT = 0;
+
+    LinearLayoutManager mLinearLayoutManager;
+    private CommentIntentExtra mCommentIntentExtra;
+    private Task<DocumentSnapshot> mTaskRestFeed;
+    private int mEntryPoint;
+    private String mRestFeedLink;
+    private String mCommentLink;
 
     Toolbar toolbar;
     RecyclerView rv;
@@ -50,33 +58,22 @@ public class FullRestFeed extends AppCompatActivity {
         toolbar.setTitle("Post");
         setSupportActionBar(toolbar);
 
-        CommentIntentExtra mCommentIntentExtra;
-        mCommentIntentExtra = (CommentIntentExtra) getIntent()
-                .getSerializableExtra("comment_extra");
+        setmCommentIntentExtra();
+        setmEntryPoint();
+        setmRestFeedLink();
+        setmTaskRestFeed();
+        setmCommentLink();
 
-        int entryPoint;
-        String restFeedLink;
+        mLinearLayoutManager = new LinearLayoutManager(this,
+                RecyclerView.VERTICAL, false);
+        rv.setLayoutManager(mLinearLayoutManager);
+        addItemDecorationToRV();
 
-        if(mCommentIntentExtra != null){
-            entryPoint = mCommentIntentExtra.getEntryPoint();
-            restFeedLink = mCommentIntentExtra.getPostLink();
-        } else {
-            entryPoint = getIntent().getIntExtra("entry_point",
-                    EntryPoints.CLICKED_GO_TO_FULL_RF);
-            restFeedLink = getIntent().getStringExtra("restFeedLink");
-        }
-
-        // TODO this activity might receive a Task<DocumentSnapshot> instead
-
-        DocumentReference restFeedRef = FirebaseFirestore.getInstance()
-                .collection("rest_feed")
-                .document(restFeedLink);
-        Task<DocumentSnapshot> taskPost = restFeedRef.get();
-
-        initializeAdapter(restFeedLink, taskPost);
-        populateAdapter(entryPoint, taskPost);
-        decorateRecyclerView();
+        initializeAdapter();
         rv.setAdapter(adapter);
+        populateAdapter();
+
+        setStackFromEnd();
     }
 
     @Override
@@ -93,27 +90,62 @@ public class FullRestFeed extends AppCompatActivity {
         }
     }
 
-    private void decorateRecyclerView(){
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this,
-                RecyclerView.VERTICAL, false);
-        rv.setLayoutManager(layoutManager);
+    private void setmCommentIntentExtra() {
+        mCommentIntentExtra = (CommentIntentExtra) getIntent()
+                .getSerializableExtra("comment_extra");
+    }
+
+    private void setmEntryPoint() {
+        if(mCommentIntentExtra != null){
+            mEntryPoint = mCommentIntentExtra.getEntryPoint();
+        } else {
+            mEntryPoint = getIntent().getIntExtra("entry_point",
+                    EntryPoints.CLICKED_GO_TO_FULL_RF);
+
+        }
+
+    }
+
+    private void setmRestFeedLink() {
+        if(mCommentIntentExtra != null){
+            mRestFeedLink = mCommentIntentExtra.getPostLink();
+        } else {
+            mRestFeedLink = getIntent().getStringExtra("restFeedLink");
+        }
+    }
+
+    private void setmCommentLink() {
+        if(mCommentIntentExtra != null){
+            mCommentLink = mCommentIntentExtra.getCommentLink();
+        }
+    }
+
+    private void setmTaskRestFeed(){
+        if(mRestFeedLink == null){
+            setmRestFeedLink();
+        }
+        DocumentReference postRef = FirebaseFirestore.getInstance()
+                .collection("rest_feed")
+                .document(mRestFeedLink);
+        mTaskRestFeed = postRef.get();
+    }
+
+    private void addItemDecorationToRV(){
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(),
-                layoutManager.getOrientation());
+                mLinearLayoutManager.getOrientation());
         rv.addItemDecoration(dividerItemDecoration);
     }
 
-    private void initializeAdapter(String restFeedLink,
-                                   Task<DocumentSnapshot> taskPost){
-        adapter = new MyAdapter(FullRestFeed.this, taskPost, restFeedLink);
+    private void initializeAdapter(){
+        adapter = new MyAdapter(FullRestFeed.this, mTaskRestFeed, mRestFeedLink);
     }
 
-    private void populateAdapter(int entryPoint,
-                                   Task<DocumentSnapshot> taskPost){
+    private void populateAdapter(){
         // fetch the comment links to add to adapter
-        switch(entryPoint){
+        switch(mEntryPoint){
             case EntryPoints.CLICKED_GO_TO_FULL_RF:
             case EntryPoints.COMMENT_ON_HOME_RF:
-                taskPost.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                mTaskRestFeed.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if(task.isSuccessful()){
@@ -130,6 +162,18 @@ public class FullRestFeed extends AppCompatActivity {
                 });
                 break;
         }
+        adapter.notifyDataSetChanged();
+    }
+
+    private void setStackFromEnd(){
+        mTaskRestFeed.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(mEntryPoint == EntryPoints.COMMENT_ON_HOME_RF){
+                    mLinearLayoutManager.setStackFromEnd(true);
+                }
+            }
+        });
     }
 
     private class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{

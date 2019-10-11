@@ -28,6 +28,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -50,6 +51,14 @@ import java.util.Timer;
 public class FullPost extends AppCompatActivity {
 
     public final int REQUEST_COMMENT = 0;
+
+    LinearLayoutManager mLinearLayoutManager;
+    private int mEntryPoint;
+    private String mPostLink;
+    private String mCommentLink;
+    private Task<DocumentSnapshot> mTaskPost;
+    private CommentIntentExtra mCommentIntentExtra;
+
     public RecyclerView rv;
 //    FirestorePagingAdapter<CommentModel, RecyclerView.ViewHolder> adapter;
     Toolbar toolbar;
@@ -60,79 +69,30 @@ public class FullPost extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_post);
 
-        CommentIntentExtra mCommentIntentExtra;
-        mCommentIntentExtra = (CommentIntentExtra) getIntent()
-                .getSerializableExtra("comment_extra");
-
-        int entryPoint;
-        String postLink;
-
-        if(mCommentIntentExtra != null){
-            entryPoint = mCommentIntentExtra.getEntryPoint();
-            postLink = mCommentIntentExtra.getPostLink();
-        } else {
-            entryPoint = getIntent().getIntExtra("entry_point",
-                    EntryPoints.CLICKED_GO_TO_FULL_POST);
-            postLink = getIntent().getStringExtra("postLink");
-        }
-
-
         toolbar = findViewById(R.id.toolbar);
-
-        // TODO this activity might receive a Task<DocumentSnapshot> instead
-        Log.i("postLink-full", postLink);
-        DocumentReference postRef = FirebaseFirestore.getInstance()
-                .collection("posts")
-                .document(postLink);
-        Task<DocumentSnapshot> taskPost = postRef.get();
-        adapter = new MyAdapter(FullPost.this, taskPost, postLink);
-
-        // fetch the comment links to add to adapter
-        switch(entryPoint){
-            case EntryPoints.NOTIF_LIKE_POST:
-            case EntryPoints.CLICKED_GO_TO_FULL_POST:
-            case EntryPoints.COMMENT_ON_HOME_POST:
-                taskPost.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.isSuccessful()){
-                            DocumentSnapshot post = task.getResult();
-                            try{
-                                Log.i("comments", "downloaded");
-                                List<String> comments = (List<String>)post.get("coms");
-                                adapter.commentLinks.addAll(comments);
-                            }catch (NullPointerException e){
-                                Log.i("ERROR", e.getMessage());
-                            }
-                        }
-                    }
-                });
-                break;
-            case EntryPoints.NOTIF_COMMENT_POST:
-                String commentLink = mCommentIntentExtra.getCommentLink();
-                adapter.commentLinks.add(commentLink);
-                break;
-        }
-
+        rv = findViewById(R.id.post_comment_rv);
 
         toolbar.setTitle("Post");
         setSupportActionBar(toolbar);
-        rv = findViewById(R.id.post_comment_rv);
 
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
-        rv.setLayoutManager(layoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(), layoutManager.getOrientation());
-        rv.addItemDecoration(dividerItemDecoration);
-//        adapter = new MyAdapter();
-//        adapter.notifyDataSetChanged();
+        setmCommentIntentExtra();
+        setmEntryPoint();
+        setmCommentLink();
+        setmPostLink();
+        Log.i("postLink-full", mPostLink);
+        setmTaskPost();
+
+        mLinearLayoutManager = new LinearLayoutManager(this,
+                RecyclerView.VERTICAL, false);
+        rv.setLayoutManager(mLinearLayoutManager);
+        addItemDecorationToRV();
+
+        initializeAdapter();
         rv.setAdapter(adapter);
-        if(entryPoint == EntryPoints.NOTIF_COMMENT_POST ||
-                entryPoint == EntryPoints.COMMENT_ON_HOME_POST){
-//            rv.scrollToPosition(1);
-//            layoutManager.scrollToPositionWithOffset(1, 50);
-//            layoutManager.setReverseLayout(true);
-            layoutManager.setStackFromEnd(true);
-        }
+        populateAdapter();
+
+        setStackFromEnd();
+
     }
 
     @Override
@@ -159,6 +119,98 @@ public class FullPost extends AppCompatActivity {
                     break;
             }
         }
+    }
+
+    private void setmCommentIntentExtra() {
+        mCommentIntentExtra = (CommentIntentExtra) getIntent()
+                .getSerializableExtra("comment_extra");
+    }
+
+    private void setmEntryPoint() {
+        if(mCommentIntentExtra != null){
+            mEntryPoint = mCommentIntentExtra.getEntryPoint();
+        } else {
+            mEntryPoint = getIntent().getIntExtra("entry_point",
+                    EntryPoints.CLICKED_GO_TO_FULL_POST);
+
+        }
+
+    }
+
+    private void setmPostLink() {
+        if(mCommentIntentExtra != null){
+            mPostLink = mCommentIntentExtra.getPostLink();
+        } else {
+            mPostLink = getIntent().getStringExtra("postLink");
+        }
+    }
+
+    private void setmCommentLink() {
+        if(mCommentIntentExtra != null){
+            mCommentLink = mCommentIntentExtra.getCommentLink();
+        }
+    }
+
+    private void setmTaskPost(){
+        if(mPostLink == null){
+            setmPostLink();
+        }
+        DocumentReference postRef = FirebaseFirestore.getInstance()
+                .collection("posts")
+                .document(mPostLink);
+        mTaskPost = postRef.get();
+    }
+
+    private void initializeAdapter(){
+        adapter = new MyAdapter(FullPost.this, mTaskPost, mPostLink);
+        switch(mEntryPoint){
+            case EntryPoints.NOTIF_COMMENT_POST:
+                adapter.commentLinks.add(mCommentLink);
+                break;
+        }
+    }
+
+    private void populateAdapter(){
+        switch(mEntryPoint){
+            case EntryPoints.NOTIF_LIKE_POST:
+            case EntryPoints.CLICKED_GO_TO_FULL_POST:
+            case EntryPoints.COMMENT_ON_HOME_POST:
+                mTaskPost.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            DocumentSnapshot post = task.getResult();
+                            try{
+                                Log.i("comments", "downloaded");
+                                List<String> comments = (List<String>)post.get("coms");
+                                adapter.commentLinks.addAll(comments);
+                            }catch (NullPointerException e){
+                                Log.i("ERROR", e.getMessage());
+                            }
+                        }
+                    }
+                });
+                break;
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    private void addItemDecorationToRV(){
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(),
+                mLinearLayoutManager.getOrientation());
+        rv.addItemDecoration(dividerItemDecoration);
+    }
+
+    private void setStackFromEnd(){
+        mTaskPost.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(mEntryPoint == EntryPoints.NOTIF_COMMENT_POST ||
+                        mEntryPoint == EntryPoints.COMMENT_ON_HOME_POST){
+                    mLinearLayoutManager.setStackFromEnd(true);
+                }
+            }
+        });
     }
 
     private class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
