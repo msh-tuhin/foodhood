@@ -33,6 +33,7 @@ import androidx.core.content.ContextCompat;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
+import myapp.utils.NotificationTypes;
 import myapp.utils.ResourceIds;
 
 public class PostCommentHolder extends HalfPostHolder
@@ -345,6 +346,7 @@ public class PostCommentHolder extends HalfPostHolder
         notification.put("postLink", mPostLink);
         notification.put("commentLink", mCommentLink);
         notification.put("w", who);
+        notification.put("t", NotificationTypes.NOTIF_LIKE_COMMENT);
 
         FirebaseFunctions.getInstance().getHttpsCallable("sendLikeCommentNotification").call(notification)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {

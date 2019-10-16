@@ -43,6 +43,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import models.CommentModel;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
+import myapp.utils.NotificationTypes;
 import myapp.utils.ResourceIds;
 
 public class FullPostCommentHolder extends RecyclerView.ViewHolder
@@ -397,6 +398,7 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
         notification.put("postLink", mPostLink);
         notification.put("commentLink", mCommentLink);
         notification.put("w", who);
+        notification.put("t", NotificationTypes.NOTIF_LIKE_COMMENT);
 
         FirebaseFunctions.getInstance().getHttpsCallable("sendLikeCommentNotification").call(notification)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {

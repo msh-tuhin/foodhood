@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
+import myapp.utils.NotificationTypes;
 import myapp.utils.ResourceIds;
 
 public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
@@ -256,7 +257,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         likeReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("like", "clicked from full post(reply)");
+                Log.i("like", "clicked from comment detail reply holder");
                 if(likeReply.getDrawable().getConstantState()
                         .equals(ContextCompat.getDrawable(mContext, ResourceIds.LIKE_EMPTY).getConstantState())){
                     likeReply.setImageResource(ResourceIds.LIKE_FULL);
@@ -378,6 +379,8 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         notification.put("commentLink", mCommentLink);
         notification.put("replyLink", mReplyLink);
         notification.put("w", who);
+        // TODO this will be set based on a check
+        notification.put("t", NotificationTypes.NOTIF_LIKE_REPLY);
 
         FirebaseFunctions.getInstance().getHttpsCallable("sendLikeReplyNotification").call(notification)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {

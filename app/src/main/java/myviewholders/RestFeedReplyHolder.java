@@ -11,15 +11,28 @@ import android.widget.TextView;
 import com.example.tuhin.myapplication.CommentDetail;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.WriteComment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
+import myapp.utils.NotificationTypes;
+import myapp.utils.ResourceIds;
 
 public class RestFeedReplyHolder extends RestFeedHolder
         implements CommentInterface, ReplyInterface{
@@ -33,6 +46,7 @@ public class RestFeedReplyHolder extends RestFeedHolder
     private String mRestFeedLink;
     private String mCommentLink;
     private String mReplyLink;
+    private FirebaseAuth mAuth;
 
     private LinearLayout commentReplyLayout;
     private TextView replyHeaderTV;
@@ -79,6 +93,8 @@ public class RestFeedReplyHolder extends RestFeedHolder
         numOfLikesInReply = v.findViewById(R.id.number_of_likes_in_reply);
         replyTOReply = v.findViewById(R.id.reply_to_reply);
         numOfRepliesToReply = v.findViewById(R.id.number_of_replies_to_reply);
+
+        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override
@@ -261,7 +277,88 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void setLikeCommentIconOnClickListener() {
+        likeComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("like", "clicked from home rf comment+reply");
+                if(likeComment.getDrawable().getConstantState().
+                        equals(ContextCompat.getDrawable(mContext, ResourceIds.LIKE_EMPTY)
+                                .getConstantState())){
+                    likeComment.setImageResource(ResourceIds.LIKE_FULL);
+                    addLikeToComment();
+                    sendNotificationLikeCommentCloud();
+                }else{
+                    likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
+                    removeLikeFromComment();
+                }
+            }
+        });
+    }
 
+    private void addLikeToComment(){
+        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser()
+                .getUid();
+        DocumentReference commentRef = FirebaseFirestore.getInstance()
+                .collection("comments")
+                .document(mCommentLink);
+        commentRef.update("l", FieldValue.arrayUnion(currentUserLink))
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.i("UPDATE", "LIKE SUCCESSFUL ADDED");
+                        }else{
+                            Exception e = task.getException();
+                            Log.i("UPDATE", e.getMessage());
+                        }
+                    }
+                });
+    }
+
+    private void removeLikeFromComment(){
+        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser()
+                .getUid();
+        DocumentReference commentRef = FirebaseFirestore.getInstance()
+                .collection("comments")
+                .document(mCommentLink);
+        commentRef.update("l", FieldValue.arrayRemove(currentUserLink))
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.i("UPDATE", "LIKE SUCCESSFULLY REMOVED");
+                        }else{
+                            Exception e = task.getException();
+                            Log.i("UPDATE", e.getMessage());
+                        }
+                    }
+                });
+    }
+
+    private void sendNotificationLikeCommentCloud(){
+        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final Map<String, Object> who = new HashMap<>();
+        who.put("l", currentUserLink);
+
+        final Map<String, Object> notification = new HashMap<>();
+        notification.put("postLink", mRestFeedLink);
+        notification.put("commentLink", mCommentLink);
+        notification.put("w", who);
+        notification.put("t", NotificationTypes.NOTIF_LIKE_COMMENT_RF);
+
+        FirebaseFunctions.getInstance().getHttpsCallable("sendLikeCommentNotification").call(notification)
+                .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
+                    @Override
+                    public void onSuccess(HttpsCallableResult httpsCallableResult) {
+                        Log.i("func_call", "returned successfully");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i("func_call", e.getMessage());
+                    }
+                });
     }
 
     @Override
@@ -377,7 +474,86 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void setLikeReplyIconOnClickListener() {
+        likeReply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("like", "clicked from home rf comment+reply");
+                if(likeReply.getDrawable().getConstantState()
+                        .equals(ContextCompat.getDrawable(mContext, ResourceIds.LIKE_EMPTY).getConstantState())){
+                    likeReply.setImageResource(ResourceIds.LIKE_FULL);
+                    addLikeToReply();
+                    sendNotificationLikeReplyCloud();
+                }else{
+                    likeReply.setImageResource(ResourceIds.LIKE_EMPTY);
+                    removeLikeFromReply();
+                }
+            }
+        });
+    }
 
+    private void addLikeToReply(){
+        DocumentReference replyRef = FirebaseFirestore.getInstance()
+                .collection("comments")
+                .document(mReplyLink);
+        String currentUserLink = mAuth.getCurrentUser().getUid();
+        replyRef.update("l", FieldValue.arrayUnion(currentUserLink))
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.i("UPDATE", "LIKE SUCCESSFUL ADDED");
+                        }else{
+                            Exception e = task.getException();
+                            Log.i("UPDATE", e.getMessage());
+                        }
+                    }
+                });
+    }
+
+    private void removeLikeFromReply(){
+        DocumentReference replyRef = FirebaseFirestore.getInstance()
+                .collection("comments")
+                .document(mReplyLink);
+        String currentUserLink = mAuth.getCurrentUser().getUid();
+        replyRef.update("l", FieldValue.arrayRemove(currentUserLink))
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.i("UPDATE", "LIKE SUCCESSFULLY REMOVED");
+                        }else{
+                            Exception e = task.getException();
+                            Log.i("UPDATE", e.getMessage());
+                        }
+                    }
+                });
+    }
+
+    private void sendNotificationLikeReplyCloud(){
+        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final Map<String, Object> who = new HashMap<>();
+        who.put("l", currentUserLink);
+
+        final Map<String, Object> notification = new HashMap<>();
+        notification.put("postLink", mRestFeedLink);
+        notification.put("commentLink", mCommentLink);
+        notification.put("replyLink", mReplyLink);
+        notification.put("w", who);
+        notification.put("t", NotificationTypes.NOTIF_LIKE_REPLY_RF);
+
+        FirebaseFunctions.getInstance().getHttpsCallable("sendLikeReplyNotification").call(notification)
+                .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
+                    @Override
+                    public void onSuccess(HttpsCallableResult httpsCallableResult) {
+                        Log.i("func_call", "returned successfully");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i("func_call", e.getMessage());
+                    }
+                });
     }
 
     @Override

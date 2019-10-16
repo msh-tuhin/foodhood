@@ -239,7 +239,14 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindLikeIcon() {
-
+        String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        List<String> likers = (List<String>) mRestFeedSnapshot.get("l");
+        // find if current user has already liked this post
+        if(likers.contains(likedBy)){
+            like.setImageResource(R.drawable.baseline_favorite_black_24dp);
+        }else{
+            like.setImageResource(R.drawable.outline_favorite_border_black_24dp);
+        }
     }
 
     @Override

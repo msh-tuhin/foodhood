@@ -223,7 +223,7 @@ public class WriteComment extends AppCompatActivity {
         addToComment(commentLink, newCommentLink);
         addToReply(replyLink, newCommentLink);
         sendReplyToReplyNotification(mPostLink, commentLink,
-                replyLink, newCommentLink);
+                replyLink, newCommentLink, "sendReplyToReplyNotification");
         mCommentIntentExtra.setReplyToReplyLink(newCommentLink);
         Intent intent = new Intent(WriteComment.this, CommentDetail.class);
         intent.putExtra("comment_extra", mCommentIntentExtra);
@@ -235,7 +235,8 @@ public class WriteComment extends AppCompatActivity {
         String replyLink = mCommentIntentExtra.getReplyLink();
         addToComment(commentLink, newCommentLink);
         addToReply(replyLink, newCommentLink);
-        // TODO send notification
+        sendReplyToReplyNotification(mPostLink, commentLink,
+                replyLink, newCommentLink, "sendReplyToReplyNotificationRF");
         mCommentIntentExtra.setReplyToReplyLink(newCommentLink);
         Intent intent = new Intent(WriteComment.this, CommentDetail.class);
         intent.putExtra("comment_extra", mCommentIntentExtra);
@@ -248,7 +249,7 @@ public class WriteComment extends AppCompatActivity {
         addToComment(commentLink, newCommentLink);
         addToReply(replyLink, newCommentLink);
         sendReplyToReplyNotification(mPostLink, commentLink,
-                replyLink, newCommentLink);
+                replyLink, newCommentLink, "sendReplyToReplyNotification");
         int newReplyPosition = mCommentIntentExtra.getNewReplyPosition();
         Intent intent = new Intent();
         intent.putExtra("replyToReplyLink", newCommentLink);
@@ -265,7 +266,9 @@ public class WriteComment extends AppCompatActivity {
         CommentModel commentModel = new CommentModel(comment, postLink);
         switch(entryPoint){
             case EntryPoints.R2C_FROM_HOME_POST:
+            case EntryPoints.R2C_FROM_HOME_RF:
             case EntryPoints.R2C_FROM_FULL_POST:
+            case EntryPoints.R2C_FROM_FULL_RF:
             case EntryPoints.R2C_FROM_CD:
                 commentModel.setType(CommentTypes.REPLY);
                 commentModel.setComLink(mCommentIntentExtra.getCommentLink());
@@ -273,6 +276,7 @@ public class WriteComment extends AppCompatActivity {
                 break;
             case EntryPoints.R2R_FROM_CD:
             case EntryPoints.R2R_FROM_HOME_POST:
+            case EntryPoints.R2R_FROM_HOME_RF:
                 commentModel.setType(CommentTypes.REPLY_TO_REPLY);
                 commentModel.setComLink(mCommentIntentExtra.getCommentLink());
                 commentModel.setReplyLink(mCommentIntentExtra.getReplyLink());
@@ -439,9 +443,9 @@ public class WriteComment extends AppCompatActivity {
     }
 
     private void addNewReplyToRFActivity(String postLink,
-                                     String replyLink,
-                                     String replyText,
-                                     Map<String, Object> commentMap){
+                                         String replyLink,
+                                         String replyText,
+                                         Map<String, Object> commentMap){
         String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         Map<String, Object> newActivity = new HashMap<>();
@@ -471,7 +475,8 @@ public class WriteComment extends AppCompatActivity {
     private void sendReplyToReplyNotification(String postLink,
                                               String commentLink,
                                               String parentReplyLink,
-                                              String newReplyLink){
+                                              String newReplyLink,
+                                              String cloudFunctionName){
 
         String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Map<String, Object> who = new HashMap<>();
@@ -484,7 +489,7 @@ public class WriteComment extends AppCompatActivity {
         notification.put("oldReplyLink", parentReplyLink);
         notification.put("newReplyLink", newReplyLink);
 
-        FirebaseFunctions.getInstance().getHttpsCallable("sendReplyToReplyNotification")
+        FirebaseFunctions.getInstance().getHttpsCallable(cloudFunctionName)
                 .call(notification).addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
             @Override
             public void onSuccess(HttpsCallableResult httpsCallableResult) {
