@@ -43,6 +43,7 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
         implements CommentInterface{
 
     private Context mContext;
+    private int mEntryPoint;
     private String mCommentLink;
     private DocumentSnapshot mCommentSnapshot;
     private String mCommentText;
@@ -78,6 +79,7 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
     }
 
     public void bindTo(Context context,
+                       int entryPoint,
                        Task<DocumentSnapshot> taskComment,
                        String postLink,
                        String commentLink) {
@@ -85,6 +87,7 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
         Log.i("bindTo", this.getClass().toString());
 
         mContext = context;
+        mEntryPoint = entryPoint;
         mPostLink = postLink;
         mCommentLink = commentLink;
         mTaskComment = taskComment;
@@ -338,7 +341,11 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
                 commentMap.put("l", mCommentLink);
 
                 CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
-                commentIntentExtra.setEntryPoint(EntryPoints.R2C_FROM_CD);
+                if(isCommentInRF()){
+                    commentIntentExtra.setEntryPoint(EntryPoints.R2C_FROM_CD_RF);
+                } else{
+                    commentIntentExtra.setEntryPoint(EntryPoints.R2C_FROM_CD_POST);
+                }
                 commentIntentExtra.setPostLink(mPostLink);
                 commentIntentExtra.setCommentLink(mCommentLink);
                 commentIntentExtra.setCommentMap(commentMap);
@@ -426,5 +433,9 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
                         Log.i("func_call", e.getMessage());
                     }
                 });
+    }
+
+    private boolean isCommentInRF(){
+        return mEntryPoint%2 == 0;
     }
 }

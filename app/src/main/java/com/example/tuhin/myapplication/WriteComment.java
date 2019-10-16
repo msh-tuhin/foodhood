@@ -133,17 +133,23 @@ public class WriteComment extends AppCompatActivity {
             case EntryPoints.R2C_FROM_FULL_RF:
                 replyToCommentFromRF(commentText, newCommentLink);
                 break;
-            case EntryPoints.R2C_FROM_CD:
-                replyToCommentFromCD(commentText, newCommentLink);
-                break;
-            case EntryPoints.R2R_FROM_CD:
-                replyToReplyFromCD(newCommentLink);
-                break;
             case EntryPoints.R2R_FROM_HOME_POST:
                 replyToReplyFromHomePost(newCommentLink);
                 break;
             case EntryPoints.R2R_FROM_HOME_RF:
                 replyToReplyFromHomeRF(newCommentLink);
+                break;
+            case EntryPoints.R2C_FROM_CD_POST:
+                replyToCommentFromCDPost(commentText, newCommentLink);
+                break;
+            case EntryPoints.R2C_FROM_CD_RF:
+                replyToCommentFromCDRF(commentText, newCommentLink);
+                break;
+            case EntryPoints.R2R_FROM_CD_POST:
+                replyToReplyFromCDPost(newCommentLink);
+                break;
+            case EntryPoints.R2R_FROM_CD_RF:
+                replyToReplyFromCDRF(newCommentLink);
                 break;
         }
     }
@@ -206,11 +212,22 @@ public class WriteComment extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void replyToCommentFromCD(String commentText, String newCommentLink){
+    private void replyToCommentFromCDPost(String commentText, String newCommentLink){
         String commentLink = mCommentIntentExtra.getCommentLink();
         addToComment(commentLink, newCommentLink);
         Map<String, Object> commentMap = mCommentIntentExtra.getCommentMap();
         addNewReplyActivity(mPostLink, newCommentLink, commentText, commentMap);
+        Intent intent = new Intent();
+        intent.putExtra("replyLink", newCommentLink);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    private void replyToCommentFromCDRF(String commentText, String newCommentLink){
+        String commentLink = mCommentIntentExtra.getCommentLink();
+        addToComment(commentLink, newCommentLink);
+        Map<String, Object> commentMap = mCommentIntentExtra.getCommentMap();
+        addNewReplyToRFActivity(mPostLink, newCommentLink, commentText, commentMap);
         Intent intent = new Intent();
         intent.putExtra("replyLink", newCommentLink);
         setResult(RESULT_OK, intent);
@@ -243,13 +260,28 @@ public class WriteComment extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void replyToReplyFromCD(String newCommentLink){
+    private void replyToReplyFromCDPost(String newCommentLink){
         String commentLink = mCommentIntentExtra.getCommentLink();
         String replyLink = mCommentIntentExtra.getReplyLink();
         addToComment(commentLink, newCommentLink);
         addToReply(replyLink, newCommentLink);
         sendReplyToReplyNotification(mPostLink, commentLink,
                 replyLink, newCommentLink, "sendReplyToReplyNotification");
+        int newReplyPosition = mCommentIntentExtra.getNewReplyPosition();
+        Intent intent = new Intent();
+        intent.putExtra("replyToReplyLink", newCommentLink);
+        intent.putExtra("newReplyPosition", newReplyPosition);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    private void replyToReplyFromCDRF(String newCommentLink){
+        String commentLink = mCommentIntentExtra.getCommentLink();
+        String replyLink = mCommentIntentExtra.getReplyLink();
+        addToComment(commentLink, newCommentLink);
+        addToReply(replyLink, newCommentLink);
+        sendReplyToReplyNotification(mPostLink, commentLink,
+                replyLink, newCommentLink, "sendReplyToReplyNotificationRF");
         int newReplyPosition = mCommentIntentExtra.getNewReplyPosition();
         Intent intent = new Intent();
         intent.putExtra("replyToReplyLink", newCommentLink);
@@ -269,12 +301,14 @@ public class WriteComment extends AppCompatActivity {
             case EntryPoints.R2C_FROM_HOME_RF:
             case EntryPoints.R2C_FROM_FULL_POST:
             case EntryPoints.R2C_FROM_FULL_RF:
-            case EntryPoints.R2C_FROM_CD:
+            case EntryPoints.R2C_FROM_CD_POST:
+            case EntryPoints.R2C_FROM_CD_RF:
                 commentModel.setType(CommentTypes.REPLY);
                 commentModel.setComLink(mCommentIntentExtra.getCommentLink());
                 commentModel.setReplyLink("");
                 break;
-            case EntryPoints.R2R_FROM_CD:
+            case EntryPoints.R2R_FROM_CD_POST:
+            case EntryPoints.R2R_FROM_CD_RF:
             case EntryPoints.R2R_FROM_HOME_POST:
             case EntryPoints.R2R_FROM_HOME_RF:
                 commentModel.setType(CommentTypes.REPLY_TO_REPLY);

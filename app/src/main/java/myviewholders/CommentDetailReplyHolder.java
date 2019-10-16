@@ -40,6 +40,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         implements ReplyInterface{
 
     private Context mContext;
+    private int mEntryPoint;
     private String mPostLink;
     private String mCommentLink;
     private String mReplyLink;
@@ -78,12 +79,14 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
     }
 
     public void bindTo(Context context,
+                       int entryPoint,
                        String postLink,
                        String commentLink,
                        String replyLink) {
         Log.i("bindTo", this.getClass().toString());
 
         mContext = context;
+        mEntryPoint = entryPoint;
         mPostLink = postLink;
         mCommentLink = commentLink;
         mReplyLink = replyLink;
@@ -336,7 +339,11 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
                 Intent intent = new Intent(mContext, WriteComment.class);
 
                 CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
-                commentIntentExtra.setEntryPoint(EntryPoints.R2R_FROM_CD);
+                if(isCommentInRF()){
+                    commentIntentExtra.setEntryPoint(EntryPoints.R2R_FROM_CD_RF);
+                } else{
+                    commentIntentExtra.setEntryPoint(EntryPoints.R2R_FROM_CD_POST);
+                }
                 commentIntentExtra.setPostLink(mPostLink);
                 commentIntentExtra.setCommentLink(mCommentLink);
                 commentIntentExtra.setReplyLink(mReplyLink);
@@ -395,6 +402,10 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
                         Log.i("func_call", e.getMessage());
                     }
                 });
+    }
+
+    private boolean isCommentInRF(){
+        return mEntryPoint%2 == 0;
     }
 
 }

@@ -237,11 +237,11 @@ public class CommentDetail extends AppCompatActivity{
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             if(holder instanceof CommentDetailHolder){
                 Log.i("time", "header");
-                ((CommentDetailHolder) holder).bindTo(context, taskComment, postLink, commentLink);
+                ((CommentDetailHolder) holder).bindTo(context, mEntryPoint, taskComment, postLink, commentLink);
             }
             else{
                 Log.i("time", "comment");
-                ((CommentDetailReplyHolder)holder).bindTo(context, postLink, commentLink, replyLinks.get(position));
+                ((CommentDetailReplyHolder)holder).bindTo(context, mEntryPoint, postLink, commentLink, replyLinks.get(position));
             }
         }
 

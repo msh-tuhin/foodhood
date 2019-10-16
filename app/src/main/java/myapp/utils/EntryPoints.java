@@ -17,8 +17,10 @@ public class EntryPoints {
     public static final int R2R_FROM_HOME_POST = 15;
     public static final int R2C_FROM_FULL_POST = 17;
 
-    public static final int R2C_FROM_CD = 31;
-    public static final int R2R_FROM_CD = 32;
+    public static final int R2C_FROM_CD_POST = 31;
+    public static final int R2C_FROM_CD_RF = 32;
+    public static final int R2R_FROM_CD_POST = 33;
+    public static final int R2R_FROM_CD_RF = 34;
 
     public static final int HOME_PAGE_RF = 100;
     public static final int CLICKED_GO_TO_FULL_RF = 2;
