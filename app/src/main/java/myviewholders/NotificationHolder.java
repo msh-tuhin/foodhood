@@ -12,13 +12,16 @@ import android.widget.TextView;
 
 import com.example.tuhin.myapplication.CommentDetail;
 import com.example.tuhin.myapplication.FullPost;
+import com.example.tuhin.myapplication.FullRestFeed;
 import com.example.tuhin.myapplication.R;
+import com.example.tuhin.myapplication.WriteComment;
 
 import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import models.NotificationModel;
+import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
 
@@ -74,6 +77,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                 notificationTextView.setText(spannableStringBuilder);
                 break;
             case NotificationTypes.NOTIF_COMMENT_ALSO:
+            case NotificationTypes.NOTIF_COMMENT_ALSO_RF:
                 who = notificationModel.getW();
                 name = (String) who.get("n");
                 String ownerName = notificationModel.getPostOwnerName();
@@ -85,6 +89,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                 notificationTextView.setText(spannableStringBuilder);
                 break;
             case NotificationTypes.NOTIF_LIKE_COMMENT:
+            case NotificationTypes.NOTIF_LIKE_COMMENT_RF:
                 who = notificationModel.getW();
                 name = (String) who.get("n");
                 notificationText = name + " likes your comment";
@@ -92,6 +97,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                 notificationTextView.setText(spannableStringBuilder);
                 break;
             case NotificationTypes.NOTIF_REPLY_COMMENT:
+            case NotificationTypes.NOTIF_REPLY_COMMENT_RF:
                 who = notificationModel.getW();
                 name = (String) who.get("n");
                 notificationText = name + " replied to your comment";
@@ -99,6 +105,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                 notificationTextView.setText(spannableStringBuilder);
                 break;
             case NotificationTypes.NOTIF_REPLY_COMMENT_ALSO:
+            case NotificationTypes.NOTIF_REPLY_COMMENT_ALSO_RF:
                 who = notificationModel.getW();
                 name = (String) who.get("n");
                 ownerName = notificationModel.getCommentOwnerName();
@@ -110,6 +117,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                 notificationTextView.setText(spannableStringBuilder);
                 break;
             case NotificationTypes.NOTIF_REPLY_REPLY:
+            case NotificationTypes.NOTIF_REPLY_REPLY_RF:
                 who = notificationModel.getW();
                 name = (String) who.get("n");
                 notificationText = name + " replied to you";
@@ -117,6 +125,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                 notificationTextView.setText(spannableStringBuilder);
                 break;
             case NotificationTypes.NOTIF_REPLY_REPLY_COMMENT_OWNER:
+            case NotificationTypes.NOTIF_REPLY_REPLY_COMMENT_OWNER_RF:
                 who = notificationModel.getW();
                 name = (String) who.get("n");
                 notificationText = name + " replied on your comment";
@@ -124,6 +133,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                 notificationTextView.setText(spannableStringBuilder);
                 break;
             case NotificationTypes.NOTIF_REPLY_REPLY_ALSO:
+            case NotificationTypes.NOTIF_REPLY_REPLY_ALSO_RF:
                 who = notificationModel.getW();
                 name = (String) who.get("n");
                 ownerName = notificationModel.getCommentOwnerName();
@@ -135,6 +145,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                 notificationTextView.setText(spannableStringBuilder);
                 break;
             case NotificationTypes.NOTIF_LIKE_REPLY:
+            case NotificationTypes.NOTIF_LIKE_REPLY_RF:
                 who = notificationModel.getW();
                 name = (String) who.get("n");
                 notificationText = name + " likes your reply";
@@ -146,13 +157,19 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
         notificationLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                CommentIntentExtra commentIntentExtra;
+                Intent intent;
+                String intentExtraName = "comment_extra";
                 switch (type){
                     case NotificationTypes.NOTIF_TAGGED_POST:
                     case NotificationTypes.NOTIF_LIKE_POST:
                     case NotificationTypes.NOTIF_LIKE_POST_TAGGED:
-                        Intent intent = new Intent(context, FullPost.class);
-                        intent.putExtra("postLink", notificationModel.getPostLink());
-                        intent.putExtra("entry_point", EntryPoints.NOTIF_LIKE_POST);
+                        commentIntentExtra = new CommentIntentExtra();
+                        commentIntentExtra.setPostLink(notificationModel.getPostLink());
+                        commentIntentExtra.setEntryPoint(EntryPoints.NOTIF_LIKE_POST);
+
+                        intent = new Intent(context, FullPost.class);
+                        intent.putExtra(intentExtraName, commentIntentExtra);
                         context.startActivity(intent);
                         break;
                     case NotificationTypes.NOTIF_COMMENT_POST:
@@ -161,31 +178,82 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                     case NotificationTypes.NOTIF_LIKE_COMMENT:
                         // EntryPoints.NOTIF_LIKE_COMMENT == EntryPoints.NOTIF_COMMENT_POST
 
+                        commentIntentExtra = new CommentIntentExtra();
+                        commentIntentExtra.setEntryPoint(EntryPoints.NOTIF_COMMENT_POST);
+                        commentIntentExtra.setCommentLink(notificationModel.getCommentLink());
+                        commentIntentExtra.setPostLink(notificationModel.getPostLink());
+
                         intent = new Intent(context, FullPost.class);
-                        intent.putExtra("postLink", notificationModel.getPostLink());
-                        intent.putExtra("commentLink", notificationModel.getCommentLink());
-                        intent.putExtra("entry_point", EntryPoints.NOTIF_COMMENT_POST);
+                        intent.putExtra(intentExtraName, commentIntentExtra);
                         context.startActivity(intent);
                         break;
                     case NotificationTypes.NOTIF_REPLY_COMMENT:
                     case NotificationTypes.NOTIF_REPLY_COMMENT_ALSO:
                     case NotificationTypes.NOTIF_LIKE_REPLY:
+                        commentIntentExtra = new CommentIntentExtra();
+                        commentIntentExtra.setEntryPoint(EntryPoints.NOTIF_REPLY_COMMENT);
+                        commentIntentExtra.setCommentLink(notificationModel.getCommentLink());
+                        commentIntentExtra.setReplyLink(notificationModel.getReplyLink());
+                        commentIntentExtra.setPostLink(notificationModel.getPostLink());
+
                         intent = new Intent(context, CommentDetail.class);
-                        intent.putExtra("postLink", notificationModel.getPostLink());
-                        intent.putExtra("commentLink", notificationModel.getCommentLink());
-                        intent.putExtra("replyLink", notificationModel.getReplyLink());
-                        intent.putExtra("entry_point", EntryPoints.NOTIF_REPLY_COMMENT);
+                        intent.putExtra(intentExtraName, commentIntentExtra);
                         context.startActivity(intent);
                         break;
                     case NotificationTypes.NOTIF_REPLY_REPLY:
                     case NotificationTypes.NOTIF_REPLY_REPLY_COMMENT_OWNER:
                     case NotificationTypes.NOTIF_REPLY_REPLY_ALSO:
+                        commentIntentExtra = new CommentIntentExtra();
+                        commentIntentExtra.setEntryPoint(EntryPoints.NOTIF_REPLY_REPLY);
+                        commentIntentExtra.setCommentLink(notificationModel.getCommentLink());
+                        commentIntentExtra.setReplyLink(notificationModel.getOldReplyLink());
+                        commentIntentExtra.setReplyToReplyLink(notificationModel.getNewReplyLink());
+                        commentIntentExtra.setPostLink(notificationModel.getPostLink());
+
                         intent = new Intent(context, CommentDetail.class);
-                        intent.putExtra("postLink", notificationModel.getPostLink());
-                        intent.putExtra("commentLink", notificationModel.getCommentLink());
-                        intent.putExtra("replyLink", notificationModel.getOldReplyLink());
-                        intent.putExtra("replyToReplyLink", notificationModel.getNewReplyLink());
-                        intent.putExtra("entry_point", EntryPoints.NOTIF_REPLY_REPLY);
+                        intent.putExtra(intentExtraName, commentIntentExtra);
+                        context.startActivity(intent);
+                        break;
+
+                    // for rest feeds
+                    case NotificationTypes.NOTIF_COMMENT_ALSO_RF:
+                    case NotificationTypes.NOTIF_LIKE_COMMENT_RF:
+                        // EntryPoints.NOTIF_LIKE_COMMENT_RF == EntryPoints.NOTIF_COMMENT_RF
+
+                        commentIntentExtra = new CommentIntentExtra();
+                        commentIntentExtra.setEntryPoint(EntryPoints.NOTIF_COMMENT_RF);
+                        commentIntentExtra.setCommentLink(notificationModel.getCommentLink());
+                        commentIntentExtra.setPostLink(notificationModel.getPostLink());
+
+                        intent = new Intent(context, FullRestFeed.class);
+                        intent.putExtra(intentExtraName, commentIntentExtra);
+                        context.startActivity(intent);
+                        break;
+                    case NotificationTypes.NOTIF_REPLY_COMMENT_RF:
+                    case NotificationTypes.NOTIF_REPLY_COMMENT_ALSO_RF:
+                    case NotificationTypes.NOTIF_LIKE_REPLY_RF:
+                        commentIntentExtra = new CommentIntentExtra();
+                        commentIntentExtra.setEntryPoint(EntryPoints.NOTIF_REPLY_COMMENT_RF);
+                        commentIntentExtra.setCommentLink(notificationModel.getCommentLink());
+                        commentIntentExtra.setReplyLink(notificationModel.getReplyLink());
+                        commentIntentExtra.setPostLink(notificationModel.getPostLink());
+
+                        intent = new Intent(context, CommentDetail.class);
+                        intent.putExtra(intentExtraName, commentIntentExtra);
+                        context.startActivity(intent);
+                        break;
+                    case NotificationTypes.NOTIF_REPLY_REPLY_RF:
+                    case NotificationTypes.NOTIF_REPLY_REPLY_COMMENT_OWNER_RF:
+                    case NotificationTypes.NOTIF_REPLY_REPLY_ALSO_RF:
+                        commentIntentExtra = new CommentIntentExtra();
+                        commentIntentExtra.setEntryPoint(EntryPoints.NOTIF_REPLY_REPLY_RF);
+                        commentIntentExtra.setCommentLink(notificationModel.getCommentLink());
+                        commentIntentExtra.setReplyLink(notificationModel.getOldReplyLink());
+                        commentIntentExtra.setReplyToReplyLink(notificationModel.getNewReplyLink());
+                        commentIntentExtra.setPostLink(notificationModel.getPostLink());
+
+                        intent = new Intent(context, CommentDetail.class);
+                        intent.putExtra(intentExtraName, commentIntentExtra);
                         context.startActivity(intent);
                         break;
                 }

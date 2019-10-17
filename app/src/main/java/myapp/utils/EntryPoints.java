@@ -35,9 +35,15 @@ public class EntryPoints {
 
     public static final int NOTIF_LIKE_POST = 51;
     public static final int NOTIF_TAGGED_POST = NOTIF_LIKE_POST;
-    public static final int NOTIF_COMMENT_POST = 52;
+    public static final int NOTIF_COMMENT_POST = 53;
     public static final int NOTIF_LIKE_COMMENT = NOTIF_COMMENT_POST;
-    public static final int NOTIF_REPLY_COMMENT = 53;
-    public static final int NOTIF_REPLY_REPLY = 54;
+    public static final int NOTIF_REPLY_COMMENT = 55;
+    public static final int NOTIF_REPLY_REPLY = 57;
+
+    public static final int NOTIF_LIKE_RF = 52;
+    public static final int NOTIF_COMMENT_RF = 54;
+    public static final int NOTIF_LIKE_COMMENT_RF = NOTIF_COMMENT_RF;
+    public static final int NOTIF_REPLY_COMMENT_RF = 56;
+    public static final int NOTIF_REPLY_REPLY_RF = 58;
 
 }

@@ -386,8 +386,11 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         notification.put("commentLink", mCommentLink);
         notification.put("replyLink", mReplyLink);
         notification.put("w", who);
-        // TODO this will be set based on a check
-        notification.put("t", NotificationTypes.NOTIF_LIKE_REPLY);
+        if(isCommentInRF()){
+            notification.put("t", NotificationTypes.NOTIF_LIKE_REPLY_RF);
+        } else{
+            notification.put("t", NotificationTypes.NOTIF_LIKE_REPLY);
+        }
 
         FirebaseFunctions.getInstance().getHttpsCallable("sendLikeReplyNotification").call(notification)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {

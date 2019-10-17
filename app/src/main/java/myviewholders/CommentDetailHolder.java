@@ -416,7 +416,11 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
         notification.put("postLink", mPostLink);
         notification.put("commentLink", mCommentLink);
         notification.put("w", who);
-        notification.put("t", NotificationTypes.NOTIF_LIKE_COMMENT);
+        if(isCommentInRF()){
+            notification.put("t", NotificationTypes.NOTIF_LIKE_COMMENT_RF);
+        } else{
+            notification.put("t", NotificationTypes.NOTIF_LIKE_COMMENT);
+        }
 
         FirebaseFunctions.getInstance()
                 .getHttpsCallable("sendLikeCommentNotification")

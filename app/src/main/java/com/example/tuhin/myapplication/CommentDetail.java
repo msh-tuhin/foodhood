@@ -108,6 +108,7 @@ public class CommentDetail extends AppCompatActivity{
 
         switch (mEntryPoint){
             case EntryPoints.NOTIF_REPLY_COMMENT:
+            case EntryPoints.NOTIF_REPLY_COMMENT_RF:
             case EntryPoints.R2C_FROM_HOME_POST:
             case EntryPoints.R2C_FROM_FULL_POST:
             case EntryPoints.R2C_FROM_HOME_RF:
@@ -117,6 +118,7 @@ public class CommentDetail extends AppCompatActivity{
                 adapter.replyLinks.add(1, mReplyLink);
                 break;
             case EntryPoints.NOTIF_REPLY_REPLY:
+            case EntryPoints.NOTIF_REPLY_REPLY_RF:
             case EntryPoints.R2R_FROM_HOME_POST:
             case EntryPoints.R2R_FROM_HOME_RF:
                 adapter.replyLinks.add(1, mReplyLink);
@@ -137,6 +139,7 @@ public class CommentDetail extends AppCompatActivity{
 
                         switch (mEntryPoint){
                             case EntryPoints.NOTIF_REPLY_COMMENT:
+                            case EntryPoints.NOTIF_REPLY_COMMENT_RF:
                             case EntryPoints.R2C_FROM_HOME_POST:
                             case EntryPoints.R2C_FROM_FULL_POST:
                             case EntryPoints.R2C_FROM_HOME_RF:
@@ -146,6 +149,7 @@ public class CommentDetail extends AppCompatActivity{
                                 replies.remove(mReplyLink);
                                 break;
                             case EntryPoints.NOTIF_REPLY_REPLY:
+                            case EntryPoints.NOTIF_REPLY_REPLY_RF:
                             case EntryPoints.R2R_FROM_HOME_POST:
                             case EntryPoints.R2R_FROM_HOME_RF:
                                 replies.remove(mReplyLink);

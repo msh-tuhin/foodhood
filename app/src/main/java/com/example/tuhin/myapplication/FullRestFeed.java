@@ -138,6 +138,11 @@ public class FullRestFeed extends AppCompatActivity {
 
     private void initializeAdapter(){
         adapter = new MyAdapter(FullRestFeed.this, mTaskRestFeed, mRestFeedLink);
+        switch(mEntryPoint){
+            case EntryPoints.NOTIF_COMMENT_RF:
+                adapter.commentLinks.add(mCommentLink);
+                break;
+        }
     }
 
     private void populateAdapter(){
