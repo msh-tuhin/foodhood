@@ -52,8 +52,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".RestaurantAllDishes"></activity>
-        <activity android:name=".FullRestFeed"></activity>
+        <activity android:name=".RestaurantAllDishes" />
+        <activity android:name=".FullRestFeed" />
+        <activity android:name=".RestAccountSetup" />
+        <activity android:name=".RestaurantHome"></activity>
     </application>
 
 </manifest>

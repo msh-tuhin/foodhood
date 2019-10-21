@@ -17,6 +17,10 @@
         <item name="android:focusable">true</item>
     </style>
 
+    <style name="TextClickableRed" parent="TextClickable">
+        <item name="android:textColor">#ff3434</item>
+    </style>
+
     <style name="PaddingAroundComment">
         <item name="android:paddingLeft">0dp</item>
         <item name="android:paddingStart">0dp</item>

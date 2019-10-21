@@ -18,11 +18,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 
 public class MainActivity extends AppCompatActivity {
 
+    private Task<DocumentSnapshot> mEmailTypeTask;
     TextView errorMessageTextView, signUpTextView, forgotPasswordTextView;
+    TextView createBusinessAccountTV;
     EditText email, password;
     Button signIn, signUp;
     FirebaseAuth mAuth;
@@ -37,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         forgotPasswordTextView = findViewById(R.id.forgot_password);
         signUpTextView = findViewById(R.id.sign_up_textview);
+        createBusinessAccountTV = findViewById(R.id.create_business_account_tv);
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         signIn = findViewById(R.id.button);
@@ -54,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SignUp.class);
+                intent.putExtra("entity", "person");
                 startActivity(intent);
             }
         });
@@ -62,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SignUp.class);
+                intent.putExtra("entity", "person");
                 startActivity(intent);
             }
         });
@@ -73,6 +80,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        createBusinessAccountTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SignUp.class);
+                intent.putExtra("entity", "business");
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override
@@ -80,9 +96,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         FirebaseUser user = mAuth.getCurrentUser();
         if(user != null && user.isEmailVerified()){
-            // TODO send to Welcome/ProfileSetup page if user is new
-            Intent intent = new Intent(MainActivity.this, home.class);
-            startActivity(intent);
+            chooseAndLaunchHome(user);
         }
     }
 
@@ -91,43 +105,15 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
-                        FirebaseUser user = authResult.getUser();
+                        final FirebaseUser user = authResult.getUser();
                         if(user != null){
-                            Intent intent = new Intent(MainActivity.this, home.class);
-                            startActivity(intent);
-                            finish();
+                             chooseAndLaunchHome(user);
 //                            if(user.isEmailVerified()){
 //                                Log.i("sign_in", "Successful");
-//                                // TODO send to welcome/ProfileSetup page if new user
-//                                Intent intent = new Intent(MainActivity.this, home.class);
-//                                startActivity(intent);
-//                                finish();
+//                                chooseAndLaunchHome(user);
 //                            }else{
 //                                Log.i("sign_in", "Email not verified");
-//                                user.sendEmailVerification()
-//                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                            @Override
-//                                            public void onSuccess(Void aVoid) {
-//                                                Log.i("email_verification", "sent");
-//                                                Intent intent = new Intent(MainActivity.this, EmailVerification.class);
-//                                                // maybe not needed
-//                                                intent.putExtra("email", email);
-//                                                startActivity(intent);
-//                                            }
-//                                        })
-//                                        .addOnFailureListener(new OnFailureListener() {
-//                                            @Override
-//                                            public void onFailure(@NonNull Exception e) {
-//                                                // TODO show a dialog with the error message
-//                                                // TODO there are some quota limitations
-//                                                // TODO handle those
-//                                                // TODO add a firestore collection for saving
-//                                                // TODO verification email not sent error messages
-//                                                // TODO so that they can be checked by an admin later
-//                                                Log.i("email_verification", e.getMessage());
-//                                                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-//                                            }
-//                                        });
+//                                sendEmailVerification(user, email);
 //                            }
                         }else{
                             // maybe this never happens
@@ -144,6 +130,75 @@ public class MainActivity extends AppCompatActivity {
 //                        errorMessageTextView.setText(e.getMessage());
                         errorMessageTextView.setText("Email or Password is wrong.");
                         errorMessageTextView.setVisibility(View.VISIBLE);
+                    }
+                });
+    }
+
+    private void chooseAndLaunchHome(FirebaseUser user){
+        FirebaseFirestore.getInstance()
+                .collection("email_type")
+                .document(user.getEmail())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            Boolean forPerson = documentSnapshot.getBoolean("forPerson");
+                            Intent intent;
+                            if(forPerson){
+                                // TODO send to Welcome/ProfileSetup page if user is new
+                                intent = new Intent(MainActivity.this, home.class);
+                            }else{
+                                intent = new Intent(MainActivity.this, RestaurantHome.class);
+                            }
+                            startActivity(intent);
+                            MainActivity.this.finish();
+                        }
+                    }
+                });
+    }
+
+    private void launchEmailVerification(FirebaseUser user, final String emailString){
+        FirebaseFirestore.getInstance()
+                .collection("email_type")
+                .document(user.getEmail())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            Boolean forPerson = documentSnapshot.getBoolean("forPerson");
+                            // TODO send to Welcome/ProfileSetup page if user is new
+                            Intent intent = new Intent(MainActivity.this, EmailVerification.class);
+                            intent.putExtra("email", emailString);
+                            intent.putExtra("for_person", forPerson);
+                            startActivity(intent);
+                            MainActivity.this.finish();
+                        }
+                    }
+                });
+    }
+
+    private void sendEmailVerification(final FirebaseUser user, final String emailString){
+        user.sendEmailVerification()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.i("email_verification", "sent");
+                        launchEmailVerification(user, emailString);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // TODO show a dialog with the error message
+                        // TODO there are some quota limitations
+                        // TODO handle those
+                        // TODO add a firestore collection for saving
+                        // TODO verification email not sent error messages
+                        // TODO so that they can be checked by an admin later
+                        Log.i("email_verification", e.getMessage());
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
     }

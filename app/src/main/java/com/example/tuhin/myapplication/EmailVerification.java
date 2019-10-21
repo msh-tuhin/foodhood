@@ -25,6 +25,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class EmailVerification extends AppCompatActivity {
 
+    private Boolean forPerson;
     TextView emailVerifiedTextView, resendEmailTextView, emailNotVerifiedTextView;
     EditText emailEditText, passwordEditText;
     Button signInButton;
@@ -40,6 +41,7 @@ public class EmailVerification extends AppCompatActivity {
         // could be acquired from the FirebaseUser object
         String name = getIntent().getStringExtra("name");
         String email = getIntent().getStringExtra("email");
+        forPerson = getIntent().getBooleanExtra("for_person", true);
         mAuth = FirebaseAuth.getInstance();
 
         emailVerifiedTextView = findViewById(R.id.email_verified_textview);
@@ -116,8 +118,12 @@ public class EmailVerification extends AppCompatActivity {
                         if(user != null){
                             if(user.isEmailVerified()){
                                 Log.i("sign_in", "Successful");
-                                // TODO send to welcome/ProfileSetup page if new user
-                                Intent intent = new Intent(EmailVerification.this, SetProfilePicture.class);
+                                Intent intent;
+                                if(forPerson){
+                                    intent = new Intent(EmailVerification.this, SetProfilePicture.class);
+                                } else{
+                                    intent = new Intent(EmailVerification.this, RestaurantHome.class);
+                                }
                                 startActivity(intent);
                                 finish();
                             }else{

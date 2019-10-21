@@ -29,12 +29,21 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignUp extends AppCompatActivity {
 
+    private String mEntity;
+    private boolean forPerson;
     TextInputLayout nameLayout, emailLayout, passwordLayout, passwordConfirmLayout;
     TextInputEditText emailEditText, passwordEditText, passwordConfirmEditText, nameEditText;
-    TextView emailErrorMessageTextview, passwordErrorMessageTextview, passwordConfirmErrorMessageTextview, nameErrorMessageTextview;
+    TextView emailErrorMessageTextview;
+    TextView passwordErrorMessageTextview;
+    TextView passwordConfirmErrorMessageTextview;
+    TextView nameErrorMessageTextview;
     Button signUp;
     FirebaseAuth mAuth;
 
@@ -45,6 +54,9 @@ public class SignUp extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
+        mEntity = getIntent().getStringExtra("entity");
+        Log.i("entity", mEntity);
+        forPerson = mEntity.equals("person");
         mAuth = FirebaseAuth.getInstance();
 
         nameLayout = findViewById(R.id.input_layout_name);
@@ -100,6 +112,15 @@ public class SignUp extends AppCompatActivity {
                     @Override
                     public void onSuccess(AuthResult authResult) {
                         FirebaseUser user = authResult.getUser();
+
+                        Log.i("email", email);
+                        Log.i("email_result", user.getEmail());
+                        Map<String, Boolean> emailType = new HashMap<>();
+                        emailType.put("forPerson", forPerson);
+                        FirebaseFirestore.getInstance()
+                                .collection("email_type")
+                                .document(email).set(emailType);
+
                         UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
                                 .setDisplayName(name).build();
                         user.updateProfile(userProfileChangeRequest)
@@ -128,6 +149,7 @@ public class SignUp extends AppCompatActivity {
                                             // maybe not needed
                                             intent.putExtra("name", name);
                                             intent.putExtra("email", email);
+                                            intent.putExtra("for_person", forPerson);
                                             startActivity(intent);
 //                                            finish();
                                         }else{
