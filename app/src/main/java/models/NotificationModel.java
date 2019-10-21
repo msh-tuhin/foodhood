@@ -14,6 +14,7 @@ public class NotificationModel {
     private String postLink;
     private String postOwnerName;
     private String commentOwnerName;
+    private String replyOwnerName;
     private String commentLink;
     private String replyLink;
     private String oldReplyLink;
@@ -101,5 +102,13 @@ public class NotificationModel {
 
     public void setCommentOwnerName(String commentOwnerName) {
         this.commentOwnerName = commentOwnerName;
+    }
+
+    public String getReplyOwnerName() {
+        return replyOwnerName;
+    }
+
+    public void setReplyOwnerName(String replyOwnerName) {
+        this.replyOwnerName = replyOwnerName;
     }
 }
