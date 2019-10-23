@@ -88,7 +88,7 @@ public class RestaurantHome extends AppCompatActivity {
         public Fragment getItem(int i) {
             switch(i){
                 case 0:
-                    return new BlankFragment();
+                    return new RestHomeFeedFragment();
                 case 1:
                     return new BlankFragment();
                 case 2:

@@ -37,7 +37,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 public class AdapterCreator {
-    public static  FirestorePagingAdapter<ActivityResponse, RecyclerView.ViewHolder> getHomeFeedAdapter(final LifecycleOwner lifecycleOwner, final Context context, final String personLink){
+    public static  FirestorePagingAdapter<ActivityResponse, RecyclerView.ViewHolder>
+    getHomeFeedAdapter(final LifecycleOwner lifecycleOwner,
+                       final Context context,
+                       final String personLink){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Query bQuery = db.collection("friends_activities")
@@ -58,11 +61,6 @@ public class AdapterCreator {
             protected void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position, @NonNull final ActivityResponse model) {
                 Log.i("recyclerview", "onBindViewHolder");
                 Log.i("currentlistsize", Integer.toString(this.getCurrentList().size()));
-                // don't need this anymore
-                if(holder instanceof PersonDetailHeaderHolder) {
-                    ((PersonDetailHeaderHolder) holder).bindTo(context, personLink);
-                    return;
-                }
                 // because holder is used in inner method
                 final RecyclerView.ViewHolder holder1 = holder;
                 Log.i("holder1", holder1.getClass().toString());
@@ -204,6 +202,77 @@ public class AdapterCreator {
                     case ERROR:
                         Log.i("loadingstate", "error occured");
                 }
+            }
+        };
+
+        return adapter;
+
+    }
+
+    public static  FirestorePagingAdapter<ActivityResponse, RecyclerView.ViewHolder>
+    getRestHomeFeedAdapter(final LifecycleOwner lifecycleOwner,
+                           final Context context){
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Log.i("current_user", currentUserLink);
+        Query bQuery = db.collection("own_activities")
+                .document(currentUserLink)
+                .collection("act").orderBy("ts");
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setPrefetchDistance(10)
+                .setPageSize(10).build();
+        FirestorePagingOptions<ActivityResponse> options = new FirestorePagingOptions.Builder<ActivityResponse>()
+                .setLifecycleOwner(lifecycleOwner)
+                .setQuery(bQuery, config, ActivityResponse.class).build();
+
+        FirestorePagingAdapter<ActivityResponse, RecyclerView.ViewHolder> adapter;
+        adapter = new FirestorePagingAdapter<ActivityResponse, RecyclerView.ViewHolder>(options) {
+
+            @Override
+            protected void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder,
+                                            final int position,
+                                            @NonNull final ActivityResponse model) {
+                Log.i("recyclerview", "onBindViewHolder");
+                Log.i("currentlistsize", Integer.toString(this.getCurrentList().size()));
+                Log.i("holder", holder.getClass().toString());
+                Log.i("activity_link", model.getLink());
+                String activityLink = model.getLink();
+                DocumentReference docRef = db.collection("activities").document(activityLink);
+                Log.i("download", "start");
+                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        Log.i("download", "finish");
+                        if(task.isSuccessful()){
+                            final DocumentSnapshot documentSnapshot = task.getResult();
+                            if(documentSnapshot.exists()){
+                                ((BaseHomeFeedHolder)holder).bindTo(context, documentSnapshot);
+                            } else{
+                                Log.i("activity", "does not exist");
+                            }
+                        }
+                    }
+                });
+
+            }
+
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                Log.i("recyclerview", "onCreateViewHolder");
+                RecyclerView.ViewHolder viewHolder;
+                View view = LayoutInflater.from(viewGroup.getContext())
+                        .inflate(R.layout.rest_feed, viewGroup, false);
+                viewHolder = new RestFeedHolder(view);
+                return viewHolder;
+            }
+
+            @Override
+            public int getItemCount() {
+                int c = super.getItemCount();
+                Log.i("count", Integer.toString(c));
+                return c;
             }
         };
 
