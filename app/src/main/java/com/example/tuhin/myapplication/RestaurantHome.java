@@ -92,7 +92,7 @@ public class RestaurantHome extends AppCompatActivity {
                 case 1:
                     return new BlankFragment();
                 case 2:
-                    return new BlankFragment();
+                    return new AllNotificationsFragment();
                 case 3:
                     return new BlankFragment();
                 default:

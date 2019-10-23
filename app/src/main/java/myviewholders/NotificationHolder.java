@@ -49,6 +49,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                 notificationTextView.setText(spannableStringBuilder);
                 break;
             case NotificationTypes.NOTIF_LIKE_POST:
+            case NotificationTypes.NOTIF_LIKE_RF:
                 who = notificationModel.getW();
                 name = (String) who.get("n");
                 notificationText = name + " likes your post";
@@ -63,6 +64,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                 notificationTextView.setText(spannableStringBuilder);
                 break;
             case NotificationTypes.NOTIF_COMMENT_POST:
+            case NotificationTypes.NOTIF_COMMENT_RF:
                 who = notificationModel.getW();
                 name = (String) who.get("n");
                 notificationText = name + " commented on your post";
@@ -216,6 +218,16 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                         break;
 
                     // for rest feeds
+                    case NotificationTypes.NOTIF_LIKE_RF:
+                        commentIntentExtra = new CommentIntentExtra();
+                        commentIntentExtra.setPostLink(notificationModel.getPostLink());
+                        commentIntentExtra.setEntryPoint(EntryPoints.NOTIF_LIKE_RF);
+
+                        intent = new Intent(context, FullRestFeed.class);
+                        intent.putExtra(intentExtraName, commentIntentExtra);
+                        context.startActivity(intent);
+                        break;
+                    case NotificationTypes.NOTIF_COMMENT_RF:
                     case NotificationTypes.NOTIF_COMMENT_ALSO_RF:
                     case NotificationTypes.NOTIF_LIKE_COMMENT_RF:
                         // EntryPoints.NOTIF_LIKE_COMMENT_RF == EntryPoints.NOTIF_COMMENT_RF

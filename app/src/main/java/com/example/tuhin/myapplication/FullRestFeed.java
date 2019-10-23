@@ -148,6 +148,7 @@ public class FullRestFeed extends AppCompatActivity {
     private void populateAdapter(){
         // fetch the comment links to add to adapter
         switch(mEntryPoint){
+            case EntryPoints.NOTIF_LIKE_RF:
             case EntryPoints.CLICKED_GO_TO_FULL_RF:
             case EntryPoints.COMMENT_ON_HOME_RF:
                 mTaskRestFeed.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
