@@ -22,10 +22,16 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EmailVerification extends AppCompatActivity {
 
     private Boolean forPerson;
+    private String mName;
+    private String mEmail;
     TextView emailVerifiedTextView, resendEmailTextView, emailNotVerifiedTextView;
     EditText emailEditText, passwordEditText;
     Button signInButton;
@@ -39,8 +45,8 @@ public class EmailVerification extends AppCompatActivity {
 
         // maybe name, email not needed from intent
         // could be acquired from the FirebaseUser object
-        String name = getIntent().getStringExtra("name");
-        String email = getIntent().getStringExtra("email");
+        mName = getIntent().getStringExtra("name");
+        mEmail = getIntent().getStringExtra("email");
         forPerson = getIntent().getBooleanExtra("for_person", true);
         mAuth = FirebaseAuth.getInstance();
 
@@ -50,7 +56,7 @@ public class EmailVerification extends AppCompatActivity {
         resendEmailTextView = findViewById(R.id.resend_email_textview);
 
         emailEditText = findViewById(R.id.email);
-        emailEditText.setText(email);
+        emailEditText.setText(mEmail);
         passwordEditText = findViewById(R.id.password);
         signInButton = findViewById(R.id.sign_in_button);
 
@@ -122,6 +128,8 @@ public class EmailVerification extends AppCompatActivity {
                                 if(forPerson){
                                     intent = new Intent(EmailVerification.this, SetProfilePicture.class);
                                 } else{
+                                    addNameToDB(user);
+                                    addEmailToDB(user);
                                     intent = new Intent(EmailVerification.this, RestaurantHome.class);
                                 }
                                 startActivity(intent);
@@ -194,6 +202,38 @@ public class EmailVerification extends AppCompatActivity {
         }else{
             Log.i("user", "null");
         }
+    }
+
+    private void addNameToDB(FirebaseUser user){
+        String name = user.getDisplayName() == null ? mName : user.getDisplayName();
+        Log.i("name", name);
+        Map<String, String> restVital = new HashMap<>();
+        restVital.put("n", name);
+        FirebaseFirestore.getInstance()
+                .collection("rest_vital").document(user.getUid())
+                .set(restVital)
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+    }
+
+    private void addEmailToDB(FirebaseUser user){
+        String emailString = user.getEmail() == null ? mEmail : user.getEmail();
+        Log.i("email", emailString);
+        Map<String, String> restExtra = new HashMap<>();
+        restExtra.put("e", emailString);
+        FirebaseFirestore.getInstance()
+                .collection("rest_extra").document(user.getUid())
+                .set(restExtra)
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
     }
 
 }
