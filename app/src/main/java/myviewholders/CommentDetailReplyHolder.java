@@ -93,7 +93,6 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         mReplyTask = db.collection("comments").document(mReplyLink).get();
 
         setElementsDependentOnReplyDownload();
-        setElementsDependentOnPersonVitalDownload();
         setElementsIndepent();
     }
 
@@ -106,7 +105,8 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
                     if(replySnapshot.exists()){
                         mReplySnapshot = replySnapshot;
                         mReplyText = replySnapshot.getString("te");
-                        mReplierLink = replySnapshot.getString("w");
+                        mReplierLink = replySnapshot.getString("w.l");
+                        mReplierName = replySnapshot.getString("w.n");
                         bindValuesDependentOnReplyDownload();
                         setOnClickListenersDependentOnReplyDownload();
                     }
@@ -115,43 +115,9 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         });
     }
 
-    private void setElementsDependentOnPersonVitalDownload(){
-        // TODO make the "w" field a map with keys "n", "l"
-        mReplyTask.continueWithTask(new Continuation<DocumentSnapshot, Task<DocumentSnapshot>>() {
-            @Override
-            public Task<DocumentSnapshot> then(@NonNull Task<DocumentSnapshot> task) throws Exception {
-                return getPersonVitalTask(task);
-            }
-        }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot personVital) {
-                if(personVital.exists()){
-                    Log.i("replier_name", personVital.getString("n"));
-                    mReplierName = personVital.getString("n");
-                    bindValuesDependentOnPersonVitalDownload();
-                    setOnClickListenersDependentOnPersonVitalDownload();
-                }
-            }
-        });
-    }
-
-    private Task<DocumentSnapshot> getPersonVitalTask(Task<DocumentSnapshot> task){
-        DocumentReference personRef = db
-                .collection("person_vital")
-                .document("abc");
-        if(task.isSuccessful()){
-            DocumentSnapshot commentSnapshot = task.getResult();
-            if(commentSnapshot.exists()){
-                personRef = db
-                        .collection("person_vital")
-                        .document(commentSnapshot.getString("w"));
-            }
-        }
-        return personRef.get();
-    }
-
     private void bindValuesDependentOnReplyDownload(){
         bindReplyByAvatar();
+        bindNameReplyBy();
         bindReplyTime();
         bindReplyingToLink();
         bindReply();
@@ -163,6 +129,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
 
     private void setOnClickListenersDependentOnReplyDownload(){
         setReplyByAvatarOnClickListener();
+        setNameReplyByOnClickListener();
         setReplyTimeOnClickListener();
         setReplyingToLinkOnClickListener();
         setReplyOnClickListener();
@@ -170,14 +137,6 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         setNoOfLikeInReplyOnClickListener();
         setReplyToReplyIconOnClickListener();
         setNoOfRepliesToReplyOnClickListener();
-    }
-
-    private void bindValuesDependentOnPersonVitalDownload(){
-        bindNameReplyBy();
-    }
-
-    private void setOnClickListenersDependentOnPersonVitalDownload(){
-        setNameReplyByOnClickListener();
     }
 
     private void setElementsIndepent(){

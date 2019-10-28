@@ -2,8 +2,12 @@ package com.example.tuhin.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -12,7 +16,9 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,6 +43,7 @@ public class home extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        setCurrentUserNameLocal();
         toolbar = findViewById(R.id.toolbar);
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
@@ -127,6 +134,27 @@ public class home extends AppCompatActivity {
 //
 //            }
         }
+    }
+
+    private void setCurrentUserNameLocal(){
+        SharedPreferences sPref = getSharedPreferences(
+                getString(R.string.account_type),
+                Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sPref.edit();
+        FirebaseFirestore.getInstance()
+                .collection("person_vital")
+                .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            String name = documentSnapshot.getString("n");
+                            editor.putString("name", name);
+                            editor.apply();
+                        }
+                    }
+                });
     }
 
 }

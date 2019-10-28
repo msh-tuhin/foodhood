@@ -3,6 +3,7 @@ package com.example.tuhin.myapplication;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import models.CommentModel;
+import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.CommentTypes;
 import myapp.utils.EntryPoints;
@@ -24,6 +25,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
@@ -229,9 +231,14 @@ public class WriteComment extends AppCompatActivity {
 
     private void replyToCommentFromRF(String commentText, String newCommentLink){
         String commentLink =mCommentIntentExtra.getCommentLink();
-        addToComment(commentLink, newCommentLink);
-        Map<String, Object> commentMap =mCommentIntentExtra.getCommentMap();
-        addNewReplyToRFActivity(mPostLink, newCommentLink, commentText, commentMap);
+        if(mForPerson){
+            addToComment(commentLink, newCommentLink);
+            Map<String, Object> commentMap =mCommentIntentExtra.getCommentMap();
+            addNewReplyToRFActivity(mPostLink, newCommentLink, commentText, commentMap);
+        }else{
+            addToCommentOnlyReplyLink(commentLink, newCommentLink);
+            sendReplyToCommentByRFNotification(mPostLink, commentLink, newCommentLink);
+        }
         mCommentIntentExtra.setReplyLink(newCommentLink);
         Intent intent = new Intent(WriteComment.this, CommentDetail.class);
         intent.putExtra("comment_extra", mCommentIntentExtra);
@@ -251,9 +258,14 @@ public class WriteComment extends AppCompatActivity {
 
     private void replyToCommentFromCDRF(String commentText, String newCommentLink){
         String commentLink = mCommentIntentExtra.getCommentLink();
-        addToComment(commentLink, newCommentLink);
-        Map<String, Object> commentMap = mCommentIntentExtra.getCommentMap();
-        addNewReplyToRFActivity(mPostLink, newCommentLink, commentText, commentMap);
+        if(mForPerson){
+            addToComment(commentLink, newCommentLink);
+            Map<String, Object> commentMap =mCommentIntentExtra.getCommentMap();
+            addNewReplyToRFActivity(mPostLink, newCommentLink, commentText, commentMap);
+        }else{
+            addToCommentOnlyReplyLink(commentLink, newCommentLink);
+            sendReplyToCommentByRFNotification(mPostLink, commentLink, newCommentLink);
+        }
         Intent intent = new Intent();
         intent.putExtra("replyLink", newCommentLink);
         setResult(RESULT_OK, intent);
@@ -322,6 +334,12 @@ public class WriteComment extends AppCompatActivity {
         // return an appropriate CommentModel(comment/ reply to comment/ reply to reply)
         // based on the entryPoint
         CommentModel commentModel = new CommentModel(comment, postLink);
+        Map<String, Object> who = new HashMap<>();
+        who.put("l", FirebaseAuth.getInstance().getCurrentUser().getUid());
+        who.put("n", getCurrentUserName());
+        if(mForPerson)  who.put("t", AccountTypes.PERSON);
+        else who.put("t", AccountTypes.RESTAURANT);
+        commentModel.setW(who);
         switch(entryPoint){
             case EntryPoints.R2C_FROM_HOME_POST:
             case EntryPoints.R2C_FROM_HOME_RF:
@@ -377,6 +395,22 @@ public class WriteComment extends AppCompatActivity {
         FirebaseFirestore.getInstance().collection("comments").document(commentLink)
                 .update("r", FieldValue.arrayUnion(replyLink),
                         "rb", FieldValue.arrayUnion(currentUserLink))
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("Error", e.getMessage());
+                    }
+                });
+    }
+
+    private void addToCommentOnlyReplyLink(String commentLink, String replyLink){
+        Log.i("commentlink", commentLink);
+        Log.i("replylink", replyLink);
+
+        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        FirebaseFirestore.getInstance().collection("comments").document(commentLink)
+                .update("r", FieldValue.arrayUnion(replyLink))
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -599,5 +633,42 @@ public class WriteComment extends AppCompatActivity {
                 Log.i("func_call", e.getMessage());
             }
         });
+    }
+
+    private void sendReplyToCommentByRFNotification(String postLink,
+                                                    String commentLink,
+                                                    String replyLink){
+
+        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Map<String, Object> who = new HashMap<>();
+        who.put("l", currentUserLink);
+
+        Map<String, Object> notification = new HashMap<>();
+        notification.put("w", who);
+        notification.put("postLink", postLink);
+        notification.put("commentLink", commentLink);
+        notification.put("replyLink", replyLink);
+        notification.put("t", NotificationTypes.NOTIF_COMMENT_ALSO_RF);
+
+        FirebaseFunctions.getInstance().getHttpsCallable("sendReplyToCommentByRFNotification")
+                .call(notification).addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
+            @Override
+            public void onSuccess(HttpsCallableResult httpsCallableResult) {
+                Log.i("func_call", "returned successfully");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("func_call", e.getMessage());
+            }
+        });
+    }
+
+    private String getCurrentUserName(){
+        SharedPreferences sPref = getSharedPreferences(
+                getString(R.string.account_type),
+                Context.MODE_PRIVATE);
+        Log.i("current_user_name", sPref.getString("name", ""));
+        return sPref.getString("name", "");
     }
 }

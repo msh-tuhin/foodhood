@@ -6,6 +6,7 @@ import com.google.firebase.firestore.PropertyName;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @IgnoreExtraProperties
 public class CommentModel {
@@ -13,7 +14,7 @@ public class CommentModel {
     private List<String> r;
     private List<String> rb;
     private String te;
-    private String w;
+    private Map<String, Object> w;
     // postlink for comment, reply, reply to reply
     private String wh;
     private List<String> l;
@@ -34,7 +35,6 @@ public class CommentModel {
     public CommentModel(String comment, String postLink){
         this.te = comment;
         this.wh = postLink;
-        this.w = FirebaseAuth.getInstance().getCurrentUser().getUid();
         this.l = new ArrayList<>();
         this.r = new ArrayList<>();
         this.rb = new ArrayList<>();
@@ -64,11 +64,11 @@ public class CommentModel {
         this.te = te;
     }
 
-    public String getW() {
+    public Map<String, Object> getW() {
         return w;
     }
 
-    public void setW(String w) {
+    public void setW(Map<String, Object> w) {
         this.w = w;
     }
 
