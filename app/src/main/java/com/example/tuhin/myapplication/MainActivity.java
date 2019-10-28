@@ -1,8 +1,11 @@
 package com.example.tuhin.myapplication;
 
+import android.content.Context;
 import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -135,6 +138,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void chooseAndLaunchHome(FirebaseUser user){
+        SharedPreferences sPref = getSharedPreferences(getString(R.string.account_type),
+                Context.MODE_PRIVATE);
+        int accountType = sPref.getInt(user.getEmail(), 0);
+        if(accountType == 0){
+            getAccountTypeFromDB(user);
+        }else if(accountType == 1){
+            // TODO send to Welcome/ProfileSetup page if user is new
+            Intent intent = new Intent(MainActivity.this, home.class);
+            startActivity(intent);
+            MainActivity.this.finish();
+        }else{
+            Intent intent = new Intent(MainActivity.this, RestaurantHome.class);
+            startActivity(intent);
+            MainActivity.this.finish();
+        }
+
+    }
+
+    private void getAccountTypeFromDB(final FirebaseUser user){
         FirebaseFirestore.getInstance()
                 .collection("email_type")
                 .document(user.getEmail())
@@ -142,15 +164,21 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        SharedPreferences sPref = getSharedPreferences(getString(R.string.account_type),
+                                Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sPref.edit();
                         if(documentSnapshot.exists()){
                             Boolean forPerson = documentSnapshot.getBoolean("forPerson");
                             Intent intent;
                             if(forPerson){
                                 // TODO send to Welcome/ProfileSetup page if user is new
                                 intent = new Intent(MainActivity.this, home.class);
+                                editor.putInt(user.getEmail(), 1);
                             }else{
                                 intent = new Intent(MainActivity.this, RestaurantHome.class);
+                                editor.putInt(user.getEmail(), 2);
                             }
+                            editor.apply();
                             startActivity(intent);
                             MainActivity.this.finish();
                         }

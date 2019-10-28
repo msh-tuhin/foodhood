@@ -70,4 +70,7 @@
         Phone
     </string>
 
+    <string name="account_type">
+        com.example.tuhin.myapplication.ACCOUNT_TYPE
+    </string>
 </resources>

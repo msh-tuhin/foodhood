@@ -10,6 +10,7 @@ import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -47,6 +48,7 @@ public class RestFeedHolder extends BaseHomeFeedHolder
     private String mRestaurantLink;
     private String mRestaurantName;
     private String mCaption;
+    private boolean mForPerson;
 
     ConstraintLayout restFeedLayout;
     CircleImageView avatar;
@@ -78,6 +80,7 @@ public class RestFeedHolder extends BaseHomeFeedHolder
 
         setmContext(context);
         setmRestFeedLink(activity.getString("wh"));
+        setmForPerson();
 
         setBindValuesOnClickListenersDependentOnPostDownload();
         bindValuesIndependent();
@@ -106,6 +109,15 @@ public class RestFeedHolder extends BaseHomeFeedHolder
 
     private void setmCaption(String mCaption) {
         this.mCaption = mCaption;
+    }
+
+    private void setmForPerson(){
+        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        SharedPreferences sPref = mContext.getSharedPreferences(
+                mContext.getString(R.string.account_type),
+                Context.MODE_PRIVATE);
+        int accountType = sPref.getInt(email, 1);
+        mForPerson = accountType == 1;
     }
 
     private void setBindValuesOnClickListenersDependentOnPostDownload(){
@@ -314,6 +326,11 @@ public class RestFeedHolder extends BaseHomeFeedHolder
     }
 
     private void createActivityForLike(){
+        if(!mForPerson){
+            Log.i("account", "for restaurant: skip activity");
+            return;
+        }
+        Log.i("account", "for person");
         final String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
         final DocumentReference postsLikedByUserRef = db.collection("liked_once").document(likedBy);
         postsLikedByUserRef.get()
