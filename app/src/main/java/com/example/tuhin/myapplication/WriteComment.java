@@ -6,8 +6,11 @@ import models.CommentModel;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.CommentTypes;
 import myapp.utils.EntryPoints;
+import myapp.utils.NotificationTypes;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -44,6 +47,7 @@ import java.util.Map;
  */
 public class WriteComment extends AppCompatActivity {
 
+    private boolean mForPerson;
     private String mPostLink;
     private int mEntryPoint;
     private CommentIntentExtra mCommentIntentExtra;
@@ -56,6 +60,7 @@ public class WriteComment extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write_comment);
 
+        setmForePerson();
         mCommentIntentExtra = (CommentIntentExtra)getIntent()
                 .getSerializableExtra("comment_extra");
         // expected from all entry points
@@ -89,6 +94,17 @@ public class WriteComment extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void setmForePerson(){
+        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        SharedPreferences sPref = getSharedPreferences(
+                                        getString(R.string.account_type),
+                                        Context.MODE_PRIVATE);
+        int accountType = sPref.getInt(email, 1);
+        mForPerson = accountType == 1;
+        if(mForPerson) Log.i("account", "for person");
+        else Log.i("account", "for restaurant");
     }
 
     private void commentOrReply(final String commentText){
@@ -164,8 +180,13 @@ public class WriteComment extends AppCompatActivity {
     }
 
     private void commentOnRFFromHome(String commentText, String newCommentLink){
-        addToRestFeed(mPostLink, newCommentLink);
-        addNewCommentToRFActivity(mPostLink, newCommentLink, commentText);
+        if(mForPerson){
+            addToRestFeed(mPostLink, newCommentLink);
+            addNewCommentToRFActivity(mPostLink, newCommentLink, commentText);
+        }else{
+            addToRestFeedOnlyCommentLink(mPostLink, newCommentLink);
+            sendCommentToRFByRFNotification(mPostLink, newCommentLink);
+        }
         mCommentIntentExtra.setCommentLink(newCommentLink);
         Intent intent = new Intent(WriteComment.this, FullRestFeed.class);
         intent.putExtra("comment_extra",mCommentIntentExtra);
@@ -182,8 +203,13 @@ public class WriteComment extends AppCompatActivity {
     }
 
     private void commentOnRFFromFullRF(String commentText, String newCommentLink){
-        addToRestFeed(mPostLink, newCommentLink);
-        addNewCommentToRFActivity(mPostLink, newCommentLink, commentText);
+        if(mForPerson){
+            addToRestFeed(mPostLink, newCommentLink);
+            addNewCommentToRFActivity(mPostLink, newCommentLink, commentText);
+        }else{
+            addToRestFeedOnlyCommentLink(mPostLink, newCommentLink);
+            sendCommentToRFByRFNotification(mPostLink, newCommentLink);
+        }
         Intent intent = new Intent();
         intent.putExtra("commentLink",newCommentLink);
         setResult(RESULT_OK, intent);
@@ -390,6 +416,17 @@ public class WriteComment extends AppCompatActivity {
                 });
     }
 
+    private void addToRestFeedOnlyCommentLink(String postLink, String commentLink){
+        FirebaseFirestore.getInstance().collection("rest_feed").document(postLink)
+                .update("coms", FieldValue.arrayUnion(commentLink))
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("Error", e.getMessage());
+                    }
+                });
+    }
+
     private void addNewCommentActivity(String postLink,
                                        String commentLink,
                                        String commentText){
@@ -524,6 +561,33 @@ public class WriteComment extends AppCompatActivity {
         notification.put("newReplyLink", newReplyLink);
 
         FirebaseFunctions.getInstance().getHttpsCallable(cloudFunctionName)
+                .call(notification).addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
+            @Override
+            public void onSuccess(HttpsCallableResult httpsCallableResult) {
+                Log.i("func_call", "returned successfully");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("func_call", e.getMessage());
+            }
+        });
+    }
+
+    private void sendCommentToRFByRFNotification(String postLink,
+                                                 String commentLink){
+
+        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Map<String, Object> who = new HashMap<>();
+        who.put("l", currentUserLink);
+
+        Map<String, Object> notification = new HashMap<>();
+        notification.put("w", who);
+        notification.put("postLink", postLink);
+        notification.put("commentLink", commentLink);
+        notification.put("t", NotificationTypes.NOTIF_COMMENT_ALSO_RF);
+
+        FirebaseFunctions.getInstance().getHttpsCallable("sendCommentByRFNotification")
                 .call(notification).addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
             @Override
             public void onSuccess(HttpsCallableResult httpsCallableResult) {
