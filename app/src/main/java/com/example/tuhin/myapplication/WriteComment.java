@@ -316,10 +316,17 @@ public class WriteComment extends AppCompatActivity {
     private void replyToReplyFromCDRF(String newCommentLink){
         String commentLink = mCommentIntentExtra.getCommentLink();
         String replyLink = mCommentIntentExtra.getReplyLink();
-        addToComment(commentLink, newCommentLink);
-        addToReply(replyLink, newCommentLink);
-        sendReplyToReplyNotification(mPostLink, commentLink,
-                replyLink, newCommentLink, "sendReplyToReplyNotificationRF");
+        if(mForPerson){
+            addToComment(commentLink, newCommentLink);
+            addToReply(replyLink, newCommentLink);
+            sendReplyToReplyNotification(mPostLink, commentLink,
+                    replyLink, newCommentLink, "sendReplyToReplyNotificationRF");
+        }else{
+            addToCommentOnlyReplyLink(commentLink, newCommentLink);
+            addToReplyOnlyReplyLink(replyLink, newCommentLink);
+            sendReplyToReplyNotification(mPostLink, commentLink,
+                    replyLink, newCommentLink, "sendReplyToReplyByRFNotification");
+        }
         int newReplyPosition = mCommentIntentExtra.getNewReplyPosition();
         Intent intent = new Intent();
         intent.putExtra("replyToReplyLink", newCommentLink);
@@ -428,6 +435,22 @@ public class WriteComment extends AppCompatActivity {
         FirebaseFirestore.getInstance().collection("comments").document(replyLink)
                 .update("r", FieldValue.arrayUnion(replyToReplyLink),
                         "rb", FieldValue.arrayUnion(currentUserLink))
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("Error", e.getMessage());
+                    }
+                });
+    }
+
+    private void addToReplyOnlyReplyLink(String replyLink, String replyToReplyLink){
+        Log.i("replylink", replyLink);
+        Log.i("replytoreplylink", replyToReplyLink);
+
+        String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        FirebaseFirestore.getInstance().collection("comments").document(replyLink)
+                .update("r", FieldValue.arrayUnion(replyToReplyLink))
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
