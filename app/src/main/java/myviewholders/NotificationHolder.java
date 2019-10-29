@@ -14,7 +14,6 @@ import com.example.tuhin.myapplication.CommentDetail;
 import com.example.tuhin.myapplication.FullPost;
 import com.example.tuhin.myapplication.FullRestFeed;
 import com.example.tuhin.myapplication.R;
-import com.example.tuhin.myapplication.WriteComment;
 
 import java.util.Map;
 
@@ -154,6 +153,28 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                 spannableStringBuilder = getSpannedNotification(notificationText, name);
                 notificationTextView.setText(spannableStringBuilder);
                 break;
+            case NotificationTypes.NOTIF_REPLY_COMMENT_RF_OWNER:
+                who = notificationModel.getW();
+                name = (String) who.get("n");
+                ownerName = notificationModel.getCommentOwnerName();
+                notificationText = name + " replied to " + ownerName + "\'s comment in your post";
+                spannableStringBuilder = getSpannedNotification(notificationText, name);
+                ownerNameStart = notificationText.indexOf(ownerName);
+                ownerNameEnd = ownerNameStart + ownerName.length();
+                spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), ownerNameStart, ownerNameEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                notificationTextView.setText(spannableStringBuilder);
+                break;
+            case NotificationTypes.NOTIF_REPLY_REPLY_RF_OWNER:
+                who = notificationModel.getW();
+                name = (String) who.get("n");
+                ownerName = notificationModel.getReplyOwnerName();
+                notificationText = name + " replied to " + ownerName + " in your post";
+                spannableStringBuilder = getSpannedNotification(notificationText, name);
+                ownerNameStart = notificationText.indexOf(ownerName);
+                ownerNameEnd = ownerNameStart + ownerName.length();
+                spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), ownerNameStart, ownerNameEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                notificationTextView.setText(spannableStringBuilder);
+                break;
         }
 
         notificationLayout.setOnClickListener(new View.OnClickListener() {
@@ -244,6 +265,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                     case NotificationTypes.NOTIF_REPLY_COMMENT_RF:
                     case NotificationTypes.NOTIF_REPLY_COMMENT_ALSO_RF:
                     case NotificationTypes.NOTIF_LIKE_REPLY_RF:
+                    case NotificationTypes.NOTIF_REPLY_COMMENT_RF_OWNER:
                         commentIntentExtra = new CommentIntentExtra();
                         commentIntentExtra.setEntryPoint(EntryPoints.NOTIF_REPLY_COMMENT_RF);
                         commentIntentExtra.setCommentLink(notificationModel.getCommentLink());
@@ -257,6 +279,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                     case NotificationTypes.NOTIF_REPLY_REPLY_RF:
                     case NotificationTypes.NOTIF_REPLY_REPLY_COMMENT_OWNER_RF:
                     case NotificationTypes.NOTIF_REPLY_REPLY_ALSO_RF:
+                    case NotificationTypes.NOTIF_REPLY_REPLY_RF_OWNER:
                         commentIntentExtra = new CommentIntentExtra();
                         commentIntentExtra.setEntryPoint(EntryPoints.NOTIF_REPLY_REPLY_RF);
                         commentIntentExtra.setCommentLink(notificationModel.getCommentLink());
