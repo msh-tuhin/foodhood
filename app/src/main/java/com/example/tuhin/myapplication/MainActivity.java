@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import myapp.utils.AccountTypes;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -140,10 +141,10 @@ public class MainActivity extends AppCompatActivity {
     private void chooseAndLaunchHome(FirebaseUser user){
         SharedPreferences sPref = getSharedPreferences(getString(R.string.account_type),
                 Context.MODE_PRIVATE);
-        int accountType = sPref.getInt(user.getEmail(), 0);
-        if(accountType == 0){
+        int accountType = sPref.getInt(user.getEmail(), AccountTypes.UNSET);
+        if(accountType == AccountTypes.UNSET){
             getAccountTypeFromDB(user);
-        }else if(accountType == 1){
+        }else if(accountType == AccountTypes.PERSON){
             // TODO send to Welcome/ProfileSetup page if user is new
             Intent intent = new Intent(MainActivity.this, home.class);
             startActivity(intent);
@@ -173,10 +174,10 @@ public class MainActivity extends AppCompatActivity {
                             if(forPerson){
                                 // TODO send to Welcome/ProfileSetup page if user is new
                                 intent = new Intent(MainActivity.this, home.class);
-                                editor.putInt(user.getEmail(), 1);
+                                editor.putInt(user.getEmail(), AccountTypes.PERSON);
                             }else{
                                 intent = new Intent(MainActivity.this, RestaurantHome.class);
-                                editor.putInt(user.getEmail(), 2);
+                                editor.putInt(user.getEmail(), AccountTypes.RESTAURANT);
                             }
                             editor.apply();
                             startActivity(intent);

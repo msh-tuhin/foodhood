@@ -6,6 +6,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 
@@ -116,8 +117,8 @@ public class RestFeedHolder extends BaseHomeFeedHolder
         SharedPreferences sPref = mContext.getSharedPreferences(
                 mContext.getString(R.string.account_type),
                 Context.MODE_PRIVATE);
-        int accountType = sPref.getInt(email, 1);
-        mForPerson = accountType == 1;
+        int accountType = sPref.getInt(email, AccountTypes.PERSON);
+        mForPerson = accountType == AccountTypes.PERSON;
     }
 
     private void setBindValuesOnClickListenersDependentOnPostDownload(){

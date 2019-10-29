@@ -2,6 +2,7 @@ package myviewholders;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -32,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
@@ -48,6 +50,7 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
     private String mCommentText;
     private String mLinkCommentBy;
     private String mNameCommentBy;
+    private boolean mForPerson;
 
     private LinearLayout commentLayout;
     private CircleImageView commenterImage;
@@ -81,9 +84,21 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
         mCommentLink = commentLink;
         mTaskComment = db.collection("comments")
                 .document(commentLink).get();
+        setmForPerson();
 
         setElementsDependentOnCommentDownload();
         setElementsIndependent();
+    }
+
+    private void setmForPerson(){
+        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        SharedPreferences sPref = mContext.getSharedPreferences(
+                mContext.getString(R.string.account_type),
+                Context.MODE_PRIVATE);
+        int accountType = sPref.getInt(email, AccountTypes.PERSON);
+        mForPerson = accountType == AccountTypes.PERSON;
+        if(mForPerson) Log.i("account", "for person");
+        else Log.i("account", "for restaurant");
     }
 
     private void setElementsDependentOnCommentDownload(){
@@ -214,7 +229,11 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
                                 ResourceIds.LIKE_EMPTY).getConstantState())){
                     likeComment.setImageResource(ResourceIds.LIKE_FULL);
                     addLikeToComment();
-                    sendNotificationLikeCommentCloud();
+                    if(mForPerson){
+                        sendNotificationLikeCommentCloud("sendLikeCommentNotification");
+                    }else{
+                        sendNotificationLikeCommentCloud("sendLikeCommentByRFNotification");
+                    }
                 }else{
                     likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
                     removeLikeFromComment();
@@ -339,7 +358,7 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
         });
     }
 
-    private void sendNotificationLikeCommentCloud(){
+    private void sendNotificationLikeCommentCloud(String cloudFunctionName){
         String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
         final Map<String, Object> who = new HashMap<>();
         who.put("l", currentUserLink);
@@ -350,7 +369,7 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
         notification.put("w", who);
         notification.put("t", NotificationTypes.NOTIF_LIKE_COMMENT_RF);
 
-        FirebaseFunctions.getInstance().getHttpsCallable("sendLikeCommentNotification").call(notification)
+        FirebaseFunctions.getInstance().getHttpsCallable(cloudFunctionName).call(notification)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
                     @Override
                     public void onSuccess(HttpsCallableResult httpsCallableResult) {

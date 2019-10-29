@@ -2,6 +2,7 @@ package myviewholders;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
@@ -49,6 +51,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
     private String mReplyText;
     private String mReplierLink;
     private String mReplierName;
+    private boolean mForPerson;
 
     private CircleImageView imageReplyBy;
     private TextView nameReplyByTV;
@@ -91,9 +94,21 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         mCommentLink = commentLink;
         mReplyLink = replyLink;
         mReplyTask = db.collection("comments").document(mReplyLink).get();
+        setmForPerson();
 
         setElementsDependentOnReplyDownload();
         setElementsIndepent();
+    }
+
+    private void setmForPerson(){
+        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        SharedPreferences sPref = mContext.getSharedPreferences(
+                mContext.getString(R.string.account_type),
+                Context.MODE_PRIVATE);
+        int accountType = sPref.getInt(email, AccountTypes.PERSON);
+        mForPerson = accountType == AccountTypes.PERSON;
+        if(mForPerson) Log.i("account", "for person");
+        else Log.i("account", "for restaurant");
     }
 
     private void setElementsDependentOnReplyDownload(){
@@ -224,7 +239,11 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
                         .equals(ContextCompat.getDrawable(mContext, ResourceIds.LIKE_EMPTY).getConstantState())){
                     likeReply.setImageResource(ResourceIds.LIKE_FULL);
                     addLikeToReply();
-                    sendNotificationLikeReplyCloud();
+                    if(mForPerson){
+                        sendNotificationLikeReplyCloud("sendLikeReplyNotification");
+                    }else{
+                        sendNotificationLikeReplyCloud("sendLikeReplyByRFNotification");
+                    }
                 }else{
                     likeReply.setImageResource(ResourceIds.LIKE_EMPTY);
                     removeLikeFromReply();
@@ -335,7 +354,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
 
     }
 
-    private void sendNotificationLikeReplyCloud(){
+    private void sendNotificationLikeReplyCloud(String cloudFunctionName){
         String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
         final Map<String, Object> who = new HashMap<>();
         who.put("l", currentUserLink);
@@ -351,7 +370,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
             notification.put("t", NotificationTypes.NOTIF_LIKE_REPLY);
         }
 
-        FirebaseFunctions.getInstance().getHttpsCallable("sendLikeReplyNotification").call(notification)
+        FirebaseFunctions.getInstance().getHttpsCallable(cloudFunctionName).call(notification)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
                     @Override
                     public void onSuccess(HttpsCallableResult httpsCallableResult) {

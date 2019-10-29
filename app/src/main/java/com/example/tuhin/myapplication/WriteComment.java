@@ -62,7 +62,7 @@ public class WriteComment extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write_comment);
 
-        setmForePerson();
+        setmForPerson();
         mCommentIntentExtra = (CommentIntentExtra)getIntent()
                 .getSerializableExtra("comment_extra");
         // expected from all entry points
@@ -98,13 +98,13 @@ public class WriteComment extends AppCompatActivity {
 
     }
 
-    private void setmForePerson(){
+    private void setmForPerson(){
         String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         SharedPreferences sPref = getSharedPreferences(
                                         getString(R.string.account_type),
                                         Context.MODE_PRIVATE);
-        int accountType = sPref.getInt(email, 1);
-        mForPerson = accountType == 1;
+        int accountType = sPref.getInt(email, AccountTypes.PERSON);
+        mForPerson = accountType == AccountTypes.PERSON;
         if(mForPerson) Log.i("account", "for person");
         else Log.i("account", "for restaurant");
     }
