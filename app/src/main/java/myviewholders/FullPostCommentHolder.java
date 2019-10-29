@@ -91,7 +91,6 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
                 .document(commentLink).get();
 
         setElementsDependentOnCommentDownload();
-        setElementsDependentOnPersonVitalDownload();
         setElementsIndependent();
     }
 
@@ -104,7 +103,8 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
                     if(commentSnapshot.exists()){
                         mCommentSnapshot = commentSnapshot;
                         mCommentText = commentSnapshot.getString("te");
-                        mLinkCommentBy = commentSnapshot.getString("w");
+                        mLinkCommentBy = commentSnapshot.getString("w.l");
+                        mNameCommentBy = commentSnapshot.getString("w.n");
                         bindValuesDependentOnCommentDownload();
                         setOnClickListenersDependentOnCommentDownload();
                     }
@@ -115,6 +115,7 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
 
     private void bindValuesDependentOnCommentDownload(){
         bindCommentByAvatar();
+        bindNameCommentBy();
         bindCommentTime();
         bindComment();
         bindRepliesLink();
@@ -125,6 +126,7 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
     }
 
     private void setOnClickListenersDependentOnCommentDownload(){
+        setNameCommentByOnClickListener();
         setCommentTimeOnClickListener();
         setCommentByAvatarOnClickListener();
         setCommentOnClickListener();
@@ -133,49 +135,6 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
         setNoOfLikeInCommentOnClickListener();
         setReplyToCommentIconOnClickListener();
         setNoOfRepliesToCommentOnClickListener();
-    }
-
-    private void setElementsDependentOnPersonVitalDownload(){
-        // TODO make the "w" field a map with keys "n", "l"
-        mTaskComment.continueWithTask(new Continuation<DocumentSnapshot, Task<DocumentSnapshot>>() {
-            @Override
-            public Task<DocumentSnapshot> then(@NonNull Task<DocumentSnapshot> task) throws Exception {
-                return getPersonVitalTask(task);
-            }
-        }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot personVital) {
-                if(personVital.exists()){
-                    Log.i("commenter_name", personVital.getString("n"));
-                    mNameCommentBy = personVital.getString("n");
-                    bindValuesDependentOnPersonVitalDownload();
-                    setOnClickListenersDependentOnPersonVitalDownload();
-                }
-            }
-        });
-    }
-
-    private Task<DocumentSnapshot> getPersonVitalTask(Task<DocumentSnapshot> task){
-        DocumentReference personRef = db
-                .collection("person_vital")
-                .document("abc");
-        if(task.isSuccessful()){
-            DocumentSnapshot commentSnapshot = task.getResult();
-            if(commentSnapshot.exists()){
-                personRef = db
-                        .collection("person_vital")
-                        .document(commentSnapshot.getString("w"));
-            }
-        }
-        return personRef.get();
-    }
-
-    private void bindValuesDependentOnPersonVitalDownload(){
-        bindNameCommentBy();
-    }
-
-    private void setOnClickListenersDependentOnPersonVitalDownload(){
-        setNameCommentByOnClickListener();
     }
 
     private void setElementsIndependent(){
