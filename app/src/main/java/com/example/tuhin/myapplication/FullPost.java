@@ -171,28 +171,49 @@ public class FullPost extends AppCompatActivity {
     }
 
     private void populateAdapter(){
-        switch(mEntryPoint){
-            case EntryPoints.NOTIF_LIKE_POST:
-            case EntryPoints.CLICKED_GO_TO_FULL_POST:
-            case EntryPoints.COMMENT_ON_HOME_POST:
-                mTaskPost.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.isSuccessful()){
-                            DocumentSnapshot post = task.getResult();
-                            try{
-                                Log.i("comments", "downloaded");
-                                List<String> comments = (List<String>)post.get("coms");
-                                adapter.commentLinks.addAll(comments);
-                            }catch (NullPointerException e){
-                                Log.i("ERROR", e.getMessage());
-                            }
+//        switch(mEntryPoint){
+//            case EntryPoints.NOTIF_LIKE_POST:
+//            case EntryPoints.CLICKED_GO_TO_FULL_POST:
+//            case EntryPoints.COMMENT_ON_HOME_POST:
+//                mTaskPost.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                        if(task.isSuccessful()){
+//                            DocumentSnapshot post = task.getResult();
+//                            try{
+//                                Log.i("comments", "downloaded");
+//                                List<String> comments = (List<String>)post.get("coms");
+//                                adapter.commentLinks.addAll(comments);
+//                            }catch (NullPointerException e){
+//                                Log.i("ERROR", e.getMessage());
+//                            }
+//                        }
+//                    }
+//                });
+//                break;
+//        }
+//        adapter.notifyDataSetChanged();
+        mTaskPost.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot post = task.getResult();
+                    try{
+                        Log.i("comments", "downloaded");
+                        List<String> comments = (List<String>)post.get("coms");
+                        switch(mEntryPoint){
+                            case EntryPoints.NOTIF_COMMENT_RF:
+                                comments.remove(mCommentLink);
+                                break;
                         }
+                        adapter.commentLinks.addAll(comments);
+                        adapter.notifyDataSetChanged();
+                    }catch (NullPointerException e){
+                        Log.i("ERROR", e.getMessage());
                     }
-                });
-                break;
-        }
-        adapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
     private void addItemDecorationToRV(){

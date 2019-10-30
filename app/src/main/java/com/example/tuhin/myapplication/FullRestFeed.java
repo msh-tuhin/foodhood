@@ -147,28 +147,49 @@ public class FullRestFeed extends AppCompatActivity {
 
     private void populateAdapter(){
         // fetch the comment links to add to adapter
-        switch(mEntryPoint){
-            case EntryPoints.NOTIF_LIKE_RF:
-            case EntryPoints.CLICKED_GO_TO_FULL_RF:
-            case EntryPoints.COMMENT_ON_HOME_RF:
-                mTaskRestFeed.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.isSuccessful()){
-                            DocumentSnapshot restFeed = task.getResult();
-                            try{
-                                Log.i("comments", "downloaded");
-                                List<String> comments = (List<String>)restFeed.get("coms");
-                                adapter.commentLinks.addAll(comments);
-                            }catch (NullPointerException e){
-                                Log.i("ERROR", e.getMessage());
-                            }
+//        switch(mEntryPoint){
+//            case EntryPoints.NOTIF_LIKE_RF:
+//            case EntryPoints.CLICKED_GO_TO_FULL_RF:
+//            case EntryPoints.COMMENT_ON_HOME_RF:
+//                mTaskRestFeed.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                        if(task.isSuccessful()){
+//                            DocumentSnapshot restFeed = task.getResult();
+//                            try{
+//                                Log.i("comments", "downloaded");
+//                                List<String> comments = (List<String>)restFeed.get("coms");
+//                                adapter.commentLinks.addAll(comments);
+//                            }catch (NullPointerException e){
+//                                Log.i("ERROR", e.getMessage());
+//                            }
+//                        }
+//                    }
+//                });
+//                break;
+//        }
+//        adapter.notifyDataSetChanged();
+        mTaskRestFeed.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot restFeed = task.getResult();
+                    try{
+                        Log.i("comments", "downloaded");
+                        List<String> comments = (List<String>)restFeed.get("coms");
+                        switch(mEntryPoint){
+                            case EntryPoints.NOTIF_COMMENT_RF:
+                                comments.remove(mCommentLink);
+                                break;
                         }
+                        adapter.commentLinks.addAll(comments);
+                        adapter.notifyDataSetChanged();
+                    }catch (NullPointerException e){
+                        Log.i("ERROR", e.getMessage());
                     }
-                });
-                break;
-        }
-        adapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
     private void setStackFromEnd(){
