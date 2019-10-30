@@ -239,6 +239,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
                         .equals(ContextCompat.getDrawable(mContext, ResourceIds.LIKE_EMPTY).getConstantState())){
                     likeReply.setImageResource(ResourceIds.LIKE_FULL);
                     addLikeToReply();
+                    increaseNumOfLikes();
                     if(mForPerson){
                         sendNotificationLikeReplyCloud("sendLikeReplyNotification");
                     }else{
@@ -247,6 +248,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
                 }else{
                     likeReply.setImageResource(ResourceIds.LIKE_EMPTY);
                     removeLikeFromReply();
+                    decreaseNumOfLikes();
                 }
             }
         });
@@ -291,7 +293,10 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
     @Override
     public void bindNoOfLikeInReply() {
         List<String> likers = (List<String>)mReplySnapshot.get("l");
-        int numberofLikes = likers.size();
+        int numberofLikes = 0;
+        if(likers != null){
+            numberofLikes = likers.size();
+        }
         numberOfLikesTV.setText(Integer.toString(numberofLikes));
     }
 
@@ -335,7 +340,11 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
 
     @Override
     public void bindNoOfRepliesToReply() {
-        int numberOfReplies = ((List<String>)mReplySnapshot.get("r")).size();
+        List<String> replies = (List<String>) mReplySnapshot.get("r");
+        int numberOfReplies = 0;
+        if(replies != null){
+            numberOfReplies = replies.size();
+        }
         numberOfRepliesTV.setText(Integer.toString(numberOfReplies));
     }
 
@@ -389,4 +398,15 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         return mEntryPoint%2 == 0;
     }
 
+    private void decreaseNumOfLikes(){
+        String str = (String) numberOfLikesTV.getText();
+        int numOfLikes = Integer.valueOf(str);
+        numberOfLikesTV.setText(Integer.toString(numOfLikes-1));
+    }
+
+    private void increaseNumOfLikes(){
+        String str = numberOfLikesTV.getText().toString();
+        int numOfLikes = Integer.valueOf(str);
+        numberOfLikesTV.setText(Integer.toString(numOfLikes+1));
+    }
 }

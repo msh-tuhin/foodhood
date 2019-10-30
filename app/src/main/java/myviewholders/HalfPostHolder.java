@@ -64,8 +64,8 @@ public class HalfPostHolder extends BaseHomeFeedHolder
     public ImageView postImages;
     public TextView goToFull;
     // com_n_like.xml
-    public TextView noOfLikes;
-    public TextView noOfComments;
+    public TextView noOfLikesTV;
+    public TextView noOfCommentsTV;
     public ImageView like;
     public ImageView comment;
 
@@ -81,8 +81,8 @@ public class HalfPostHolder extends BaseHomeFeedHolder
         postCaption = v.findViewById(R.id.post_caption);
         postImages = v.findViewById(R.id.post_images);
         goToFull = v.findViewById(R.id.go_to_full);
-        noOfLikes = v.findViewById(R.id.no_likes);
-        noOfComments = v.findViewById(R.id.no_comments);
+        noOfLikesTV = v.findViewById(R.id.no_likes);
+        noOfCommentsTV = v.findViewById(R.id.no_comments);
         like = v.findViewById(R.id.like);
         comment = v.findViewById(R.id.comment);
     }
@@ -346,9 +346,11 @@ public class HalfPostHolder extends BaseHomeFeedHolder
                 if(isLikeFilled){
                     like.setImageResource(R.drawable.outline_favorite_border_black_24dp);
                     removeLikeFromPost();
+                    decreaseNumOfLikes();
                 }else{
                     like.setImageResource(R.drawable.baseline_favorite_black_24dp);
                     addLikeToPost();
+                    increaseNumOfLikes();
                     createActivityForLike();
                 }
             }
@@ -357,7 +359,12 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     @Override
     public void bindNoOfLike() {
-
+        List<String> likes = (List<String>) mPostSnapShot.get("l");
+        int numOfLikes = 0;
+        if(likes != null){
+            numOfLikes = likes.size();
+        }
+        noOfLikesTV.setText(Integer.toString(numOfLikes));
     }
 
     @Override
@@ -388,7 +395,12 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     @Override
     public void bindNoOfComment() {
-
+        List<String> comments = (List<String>) mPostSnapShot.get("coms");
+        int numOfComments = 0;
+        if(comments != null){
+            numOfComments = comments.size();
+        }
+        noOfCommentsTV.setText(Integer.toString(numOfComments));
     }
 
     @Override
@@ -466,5 +478,17 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
                     }
                 });
+    }
+
+    private void decreaseNumOfLikes(){
+        String str = (String) noOfLikesTV.getText();
+        int numOfLikes = Integer.valueOf(str);
+        noOfLikesTV.setText(Integer.toString(numOfLikes-1));
+    }
+
+    private void increaseNumOfLikes(){
+        String str = noOfLikesTV.getText().toString();
+        int numOfLikes = Integer.valueOf(str);
+        noOfLikesTV.setText(Integer.toString(numOfLikes+1));
     }
 }

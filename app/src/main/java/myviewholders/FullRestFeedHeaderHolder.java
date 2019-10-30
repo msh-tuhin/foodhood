@@ -283,9 +283,11 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
                 if(isLikeFilled){
                     like.setImageResource(R.drawable.outline_favorite_border_black_24dp);
                     removeLikeFromPost();
+                    decreaseNumOfLikes();
                 }else{
                     like.setImageResource(R.drawable.baseline_favorite_black_24dp);
                     addLikeToPost();
+                    increaseNumOfLikes();
                     createActivityForLike();
                 }
             }
@@ -378,7 +380,12 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindNoOfLike() {
-
+        List<String> likes = (List<String>) mRestFeedSnapshot.get("l");
+        int numOfLikes = 0;
+        if(likes != null){
+            numOfLikes = likes.size();
+        }
+        noOfLikesTV.setText(Integer.toString(numOfLikes));
     }
 
     @Override
@@ -411,7 +418,12 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindNoOfComment() {
-
+        List<String> comments = (List<String>) mRestFeedSnapshot.get("coms");
+        int numOfComments = 0;
+        if(comments != null){
+            numOfComments = comments.size();
+        }
+        noOfCommentsTV.setText(Integer.toString(numOfComments));
     }
 
     @Override
@@ -427,6 +439,18 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
     @Override
     public void setRestFeedLayoutOnClickListener() {
 
+    }
+
+    private void decreaseNumOfLikes(){
+        String str = (String) noOfLikesTV.getText();
+        int numOfLikes = Integer.valueOf(str);
+        noOfLikesTV.setText(Integer.toString(numOfLikes-1));
+    }
+
+    private void increaseNumOfLikes(){
+        String str = noOfLikesTV.getText().toString();
+        int numOfLikes = Integer.valueOf(str);
+        noOfLikesTV.setText(Integer.toString(numOfLikes+1));
     }
 
 }

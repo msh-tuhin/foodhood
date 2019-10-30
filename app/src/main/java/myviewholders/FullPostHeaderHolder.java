@@ -66,8 +66,8 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
     public TextView dishes;
     public ImageView postImages;
     // com_n_like.xml
-    public TextView noOfLikes;
-    public TextView noOfComments;
+    public TextView noOfLikesTV;
+    public TextView noOfCommentsTV;
     public ImageView like;
     public ImageView comment;
 
@@ -84,8 +84,8 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         postTime = v.findViewById(R.id.post_time);
         postCaption = v.findViewById(R.id.post_caption);
         postImages = v.findViewById(R.id.post_images);
-        noOfLikes = v.findViewById(R.id.no_likes);
-        noOfComments = v.findViewById(R.id.no_comments);
+        noOfLikesTV = v.findViewById(R.id.no_likes);
+        noOfCommentsTV = v.findViewById(R.id.no_comments);
         like = v.findViewById(R.id.like);
         comment = v.findViewById(R.id.comment);
 
@@ -357,9 +357,11 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
                 if(isLikeFilled){
                     like.setImageResource(R.drawable.outline_favorite_border_black_24dp);
                     removeLikeFromPost();
+                    decreaseNumOfLikes();
                 }else{
                     like.setImageResource(R.drawable.baseline_favorite_black_24dp);
                     addLikeToPost();
+                    increaseNumOfLikes();
                     createActivityForLike();
                 }
             }
@@ -368,7 +370,12 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindNoOfLike() {
-
+        List<String> likes = (List<String>) mPostSnapShot.get("l");
+        int numOfLikes = 0;
+        if(likes != null){
+            numOfLikes = likes.size();
+        }
+        noOfLikesTV.setText(Integer.toString(numOfLikes));
     }
 
     @Override
@@ -400,7 +407,12 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindNoOfComment() {
-
+        List<String> comments = (List<String>) mPostSnapShot.get("coms");
+        int numOfComments = 0;
+        if(comments != null){
+            numOfComments = comments.size();
+        }
+        noOfCommentsTV.setText(Integer.toString(numOfComments));
     }
 
     @Override
@@ -562,5 +574,17 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         ((TextView)view.findViewById(R.id.review)).setText(review);
         ((RatingBar)view.findViewById(R.id.dish_ratingBar)).setRating(rating);
         ((RatingBar)view.findViewById(R.id.dish_ratingBar)).setIsIndicator(true);
+    }
+
+    private void decreaseNumOfLikes(){
+        String str = (String) noOfLikesTV.getText();
+        int numOfLikes = Integer.valueOf(str);
+        noOfLikesTV.setText(Integer.toString(numOfLikes-1));
+    }
+
+    private void increaseNumOfLikes(){
+        String str = noOfLikesTV.getText().toString();
+        int numOfLikes = Integer.valueOf(str);
+        noOfLikesTV.setText(Integer.toString(numOfLikes+1));
     }
 }
