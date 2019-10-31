@@ -24,6 +24,7 @@ import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -37,6 +38,8 @@ import myapp.utils.ResourceIds;
 public class RestFeedReplyHolder extends RestFeedHolder
         implements CommentInterface, ReplyInterface{
 
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private Context mContext;
     private String mCommentText;
     private String mNameCommentBy;
@@ -46,7 +49,10 @@ public class RestFeedReplyHolder extends RestFeedHolder
     private String mRestFeedLink;
     private String mCommentLink;
     private String mReplyLink;
-    private FirebaseAuth mAuth;
+    private Task<DocumentSnapshot> mTaskReply;
+    private Task<DocumentSnapshot> mTaskComment;
+    private DocumentSnapshot mReplySnapshot;
+    private DocumentSnapshot mCommentSnapshot;
 
     private LinearLayout commentReplyLayout;
     private TextView replyHeaderTV;
@@ -93,8 +99,6 @@ public class RestFeedReplyHolder extends RestFeedHolder
         numOfLikesInReply = v.findViewById(R.id.number_of_likes_in_reply);
         replyTOReply = v.findViewById(R.id.reply_to_reply);
         numOfRepliesToReply = v.findViewById(R.id.number_of_replies_to_reply);
-
-        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override
@@ -102,8 +106,10 @@ public class RestFeedReplyHolder extends RestFeedHolder
         super.bindTo(context, activity);
 
         setPrivateGlobalsIndependent(context, activity);
-        bindValues();
-        setOnClickListeners();
+        bindValuesIndependent();
+        setOnClickListenersIndependent();
+        setElementsDependentOnCommentDownload();
+        setElementsDependentOnReplyDownload();
     }
 
     private void setmContext(Context mContext) {
@@ -142,6 +148,14 @@ public class RestFeedReplyHolder extends RestFeedHolder
         this.mReplyLink = mReplyLink;
     }
 
+    private void setmTaskComment(){
+        mTaskComment = db.collection("comments").document(mCommentLink).get();
+    }
+
+    private void setmTaskReply(){
+        mTaskReply = db.collection("comments").document(mReplyLink).get();
+    }
+
     private void setPrivateGlobalsIndependent(Context context, DocumentSnapshot activity){
         Map replyBy = (Map) activity.get("w");
         String nameReplyBy = (String) replyBy.get("n");
@@ -164,55 +178,101 @@ public class RestFeedReplyHolder extends RestFeedHolder
         setmCommentLink(commentLink);
         setmReplyLink(replyLink);
         setmRestFeedLink(activity.getString("wh"));
+        setmTaskComment();
+        setmTaskReply();
     }
 
-    private void bindValues(){
+    private void bindValuesIndependent(){
         bindHeader();
         bindCommentByAvatar();
         bindNameCommentBy();
-        bindCommentTime();
         bindComment();
+
+        bindReplyByAvatar();
+        bindNameReplyBy();
+        bindReply();
+    }
+
+    private void setOnClickListenersIndependent(){
+        setCommentByAvatarOnClickListener();
+        setNameCommentByOnClickListener();
+        setCommentOnClickListener();
+        setCommentLayoutOnClickListener();
+
+        setReplyByAvatarOnClickListener();
+        setNameReplyByOnClickListener();
+        setReplyOnClickListener();
+
+        setReplyLayoutOnClickListener();
+        setCommentReplyLayoutOnClickListener();
+    }
+
+    private void setElementsDependentOnCommentDownload(){
+        mTaskComment.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot commentSnapshot = task.getResult();
+                    if(commentSnapshot.exists()){
+                        mCommentSnapshot = commentSnapshot;
+                        bindValuesDependentOnCommentDownload();
+                        setOnClickListenersDependentOnCommentDownload();
+                    }
+                }
+            }
+        });
+    }
+
+    private void bindValuesDependentOnCommentDownload(){
+        bindCommentTime();
         bindRepliesLink();
         bindLikeCommentIcon();
         bindNoOfLikeInComment();
         bindReplyToCommentIcon();
         bindNoOfRepliesToComment();
+    }
 
-        bindReplyByAvatar();
-        bindNameReplyBy();
+    private void setOnClickListenersDependentOnCommentDownload(){
+        setCommentTimeOnClickListener();
+        setRepliesLinkOnClickListener();
+        setLikeCommentIconOnClickListener();
+        setNoOfLikeInCommentOnClickListener();
+        setReplyToCommentIconOnClickListener();
+        setNoOfRepliesToCommentOnClickListener();
+    }
+
+    private void setElementsDependentOnReplyDownload(){
+        mTaskReply.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot replySnapshot = task.getResult();
+                    if(replySnapshot.exists()){
+                        mReplySnapshot = replySnapshot;
+                        bindValuesDependentOnReplyDownload();
+                        setOnClickListenersDependentOnReplyDownload();
+                    }
+                }
+            }
+        });
+    }
+
+    private void bindValuesDependentOnReplyDownload(){
         bindReplyTime();
         bindReplyingToLink();
-        bindReply();
         bindLikeReplyIcon();
         bindNoOfLikeInReply();
         bindReplyToReplyIcon();
         bindNoOfRepliesToReply();
     }
 
-    private void setOnClickListeners(){
-        setCommentByAvatarOnClickListener();
-        setNameCommentByOnClickListener();
-        setCommentTimeOnClickListener();
-        setCommentOnClickListener();
-        setRepliesLinkOnClickListener();
-        setLikeCommentIconOnClickListener();
-        setNoOfLikeInCommentOnClickListener();
-        setReplyToCommentIconOnClickListener();
-        setNoOfRepliesToCommentOnClickListener();
-        setCommentLayoutOnClickListener();
-
-        setReplyByAvatarOnClickListener();
-        setNameReplyByOnClickListener();
+    private void setOnClickListenersDependentOnReplyDownload(){
         setReplyTimeOnClickListener();
         setReplyingToLinkOnClickListener();
-        setReplyOnClickListener();
         setLikeReplyIconOnClickListener();
         setNoOfLikeInReplyOnClickListener();
         setReplyToReplyIconOnClickListener();
         setNoOfRepliesToReplyOnClickListener();
-
-        setReplyLayoutOnClickListener();
-        setCommentReplyLayoutOnClickListener();
     }
 
     @Override
@@ -272,7 +332,13 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void bindLikeCommentIcon() {
-
+        String currentUserLink = mAuth.getCurrentUser().getUid();
+        List<String> likers = (List<String>) mCommentSnapshot.get("l");
+        if(likers.contains(currentUserLink)){
+            likeComment.setImageResource(ResourceIds.LIKE_FULL);
+        }else{
+            likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
+        }
     }
 
     @Override
@@ -286,10 +352,12 @@ public class RestFeedReplyHolder extends RestFeedHolder
                                 .getConstantState())){
                     likeComment.setImageResource(ResourceIds.LIKE_FULL);
                     addLikeToComment();
+                    increaseNumOfLikes(noOfLikesInComment);
                     sendNotificationLikeCommentCloud();
                 }else{
                     likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
                     removeLikeFromComment();
+                    decreaseNumOfLikes(noOfLikesInComment);
                 }
             }
         });
@@ -363,7 +431,12 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void bindNoOfLikeInComment() {
-
+        List<String> likers = (List<String>) mCommentSnapshot.get("l");
+        int numberofLikes = 0;
+        if(likers != null){
+            numberofLikes = likers.size();
+        }
+        noOfLikesInComment.setText(Integer.toString(numberofLikes));
     }
 
     @Override
@@ -404,7 +477,12 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void bindNoOfRepliesToComment() {
-
+        List<String> replies = (List<String>) mCommentSnapshot.get("r");
+        int numberOfReplies = 0;
+        if(replies != null){
+            numberOfReplies = replies.size();
+        }
+        noOfRepliesToComment.setText(Integer.toString(numberOfReplies));
     }
 
     @Override
@@ -469,7 +547,13 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void bindLikeReplyIcon() {
-
+        String currentUserLink = mAuth.getCurrentUser().getUid();
+        List<String> likers = (List<String>) mReplySnapshot.get("l");
+        if(likers.contains(currentUserLink)){
+            likeReply.setImageResource(ResourceIds.LIKE_FULL);
+        }else{
+            likeReply.setImageResource(ResourceIds.LIKE_EMPTY);
+        }
     }
 
     @Override
@@ -482,10 +566,12 @@ public class RestFeedReplyHolder extends RestFeedHolder
                         .equals(ContextCompat.getDrawable(mContext, ResourceIds.LIKE_EMPTY).getConstantState())){
                     likeReply.setImageResource(ResourceIds.LIKE_FULL);
                     addLikeToReply();
+                    increaseNumOfLikes(numOfLikesInReply);
                     sendNotificationLikeReplyCloud();
                 }else{
                     likeReply.setImageResource(ResourceIds.LIKE_EMPTY);
                     removeLikeFromReply();
+                    decreaseNumOfLikes(numOfLikesInReply);
                 }
             }
         });
@@ -558,7 +644,12 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void bindNoOfLikeInReply() {
-
+        List<String> likers = (List<String>) mReplySnapshot.get("l");
+        int numberofLikes = 0;
+        if(likers != null){
+            numberofLikes = likers.size();
+        }
+        numOfLikesInReply.setText(Integer.toString(numberofLikes));
     }
 
     @Override
@@ -593,7 +684,12 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void bindNoOfRepliesToReply() {
-
+        List<String> replies = (List<String>) mReplySnapshot.get("r");
+        int numberOfReplies = 0;
+        if(replies != null){
+            numberOfReplies = replies.size();
+        }
+        numOfRepliesToReply.setText(Integer.toString(numberOfReplies));
     }
 
     @Override
@@ -624,5 +720,17 @@ public class RestFeedReplyHolder extends RestFeedHolder
                 mContext.startActivity(intent);
             }
         });
+    }
+
+    private void decreaseNumOfLikes(TextView v){
+        String str = (String) v.getText();
+        int numOfLikes = Integer.valueOf(str);
+        v.setText(Integer.toString(numOfLikes-1));
+    }
+
+    private void increaseNumOfLikes(TextView v){
+        String str = v.getText().toString();
+        int numOfLikes = Integer.valueOf(str);
+        v.setText(Integer.toString(numOfLikes+1));
     }
 }

@@ -27,6 +27,7 @@ import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import androidx.core.content.ContextCompat;
@@ -49,12 +50,16 @@ public class PostCommentHolder extends HalfPostHolder
     ImageView likeComment;
     ImageView replyToComment;
 
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private Task<DocumentSnapshot> mTaskComment;
     private Context mContext;
     private String mCommentText;
     private String mCommentLink;
     private String mPostLink;
     private String mNameCommentBy;
     private String mLinkCommentBy;
+    private DocumentSnapshot mCommentSnapshot;
 
     public PostCommentHolder(@NonNull View v) {
         super(v);
@@ -75,8 +80,9 @@ public class PostCommentHolder extends HalfPostHolder
         super.bindTo(context, activity);
 
         setPrivateGlobalFields(context, activity);
-        bindValues();
-        setOnClickListeners();
+        bindValuesIndependent();
+        setOnClickListenersIndependent();
+        setElementsDependentOnCommentDownload();
     }
 
     private void setPrivateGlobalFields(Context context, DocumentSnapshot activity){
@@ -95,17 +101,44 @@ public class PostCommentHolder extends HalfPostHolder
         final String commentLink = commentData.get("l");
         setmCommentText(commentText);
         setmCommentLink(commentLink);
+        setmTaskComment();
 
         final String postLink = activity.getString("wh");
         setmPostLink(postLink);
     }
 
-    private void bindValues(){
+    private void bindValuesIndependent(){
         bindHeader();
         bindCommentByAvatar();
         bindNameCommentBy();
-        bindCommentTime();
         bindComment();
+    }
+
+    private void setOnClickListenersIndependent(){
+        setCommentByAvatarOnClickListener();
+        setNameCommentByOnClickListener();
+        setCommentOnClickListener();
+        setCommentLayoutOnClickListener();
+    }
+
+    private void setElementsDependentOnCommentDownload(){
+        mTaskComment.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot commentSnapshot = task.getResult();
+                    if(commentSnapshot.exists()){
+                        mCommentSnapshot = commentSnapshot;
+                        bindValuesDependentOnCommentDownload();
+                        setOnClickListenersDependentOnCommentDownload();
+                    }
+                }
+            }
+        });
+    }
+
+    private void bindValuesDependentOnCommentDownload(){
+        bindCommentTime();
         bindRepliesLink();
         bindLikeCommentIcon();
         bindNoOfLikeInComment();
@@ -113,17 +146,13 @@ public class PostCommentHolder extends HalfPostHolder
         bindNoOfRepliesToComment();
     }
 
-    private void setOnClickListeners(){
-        setCommentByAvatarOnClickListener();
-        setNameCommentByOnClickListener();
+    private void setOnClickListenersDependentOnCommentDownload(){
         setCommentTimeOnClickListener();
-        setCommentOnClickListener();
         setRepliesLinkOnClickListener();
         setLikeCommentIconOnClickListener();
         setNoOfLikeInCommentOnClickListener();
         setReplyToCommentIconOnClickListener();
         setNoOfRepliesToCommentOnClickListener();
-        setCommentLayoutOnClickListener();
     }
 
     private void setmContext(Context mContext) {
@@ -148,6 +177,10 @@ public class PostCommentHolder extends HalfPostHolder
 
     private void setmLinkCommentBy(String mLinkCommentBy) {
         this.mLinkCommentBy = mLinkCommentBy;
+    }
+
+    private void setmTaskComment(){
+        mTaskComment = db.collection("comments").document(mCommentLink).get();
     }
 
     public void bindHeader(){
@@ -206,7 +239,13 @@ public class PostCommentHolder extends HalfPostHolder
 
     @Override
     public void bindLikeCommentIcon() {
-
+        String currentUserLink = mAuth.getCurrentUser().getUid();
+        List<String> likers = (List<String>) mCommentSnapshot.get("l");
+        if(likers.contains(currentUserLink)){
+            likeComment.setImageResource(ResourceIds.LIKE_FULL);
+        }else{
+            likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
+        }
     }
 
     @Override
@@ -218,10 +257,12 @@ public class PostCommentHolder extends HalfPostHolder
                 if(likeComment.getDrawable().getConstantState().equals(ContextCompat.getDrawable(mContext, ResourceIds.LIKE_EMPTY).getConstantState())){
                     likeComment.setImageResource(ResourceIds.LIKE_FULL);
                     addLikeToComment();
+                    increaseNumOfLikes();
                     sendNotificationLikeCommentCloud();
                 }else{
                     likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
                     removeLikeFromComment();
+                    decreaseNumOfLikes();
                 }
             }
         });
@@ -229,7 +270,12 @@ public class PostCommentHolder extends HalfPostHolder
 
     @Override
     public void bindNoOfLikeInComment() {
-
+        List<String> likers = (List<String>) mCommentSnapshot.get("l");
+        int numberofLikes = 0;
+        if(likers != null){
+            numberofLikes = likers.size();
+        }
+        noOfLikesOnComment.setText(Integer.toString(numberofLikes));
     }
 
     @Override
@@ -270,7 +316,12 @@ public class PostCommentHolder extends HalfPostHolder
 
     @Override
     public void bindNoOfRepliesToComment() {
-
+        List<String> replies = (List<String>) mCommentSnapshot.get("r");
+        int numberOfReplies = 0;
+        if(replies != null){
+            numberOfReplies = replies.size();
+        }
+        noOfRepliesToComment.setText(Integer.toString(numberOfReplies));
     }
 
     @Override
@@ -361,5 +412,17 @@ public class PostCommentHolder extends HalfPostHolder
                         Log.i("func_call", e.getMessage());
                     }
                 });
+    }
+
+    private void decreaseNumOfLikes(){
+        String str = (String) noOfLikesOnComment.getText();
+        int numOfLikes = Integer.valueOf(str);
+        noOfLikesOnComment.setText(Integer.toString(numOfLikes-1));
+    }
+
+    private void increaseNumOfLikes(){
+        String str = noOfLikesOnComment.getText().toString();
+        int numOfLikes = Integer.valueOf(str);
+        noOfLikesOnComment.setText(Integer.toString(numOfLikes+1));
     }
 }

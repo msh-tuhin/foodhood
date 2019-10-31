@@ -26,7 +26,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
+import org.w3c.dom.Text;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import androidx.core.content.ContextCompat;
@@ -59,6 +62,8 @@ public class PostReplyHolder extends HalfPostHolder
     TextView numOfLikesInReply;
     TextView numOfRepliesToReply;
 
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private Context mContext;
     private String mCommentText;
     private String mCommentLink;
@@ -69,6 +74,10 @@ public class PostReplyHolder extends HalfPostHolder
     private String mReplyLink;
     private String mNameReplyBy;
     private String mLinkReplyBy;
+    private Task<DocumentSnapshot> mTaskReply;
+    private Task<DocumentSnapshot> mTaskComment;
+    private DocumentSnapshot mReplySnapshot;
+    private DocumentSnapshot mCommentSnapshot;
 
     public PostReplyHolder(@NonNull View v) {
         super(v);
@@ -98,8 +107,10 @@ public class PostReplyHolder extends HalfPostHolder
         super.bindTo(context, activity);
 
         setPrivateGlobalFields(context, activity);
-        bindValues();
-        setOnClickListeners();
+        bindValuesIndependent();
+        setOnClickListenersIndependent();
+        setElementsDependentOnCommentDownload();
+        setElementsDependentOnReplyDownload();
     }
 
     private void setPrivateGlobalFields(Context context, DocumentSnapshot activity){
@@ -124,55 +135,102 @@ public class PostReplyHolder extends HalfPostHolder
 
         // set mPostLink
         setmPostLink(activity.getString("wh"));
+
+        setmTaskComment();
+        setmTaskReply();
     }
 
-    private void bindValues(){
+    private void bindValuesIndependent(){
         bindHeader();
         bindCommentByAvatar();
         bindNameCommentBy();
-        bindCommentTime();
         bindComment();
+
+        bindReplyByAvatar();
+        bindNameReplyBy();
+        bindReply();
+    }
+
+    private void setOnClickListenersIndependent(){
+        setCommentByAvatarOnClickListener();
+        setNameCommentByOnClickListener();
+        setCommentOnClickListener();
+        setCommentLayoutOnClickListener();
+
+        setReplyByAvatarOnClickListener();
+        setNameReplyByOnClickListener();
+        setReplyOnClickListener();
+
+        setReplyLayoutOnClickListener();
+        setCommentReplyLayoutOnClickListener();
+    }
+
+    private void setElementsDependentOnCommentDownload(){
+        mTaskComment.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot commentSnapshot = task.getResult();
+                    if(commentSnapshot.exists()){
+                        mCommentSnapshot = commentSnapshot;
+                        bindValuesDependentOnCommentDownload();
+                        setOnClickListenersDependentOnCommentDownload();
+                    }
+                }
+            }
+        });
+    }
+
+    private void bindValuesDependentOnCommentDownload(){
+        bindCommentTime();
         bindRepliesLink();
         bindLikeCommentIcon();
         bindNoOfLikeInComment();
         bindReplyToCommentIcon();
         bindNoOfRepliesToComment();
+    }
 
-        bindReplyByAvatar();
-        bindNameReplyBy();
+    private void setOnClickListenersDependentOnCommentDownload(){
+        setCommentTimeOnClickListener();
+        setRepliesLinkOnClickListener();
+        setLikeCommentIconOnClickListener();
+        setNoOfLikeInCommentOnClickListener();
+        setReplyToCommentIconOnClickListener();
+        setNoOfRepliesToCommentOnClickListener();
+    }
+
+    private void setElementsDependentOnReplyDownload(){
+        mTaskReply.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot replySnapshot = task.getResult();
+                    if(replySnapshot.exists()){
+                        mReplySnapshot = replySnapshot;
+                        bindValuesDependentOnReplyDownload();
+                        setOnClickListenersDependentOnReplyDownload();
+                    }
+                }
+            }
+        });
+    }
+
+    private void bindValuesDependentOnReplyDownload(){
         bindReplyTime();
         bindReplyingToLink();
-        bindReply();
         bindLikeReplyIcon();
         bindNoOfLikeInReply();
         bindReplyToReplyIcon();
         bindNoOfRepliesToReply();
     }
 
-    private void setOnClickListeners(){
-        setCommentByAvatarOnClickListener();
-        setNameCommentByOnClickListener();
-        setCommentTimeOnClickListener();
-        setCommentOnClickListener();
-        setRepliesLinkOnClickListener();
-        setLikeCommentIconOnClickListener();
-        setNoOfLikeInCommentOnClickListener();
-        setReplyToCommentIconOnClickListener();
-        setNoOfRepliesToCommentOnClickListener();
-        setCommentLayoutOnClickListener();
-
-        setReplyByAvatarOnClickListener();
-        setNameReplyByOnClickListener();
+    private void setOnClickListenersDependentOnReplyDownload(){
         setReplyTimeOnClickListener();
         setReplyingToLinkOnClickListener();
-        setReplyOnClickListener();
         setLikeReplyIconOnClickListener();
         setNoOfLikeInReplyOnClickListener();
         setReplyToReplyIconOnClickListener();
         setNoOfRepliesToReplyOnClickListener();
-
-        setReplyLayoutOnClickListener();
-        setCommentReplyLayoutOnClickListener();
     }
 
     private void setmContext(Context mContext) {
@@ -213,6 +271,14 @@ public class PostReplyHolder extends HalfPostHolder
 
     private void setmLinkReplyBy(String mLinkReplyBy) {
         this.mLinkReplyBy = mLinkReplyBy;
+    }
+
+    private void setmTaskComment(){
+        mTaskComment = db.collection("comments").document(mCommentLink).get();
+    }
+
+    private void setmTaskReply(){
+        mTaskReply = db.collection("comments").document(mReplyLink).get();
     }
 
     public void bindHeader(){
@@ -271,7 +337,13 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void bindLikeCommentIcon() {
-
+        String currentUserLink = mAuth.getCurrentUser().getUid();
+        List<String> likers = (List<String>) mCommentSnapshot.get("l");
+        if(likers.contains(currentUserLink)){
+            likeComment.setImageResource(ResourceIds.LIKE_FULL);
+        }else{
+            likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
+        }
     }
 
     @Override
@@ -285,10 +357,12 @@ public class PostReplyHolder extends HalfPostHolder
                                 .getConstantState())){
                     likeComment.setImageResource(ResourceIds.LIKE_FULL);
                     addLikeToComment();
+                    increaseNumOfLikes(noOfLikesOnComment);
                     sendNotificationLikeCommentCloud();
                 }else{
                     likeComment.setImageResource(ResourceIds.LIKE_EMPTY);
                     removeLikeFromComment();
+                    decreaseNumOfLikes(noOfLikesOnComment);
                 }
             }
         });
@@ -362,7 +436,12 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void bindNoOfLikeInComment() {
-
+        List<String> likers = (List<String>) mCommentSnapshot.get("l");
+        int numberofLikes = 0;
+        if(likers != null){
+            numberofLikes = likers.size();
+        }
+        noOfLikesOnComment.setText(Integer.toString(numberofLikes));
     }
 
     @Override
@@ -403,7 +482,12 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void bindNoOfRepliesToComment() {
-
+        List<String> replies = (List<String>) mCommentSnapshot.get("r");
+        int numberOfReplies = 0;
+        if(replies != null){
+            numberOfReplies = replies.size();
+        }
+        noOfRepliesToComment.setText(Integer.toString(numberOfReplies));
     }
 
     @Override
@@ -468,7 +552,13 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void bindLikeReplyIcon() {
-
+        String currentUserLink = mAuth.getCurrentUser().getUid();
+        List<String> likers = (List<String>) mReplySnapshot.get("l");
+        if(likers.contains(currentUserLink)){
+            likeReply.setImageResource(ResourceIds.LIKE_FULL);
+        }else{
+            likeReply.setImageResource(ResourceIds.LIKE_EMPTY);
+        }
     }
 
     @Override
@@ -482,10 +572,12 @@ public class PostReplyHolder extends HalfPostHolder
                                 .getConstantState())){
                     ((ImageView)v).setImageResource(ResourceIds.LIKE_FULL);
                     addLikeToReply();
+                    increaseNumOfLikes(numOfLikesInReply);
                     sendNotificationLikeReplyCloud();
                 }else{
                     ((ImageView)v).setImageResource(ResourceIds.LIKE_EMPTY);
                     removeLikeFromReply();
+                    decreaseNumOfLikes(numOfLikesInReply);
                 }
             }
         });
@@ -560,7 +652,12 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void bindNoOfLikeInReply() {
-
+        List<String> likers = (List<String>) mReplySnapshot.get("l");
+        int numberofLikes = 0;
+        if(likers != null){
+            numberofLikes = likers.size();
+        }
+        numOfLikesInReply.setText(Integer.toString(numberofLikes));
     }
 
     @Override
@@ -595,7 +692,12 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void bindNoOfRepliesToReply() {
-
+        List<String> replies = (List<String>) mReplySnapshot.get("r");
+        int numberOfReplies = 0;
+        if(replies != null){
+            numberOfReplies = replies.size();
+        }
+        numOfRepliesToReply.setText(Integer.toString(numberOfReplies));
     }
 
     @Override
@@ -625,5 +727,17 @@ public class PostReplyHolder extends HalfPostHolder
                 mContext.startActivity(intent);
             }
         });
+    }
+
+    private void decreaseNumOfLikes(TextView v){
+        String str = (String) v.getText();
+        int numOfLikes = Integer.valueOf(str);
+        v.setText(Integer.toString(numOfLikes-1));
+    }
+
+    private void increaseNumOfLikes(TextView v){
+        String str = v.getText().toString();
+        int numOfLikes = Integer.valueOf(str);
+        v.setText(Integer.toString(numOfLikes+1));
     }
 }
