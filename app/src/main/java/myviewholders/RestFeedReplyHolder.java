@@ -316,9 +316,17 @@ public class RestFeedReplyHolder extends RestFeedHolder
         commenterNameTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("clicked", "commenter name from home rf+comment+reply");
-                Intent intent = new Intent(mContext, PersonDetail.class);
-                intent.putExtra("personLink", mLinkCommentBy);
+                Intent intent;
+                if(isCommenterAPerson()){
+                    Log.i("clicked", "commenter(person) name from home rf+comment+reply");
+                    intent = new Intent(mContext, PersonDetail.class);
+                    intent.putExtra("personLink", mLinkCommentBy);
+                }else{
+                    Log.i("clicked", "commenter(restaurant) name from home rf+comment+reply");
+                    intent = new Intent(mContext, RestDetail.class);
+                    intent.putExtra("restaurantLink", mLinkCommentBy);
+                }
+
                 mContext.startActivity(intent);
             }
         });
@@ -489,7 +497,12 @@ public class RestFeedReplyHolder extends RestFeedHolder
                 Map<String, Object> replyingTo = new HashMap<>();
                 replyingTo.put("n", mNameCommentBy);
                 replyingTo.put("l", mLinkCommentBy);
-                replyingTo.put("t", AccountTypes.PERSON);
+                if(isCommenterAPerson()){
+                    replyingTo.put("t", AccountTypes.PERSON);
+                }else{
+                    replyingTo.put("t", AccountTypes.RESTAURANT);
+                }
+
                 CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
                 commentIntentExtra.setEntryPoint(EntryPoints.R2C_FROM_HOME_RF);
                 commentIntentExtra.setPostLink(mRestFeedLink);
@@ -809,5 +822,13 @@ public class RestFeedReplyHolder extends RestFeedHolder
         spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.BLUE),
                 start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableStringBuilder;
+    }
+
+    private boolean isCommenterAPerson(){
+        Long commenterType = mCommentSnapshot.getLong("w.t");
+        if(commenterType != null){
+            return commenterType == AccountTypes.PERSON;
+        }
+        return true;
     }
 }
