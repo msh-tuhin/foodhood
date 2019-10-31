@@ -9,7 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.CommentDetail;
+import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.R;
+import com.example.tuhin.myapplication.RestDetail;
 import com.example.tuhin.myapplication.WriteComment;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -184,7 +186,22 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
 
     @Override
     public void setNameCommentByOnClickListener() {
-
+        commenterNameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                if(isCommenterAPerson()){
+                    Log.i("clicked", "commenter(person) name from CD");
+                    intent = new Intent(mContext, PersonDetail.class);
+                    intent.putExtra("personLink", mCommenterLink);
+                } else{
+                    Log.i("clicked", "commenter(restaurant) name from CD");
+                    intent = new Intent(mContext, RestDetail.class);
+                    intent.putExtra("restaurantLink", mCommenterLink);
+                }
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -441,5 +458,13 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
         String str = numberOfLikesTextView.getText().toString();
         int numOfLikes = Integer.valueOf(str);
         numberOfLikesTextView.setText(Integer.toString(numOfLikes+1));
+    }
+
+    private boolean isCommenterAPerson(){
+        Long commenterType = mCommentSnapshot.getLong("w.t");
+        if(commenterType != null){
+            return commenterType == AccountTypes.PERSON;
+        }
+        return true;
     }
 }

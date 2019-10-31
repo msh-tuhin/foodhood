@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.tuhin.myapplication.ActivityResponse;
 import com.example.tuhin.myapplication.CommentDetail;
+import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.WriteComment;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -302,7 +303,15 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void setNameCommentByOnClickListener() {
-
+        commenterName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("clicked", "commenter name from home post+comment+reply");
+                Intent intent = new Intent(mContext, PersonDetail.class);
+                intent.putExtra("personLink", mLinkCommentBy);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -517,7 +526,15 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void setNameReplyByOnClickListener() {
-
+        replierName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("clicked", "replier name from home post+comment+reply");
+                Intent intent = new Intent(mContext, PersonDetail.class);
+                intent.putExtra("personLink", mLinkReplyBy);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override

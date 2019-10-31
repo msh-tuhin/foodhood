@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.CommentDetail;
+import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.WriteComment;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -46,6 +47,7 @@ public class RestFeedReplyHolder extends RestFeedHolder
     private String mLinkCommentBy;
     private String mReplyText;
     private String mNameReplyBy;
+    private String mLinkReplyBy;
     private String mRestFeedLink;
     private String mCommentLink;
     private String mReplyLink;
@@ -136,6 +138,10 @@ public class RestFeedReplyHolder extends RestFeedHolder
         this.mNameReplyBy = mNameReplyBy;
     }
 
+    private void setmLinkReplyBy(String mLinkReplyBy) {
+        this.mLinkReplyBy = mLinkReplyBy;
+    }
+
     private void setmRestFeedLink(String mRestFeedLink) {
         this.mRestFeedLink = mRestFeedLink;
     }
@@ -159,6 +165,7 @@ public class RestFeedReplyHolder extends RestFeedHolder
     private void setPrivateGlobalsIndependent(Context context, DocumentSnapshot activity){
         Map replyBy = (Map) activity.get("w");
         String nameReplyBy = (String) replyBy.get("n");
+        String linkReplyBy = (String) replyBy.get("l");
 
         Map<String, String> commentData = (Map) activity.get("com");
         String commentText = commentData.get("text");
@@ -174,6 +181,7 @@ public class RestFeedReplyHolder extends RestFeedHolder
         setmLinkCommentBy(linkCommentBy);
         setmCommentText(commentText);
         setmNameReplyBy(nameReplyBy);
+        setmLinkReplyBy(linkReplyBy);
         setmReplyText(replyText);
         setmCommentLink(commentLink);
         setmReplyLink(replyLink);
@@ -297,7 +305,15 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void setNameCommentByOnClickListener() {
-
+        commenterNameTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("clicked", "commenter name from home rf+comment+reply");
+                Intent intent = new Intent(mContext, PersonDetail.class);
+                intent.putExtra("personLink", mLinkCommentBy);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -512,7 +528,15 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void setNameReplyByOnClickListener() {
-
+        replierNameTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("clicked", "replier name from home rf+comment+reply");
+                Intent intent = new Intent(mContext, PersonDetail.class);
+                intent.putExtra("personLink", mLinkReplyBy);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override

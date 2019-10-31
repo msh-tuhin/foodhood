@@ -10,7 +10,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.CommentDetail;
+import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.R;
+import com.example.tuhin.myapplication.RestDetail;
 import com.example.tuhin.myapplication.WriteComment;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -50,7 +52,7 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
     private String mCommentText;
     private String mLinkCommentBy;
     private String mNameCommentBy;
-    private boolean mForPerson;
+    private boolean mForPerson; // is current user a person or restaurant?
 
     private LinearLayout commentLayout;
     private CircleImageView commenterImage;
@@ -174,7 +176,22 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
 
     @Override
     public void setNameCommentByOnClickListener() {
-
+        commenterNameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                if(isCommenterAPerson()){
+                    Log.i("clicked", "commenter(person) name from full rf");
+                    intent = new Intent(mContext, PersonDetail.class);
+                    intent.putExtra("personLink", mLinkCommentBy);
+                } else{
+                    Log.i("clicked", "commenter(restaurant) name from full rf");
+                    intent = new Intent(mContext, RestDetail.class);
+                    intent.putExtra("restaurantLink", mLinkCommentBy);
+                }
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -403,5 +420,13 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
         String str = numberOfLikesTextView.getText().toString();
         int numOfLikes = Integer.valueOf(str);
         numberOfLikesTextView.setText(Integer.toString(numOfLikes+1));
+    }
+
+    private boolean isCommenterAPerson(){
+        Long commenterType = mCommentSnapshot.getLong("w.t");
+        if(commenterType != null){
+            return commenterType == AccountTypes.PERSON;
+        }
+        return true;
     }
 }

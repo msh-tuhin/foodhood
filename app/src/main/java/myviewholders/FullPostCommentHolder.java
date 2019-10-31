@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.example.tuhin.myapplication.CommentDetail;
 import com.example.tuhin.myapplication.FullPost;
+import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.WriteComment;
 import com.google.android.gms.tasks.Continuation;
@@ -167,7 +168,15 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
 
     @Override
     public void setNameCommentByOnClickListener() {
-
+        commenterNameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("clicked", "commenter name from full post");
+                Intent intent = new Intent(mContext, PersonDetail.class);
+                intent.putExtra("personLink", mLinkCommentBy);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
