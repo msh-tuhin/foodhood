@@ -357,6 +357,7 @@ public class WriteComment extends AppCompatActivity {
                 commentModel.setType(CommentTypes.REPLY);
                 commentModel.setComLink(mCommentIntentExtra.getCommentLink());
                 commentModel.setReplyLink("");
+                commentModel.setReplyTo(mCommentIntentExtra.getReplyingTo());
                 break;
             case EntryPoints.R2R_FROM_CD_POST:
             case EntryPoints.R2R_FROM_CD_RF:
@@ -365,6 +366,7 @@ public class WriteComment extends AppCompatActivity {
                 commentModel.setType(CommentTypes.REPLY_TO_REPLY);
                 commentModel.setComLink(mCommentIntentExtra.getCommentLink());
                 commentModel.setReplyLink(mCommentIntentExtra.getReplyLink());
+                commentModel.setReplyTo(mCommentIntentExtra.getReplyingTo());
                 break;
             default:
                 // means its a comment

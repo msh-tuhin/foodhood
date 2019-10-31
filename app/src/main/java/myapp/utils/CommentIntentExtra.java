@@ -11,6 +11,7 @@ public class CommentIntentExtra implements Serializable {
     private String replyToReplyLink;
     private int newReplyPosition;
     private Map<String, Object> commentMap;
+    private Map<String, Object> replyingTo;
 
     public CommentIntentExtra(){
 
@@ -86,5 +87,13 @@ public class CommentIntentExtra implements Serializable {
 
     public void setCommentMap(Map<String, Object> commentMap) {
         this.commentMap = commentMap;
+    }
+
+    public Map<String, Object> getReplyingTo() {
+        return replyingTo;
+    }
+
+    public void setReplyingTo(Map<String, Object> replyingTo) {
+        this.replyingTo = replyingTo;
     }
 }

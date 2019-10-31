@@ -3,6 +3,12 @@ package myviewholders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -191,7 +197,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
             @Override
             public void onClick(View v) {
                 Intent intent;
-                if(isCommenterAPerson()){
+                if(isReplierAPerson()){
                     Log.i("clicked", "replier(person) name from CD reply");
                     intent = new Intent(mContext, PersonDetail.class);
                     intent.putExtra("personLink", mReplierLink);
@@ -217,12 +223,38 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
 
     @Override
     public void bindReplyingToLink() {
-
+        Map<String, Object> replyTo = (Map<String, Object>) mReplySnapshot.get("replyTo");
+        if(replyTo != null){
+            String name = (String) replyTo.get("n");
+            String text = "Replying To " + name;
+            SpannableStringBuilder spannedText = getSpannedText(text, name);
+            replyingToTV.setText(spannedText);
+        }
     }
 
     @Override
     public void setReplyingToLinkOnClickListener() {
-
+        replyingToTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Map<String, Object> replyTo = (Map<String, Object>) mReplySnapshot.get("replyTo");
+                if(replyTo != null){
+                    String link = (String) replyTo.get("l");
+                    Long type = (Long) replyTo.get("t");
+                    Intent intent;
+                    if(type == AccountTypes.PERSON){
+                        Log.i("clicked", "replying to(person) from CD");
+                        intent = new Intent(mContext, PersonDetail.class);
+                        intent.putExtra("personLink", link);
+                    }else{
+                        Log.i("clicked", "replying to(restaurant) from CD");
+                        intent = new Intent(mContext, RestDetail.class);
+                        intent.putExtra("restaurantLink", link);
+                    }
+//            mContext.startActivity(intent);
+                }
+            }
+        });
     }
 
     @Override
@@ -338,6 +370,15 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
 
                 Intent intent = new Intent(mContext, WriteComment.class);
 
+                Map<String, Object> replyingTo = new HashMap<>();
+                replyingTo.put("n", mReplierName);
+                replyingTo.put("l", mReplierLink);
+                if(isReplierAPerson()){
+                    replyingTo.put("t", AccountTypes.PERSON);
+                }else{
+                    replyingTo.put("t", AccountTypes.RESTAURANT);
+                }
+
                 CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
                 if(isCommentInRF()){
                     commentIntentExtra.setEntryPoint(EntryPoints.R2R_FROM_CD_RF);
@@ -348,6 +389,8 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
                 commentIntentExtra.setCommentLink(mCommentLink);
                 commentIntentExtra.setReplyLink(mReplyLink);
                 commentIntentExtra.setNewReplyPosition(replyPosition);
+                commentIntentExtra.setReplyingTo(replyingTo);
+
                 intent.putExtra("comment_extra", commentIntentExtra);
                 ((CommentDetail)mContext).startActivityForResult(intent,
                         ((CommentDetail)mContext).REQUEST_REPLY_TO_REPLY);
@@ -427,11 +470,21 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         numberOfLikesTV.setText(Integer.toString(numOfLikes+1));
     }
 
-    private boolean isCommenterAPerson(){
+    private boolean isReplierAPerson(){
         Long commenterType = mReplySnapshot.getLong("w.t");
         if(commenterType != null){
             return commenterType == AccountTypes.PERSON;
         }
         return true;
+    }
+
+    private SpannableStringBuilder getSpannedText(String text, String name){
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(text);
+        int start = text.indexOf(name);
+        int end = start + name.length();
+        spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.BLUE),
+                start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannableStringBuilder;
     }
 }

@@ -42,6 +42,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import models.CommentModel;
+import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
@@ -318,11 +319,17 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
                 commentMap.put("byn", mNameCommentBy);
                 commentMap.put("l", mCommentLink);
 
+                Map<String, Object> replyingTo = new HashMap<>();
+                replyingTo.put("n", mNameCommentBy);
+                replyingTo.put("l", mLinkCommentBy);
+                replyingTo.put("t", AccountTypes.PERSON);
+
                 CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
                 commentIntentExtra.setEntryPoint(EntryPoints.R2C_FROM_FULL_POST);
                 commentIntentExtra.setPostLink(mPostLink);
                 commentIntentExtra.setCommentLink(mCommentLink);
                 commentIntentExtra.setCommentMap(commentMap);
+                commentIntentExtra.setReplyingTo(replyingTo);
 
                 Intent intent = new Intent(mContext, WriteComment.class);
                 intent.putExtra("comment_extra", commentIntentExtra);

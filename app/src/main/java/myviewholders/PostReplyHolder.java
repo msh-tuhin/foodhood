@@ -4,6 +4,12 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,6 +20,7 @@ import com.example.tuhin.myapplication.ActivityResponse;
 import com.example.tuhin.myapplication.CommentDetail;
 import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.R;
+import com.example.tuhin.myapplication.RestDetail;
 import com.example.tuhin.myapplication.WriteComment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -35,6 +42,7 @@ import java.util.Map;
 
 import androidx.core.content.ContextCompat;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
@@ -57,6 +65,7 @@ public class PostReplyHolder extends HalfPostHolder
     CircleImageView replierImage;
     TextView replierName;
     TextView replyTime;
+    TextView replyingToTV;
     TextView theReply;
     ImageView likeReply;
     ImageView replyTOReply;
@@ -96,6 +105,7 @@ public class PostReplyHolder extends HalfPostHolder
         postReplyHeader = v.findViewById(R.id.post_reply_header);
         replierImage = v.findViewById(R.id.replier_image);
         replierName = v.findViewById(R.id.replier_name);
+        replyingToTV = v.findViewById(R.id.replying_to);
         theReply = v.findViewById(R.id.the_reply);
         likeReply = v.findViewById(R.id.like_reply);
         replyTOReply = v.findViewById(R.id.reply_to_reply);
@@ -476,11 +486,16 @@ public class PostReplyHolder extends HalfPostHolder
                 commentMap.put("byn", mNameCommentBy);
                 commentMap.put("l", mCommentLink);
 
+                Map<String, Object> replyingTo = new HashMap<>();
+                replyingTo.put("n", mNameCommentBy);
+                replyingTo.put("l", mLinkCommentBy);
+                replyingTo.put("t", AccountTypes.PERSON);
                 CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
                 commentIntentExtra.setEntryPoint(EntryPoints.R2C_FROM_HOME_POST);
                 commentIntentExtra.setPostLink(mPostLink);
                 commentIntentExtra.setCommentLink(mCommentLink);
                 commentIntentExtra.setCommentMap(commentMap);
+                commentIntentExtra.setReplyingTo(replyingTo);
 
                 Intent intent = new Intent(mContext, WriteComment.class);
                 intent.putExtra("comment_extra", commentIntentExtra);
@@ -549,12 +564,31 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void bindReplyingToLink() {
-
+        Map<String, Object> replyTo = (Map<String, Object>) mReplySnapshot.get("replyTo");
+        if(replyTo != null){
+            String name = (String) replyTo.get("n");
+            String text = "Replying To " + name;
+            SpannableStringBuilder spannedText = getSpannedText(text, name);
+            replyingToTV.setText(spannedText);
+        }
     }
 
     @Override
     public void setReplyingToLinkOnClickListener() {
-
+        replyingToTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Map<String, Object> replyTo = (Map<String, Object>) mReplySnapshot.get("replyTo");
+                if(replyTo != null){
+                    String link = (String) replyTo.get("l");
+                    Intent intent;
+                    Log.i("clicked", "replying to from home post+reply");
+                    intent = new Intent(mContext, PersonDetail.class);
+                    intent.putExtra("personLink", link);
+//            mContext.startActivity(intent);
+                }
+            }
+        });
     }
 
     @Override
@@ -694,11 +728,16 @@ public class PostReplyHolder extends HalfPostHolder
             public void onClick(View v) {
                 Log.i("reply2reply", "from home post+reply");
 
+                Map<String, Object> replyingTo = new HashMap<>();
+                replyingTo.put("n", mNameReplyBy);
+                replyingTo.put("l", mLinkReplyBy);
+                replyingTo.put("t", AccountTypes.PERSON);
                 CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
                 commentIntentExtra.setEntryPoint(EntryPoints.R2R_FROM_HOME_POST);
                 commentIntentExtra.setPostLink(mPostLink);
                 commentIntentExtra.setCommentLink(mCommentLink);
                 commentIntentExtra.setReplyLink(mReplyLink);
+                commentIntentExtra.setReplyingTo(replyingTo);
 
                 Intent intent = new Intent(mContext, WriteComment.class);
                 intent.putExtra("comment_extra", commentIntentExtra);
@@ -756,5 +795,15 @@ public class PostReplyHolder extends HalfPostHolder
         String str = v.getText().toString();
         int numOfLikes = Integer.valueOf(str);
         v.setText(Integer.toString(numOfLikes+1));
+    }
+
+    private SpannableStringBuilder getSpannedText(String text, String name){
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(text);
+        int start = text.indexOf(name);
+        int end = start + name.length();
+        spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.BLUE),
+                start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannableStringBuilder;
     }
 }

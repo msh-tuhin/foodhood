@@ -31,6 +31,7 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
@@ -376,11 +377,17 @@ public class RestFeedCommentHolder extends RestFeedHolder
                 commentMap.put("byn", mNameCommentBy);
                 commentMap.put("l", mCommentLink);
 
+                Map<String, Object> replyingTo = new HashMap<>();
+                replyingTo.put("n", mNameCommentBy);
+                replyingTo.put("l", mLinkCommentBy);
+                replyingTo.put("t", AccountTypes.PERSON);
+
                 CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
                 commentIntentExtra.setEntryPoint(EntryPoints.R2C_FROM_HOME_RF);
                 commentIntentExtra.setCommentLink(mCommentLink);
                 commentIntentExtra.setPostLink(mRestFeedLink);
                 commentIntentExtra.setCommentMap(commentMap);
+                commentIntentExtra.setReplyingTo(replyingTo);
 
                 Intent intent = new Intent(mContext, WriteComment.class);
                 intent.putExtra("comment_extra", commentIntentExtra);

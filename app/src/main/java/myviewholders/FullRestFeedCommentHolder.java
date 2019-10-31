@@ -337,11 +337,21 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
                 commentMap.put("byn", mNameCommentBy);
                 commentMap.put("l", mCommentLink);
 
+                Map<String, Object> replyingTo = new HashMap<>();
+                replyingTo.put("n", mNameCommentBy);
+                replyingTo.put("l", mLinkCommentBy);
+                if(isCommenterAPerson()){
+                    replyingTo.put("t", AccountTypes.PERSON);
+                }else{
+                    replyingTo.put("t", AccountTypes.RESTAURANT);
+                }
+
                 CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
                 commentIntentExtra.setEntryPoint(EntryPoints.R2C_FROM_FULL_RF);
                 commentIntentExtra.setPostLink(mRestFeedLink);
                 commentIntentExtra.setCommentLink(mCommentLink);
                 commentIntentExtra.setCommentMap(commentMap);
+                commentIntentExtra.setReplyingTo(replyingTo);
 
                 Intent intent = new Intent(mContext, WriteComment.class);
                 intent.putExtra("comment_extra", commentIntentExtra);

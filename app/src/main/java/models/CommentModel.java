@@ -20,7 +20,7 @@ public class CommentModel {
     private List<String> l;
 
     // private Boolean isReply;
-    private String replyTo;
+    private Map<String, Object> replyTo;
 
     // commentlink for reply, empty for comment
     private String comLink;
@@ -88,12 +88,11 @@ public class CommentModel {
         this.l = l;
     }
 
-//    might need later
-    public String getReplyTo() {
+    public Map<String, Object> getReplyTo() {
         return replyTo;
     }
 
-    public void setReplyTo(String replyTo) {
+    public void setReplyTo(Map<String, Object> replyTo) {
         this.replyTo = replyTo;
     }
 
