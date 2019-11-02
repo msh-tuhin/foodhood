@@ -49,6 +49,7 @@ public class SetProfilePicture extends AppCompatActivity {
     final int REQUEST_EXTERNAL_STORAGE_READ_PERM = 1;
 
     Uri uploadUri = null;
+    String photoPath;
     Toolbar toolbar;
     ImageButton captureImage, chooseFrom, deleteImage;
     ConstraintLayout imageSourceChooser;
@@ -119,72 +120,11 @@ public class SetProfilePicture extends AppCompatActivity {
         skipOrNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Log.i("skip_next", "clicked");
-                if(uploadUri != null){
-                    Log.i("upload_uri", "not null");
-                    FirebaseStorage storage = FirebaseStorage.getInstance();
-                    final StorageReference storageReference = storage.getReference()
-                            .child("profile-pictures").child(uploadUri.getLastPathSegment());
-                    UploadTask uploadTask = storageReference.putFile(uploadUri);
-
-                    uploadTask.addOnCanceledListener(new OnCanceledListener() {
-                        @Override
-                        public void onCanceled() {
-                            Log.i("upload", "canceled");
-                        }
-                    }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
-                            Log.i("upload", "paused");
-                        }
-                    }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            Log.i("upload", "running");
-                        }
-                    });
-
-                    uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                        @Override
-                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                            if(!task.isSuccessful()){
-                                throw task.getException();
-                            }
-                            return storageReference.getDownloadUrl();
-                        }
-                    }).continueWithTask(new Continuation<Uri, Task<Void>>() {
-                        @Override
-                        public Task<Void> then(@NonNull Task<Uri> task) throws Exception {
-                            Uri uri = task.getResult();
-                            Log.i("download_uri", uri.toString());
-                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            if(user == null){
-                                throw new Exception("User null");
-                            }
-                            Log.i("current_user", user.getEmail());
-                            // TODO maybe add download_uri of uploaded profile
-                            // TODO picture to firestore database
-                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                    .setPhotoUri(uri)
-                                    .build();
-                            return user.updateProfile(profileUpdates);
-                        }
-                    }).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.i("photo_uri", "updated");
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            // TODO
-                            Log.e("error", e.getMessage());
-                        }
-                    });
-                } else Log.i("upload_uri", "null");
-
                 Intent intent = new Intent(SetProfilePicture.this, SetPhone.class);
+                if(((TextView)v).getText() == "Next"){
+                    personDataBundle.putString("photo_path", photoPath);
+                }
                 intent.putExtras(personDataBundle);
                 startActivity(intent);
             }
@@ -210,6 +150,7 @@ public class SetProfilePicture extends AppCompatActivity {
                     Log.i("Content-Uri", contentUri.toString());
                 }
                 String path = getPathFromContentUri(contentUri);
+                photoPath = path;
                 Uri uri = Uri.fromFile(new File(path));
                 Log.i("Uri", uri.toString());
 

@@ -146,9 +146,10 @@ public class MainActivity extends AppCompatActivity {
             getAccountTypeFromDB(user);
         }else if(accountType == AccountTypes.PERSON){
             // TODO send to Welcome/ProfileSetup page if user is new
-            Intent intent = new Intent(MainActivity.this, home.class);
-            startActivity(intent);
-            MainActivity.this.finish();
+            chooseHomeOrProfileCreation(user);
+            // Intent intent = new Intent(MainActivity.this, home.class);
+            // startActivity(intent);
+            // MainActivity.this.finish();
         }else{
             Intent intent = new Intent(MainActivity.this, RestaurantHome.class);
             startActivity(intent);
@@ -165,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Log.i("account_type_SP", "being added");
                         SharedPreferences sPref = getSharedPreferences(getString(R.string.account_type),
                                 Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sPref.edit();
@@ -172,16 +174,16 @@ public class MainActivity extends AppCompatActivity {
                             Boolean forPerson = documentSnapshot.getBoolean("forPerson");
                             Intent intent;
                             if(forPerson){
-                                // TODO send to Welcome/ProfileSetup page if user is new
-                                intent = new Intent(MainActivity.this, home.class);
                                 editor.putInt(user.getEmail(), AccountTypes.PERSON);
+                                editor.apply();
+                                chooseHomeOrProfileCreation(user);
                             }else{
-                                intent = new Intent(MainActivity.this, RestaurantHome.class);
                                 editor.putInt(user.getEmail(), AccountTypes.RESTAURANT);
+                                editor.apply();
+                                intent = new Intent(MainActivity.this, RestaurantHome.class);
+                                startActivity(intent);
+                                MainActivity.this.finish();
                             }
-                            editor.apply();
-                            startActivity(intent);
-                            MainActivity.this.finish();
                         }
                     }
                 });
@@ -228,6 +230,26 @@ public class MainActivity extends AppCompatActivity {
                         // TODO so that they can be checked by an admin later
                         Log.i("email_verification", e.getMessage());
                         Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private void chooseHomeOrProfileCreation(FirebaseUser user){
+        String uid = user.getUid();
+        FirebaseFirestore.getInstance().collection("profile_created")
+                .document(uid).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            Intent intent = new Intent(MainActivity.this, home.class);
+                            startActivity(intent);
+                            MainActivity.this.finish();
+                        }else{
+                            Intent intent = new Intent(MainActivity.this, SetProfilePicture.class);
+                            startActivity(intent);
+                            MainActivity.this.finish();
+                        }
                     }
                 });
     }
