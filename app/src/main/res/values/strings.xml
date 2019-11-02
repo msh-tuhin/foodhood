@@ -66,6 +66,10 @@
         Please set phone number
     </string>
 
+    <string name="ask_for_current_town">
+        Please set your current town
+    </string>
+
     <string name="phone_hint">
         Phone
     </string>

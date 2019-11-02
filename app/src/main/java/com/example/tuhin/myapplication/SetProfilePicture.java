@@ -54,6 +54,7 @@ public class SetProfilePicture extends AppCompatActivity {
     ConstraintLayout imageSourceChooser;
     ImageView profilePicture;
     TextView skipOrNext;
+    Bundle personDataBundle = new Bundle();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,9 +120,6 @@ public class SetProfilePicture extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                // TODO upload photo
-                // TODO launch next activity
-
                 Log.i("skip_next", "clicked");
                 if(uploadUri != null){
                     Log.i("upload_uri", "not null");
@@ -165,6 +163,8 @@ public class SetProfilePicture extends AppCompatActivity {
                                 throw new Exception("User null");
                             }
                             Log.i("current_user", user.getEmail());
+                            // TODO maybe add download_uri of uploaded profile
+                            // TODO picture to firestore database
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                     .setPhotoUri(uri)
                                     .build();
@@ -184,10 +184,8 @@ public class SetProfilePicture extends AppCompatActivity {
                     });
                 } else Log.i("upload_uri", "null");
 
-                // TODO maybe add download_uri of uploaded profile
-                // TODO picture to firestore database
-
                 Intent intent = new Intent(SetProfilePicture.this, SetPhone.class);
+                intent.putExtras(personDataBundle);
                 startActivity(intent);
             }
         });
@@ -221,16 +219,18 @@ public class SetProfilePicture extends AppCompatActivity {
                     Log.i("compressed_uri", compressedFileUri.toString());
                     uploadUri = compressedFileUri;
                     profilePicture.setImageURI(compressedFileUri);
+
+                    imageSourceChooser.setVisibility(View.INVISIBLE);
+                    deleteImage.setClickable(true);
+                    skipOrNext.setText("Next");
                 }catch (IOException e){
 
                     // TODO handle the unsuccessful image compression
+                    // TODO maybe show a dialog(cant compress the selected image)
 
-                    Log.e("error", e.getMessage());
+                    Log.e("compression-error", e.getMessage());
                     // profilePicture.setImageURI(uri);
                 }
-                imageSourceChooser.setVisibility(View.INVISIBLE);
-                deleteImage.setClickable(true);
-                skipOrNext.setText("Next");
 
                 String msg = data.getClipData() != null ? "not null" : "null";
                 Log.i("CLIPDATA", msg);

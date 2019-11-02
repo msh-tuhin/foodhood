@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import myapp.utils.InputValidator;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,12 +25,14 @@ public class SetPhone extends AppCompatActivity {
     TextInputLayout phoneInputLayout;
     TextInputEditText phoneEditText;
     TextView skipOrNext;
+    Bundle personDataBundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_phone);
 
+        personDataBundle = getIntent().getExtras();
         toolbar = findViewById(R.id.toolbar);
         phoneInputLayout = findViewById(R.id.input_layout_phone);
         phoneEditText = findViewById(R.id.phone_editText);
@@ -42,6 +45,7 @@ public class SetPhone extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i("skip_next_phone", "clicked");
+                Intent intent = new Intent(SetPhone.this, SetCurrentTown.class);
                 if(((TextView)v).getText() == "Next"){
                     phoneNumber = phoneEditText.getText().toString();
                     phoneNumber = phoneNumber.replaceAll("[\\s-]", "");
@@ -53,12 +57,14 @@ public class SetPhone extends AppCompatActivity {
                         Log.i("match_start", Integer.toString(matcher.start()));
                         Log.i("match_end", Integer.toString(matcher.end()));
                         phoneNumber = matcher.replaceFirst("");
-                    } else Log.i("match", "not found");
+                    } else {
+                        Log.i("match", "not found");
+                    }
                     Log.i("new_phone_number", phoneNumber);
+                    personDataBundle.putString("phone", phoneNumber);
                 }
-
-                // TODO send phone number to next activity
-                // TODO launch new activity
+                intent.putExtras(personDataBundle);
+                startActivity(intent);
             }
         });
 

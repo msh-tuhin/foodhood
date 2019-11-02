@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="towns_bd">
+        <item>Select Current Town</item>
+        <item>Chattogram</item>
+        <item>Dhaka</item>
+        <item>Rajshahi</item>
+        <item>Cumilla</item>
+        <item>Barishal</item>
+        <item>Sylhet</item>
+    </string-array>
+</resources>

@@ -55,7 +55,8 @@
         <activity android:name=".RestaurantAllDishes" />
         <activity android:name=".FullRestFeed" />
         <activity android:name=".RestAccountSetup" />
-        <activity android:name=".RestaurantHome"></activity>
+        <activity android:name=".RestaurantHome" />
+        <activity android:name=".SetCurrentTown"></activity>
     </application>
 
 </manifest>
