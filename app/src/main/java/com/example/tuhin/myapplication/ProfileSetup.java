@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import id.zelory.compressor.Compressor;
 import models.PersonInfo;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -42,7 +43,6 @@ public class ProfileSetup extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser currentUser;
-    TextView nameTextView;
     Bundle personDatabundle;
 
     @Override
@@ -51,11 +51,8 @@ public class ProfileSetup extends AppCompatActivity {
         setContentView(R.layout.activity_profile_setup);
 
         personDatabundle = getIntent().getExtras();
-        nameTextView = findViewById(R.id.name);
 
         currentUser = mAuth.getCurrentUser();
-        nameTextView.setText(currentUser.getDisplayName());
-
         String newUserName = currentUser.getDisplayName();
         String newUserEmail = currentUser.getEmail();
         String newUserUid = currentUser.getUid();
@@ -66,41 +63,19 @@ public class ProfileSetup extends AppCompatActivity {
         Log.i("new_user_name", newUserName);
         Log.i("new_user_email", newUserEmail);
         Log.i("new_user_uid", newUserUid);
-        Log.i("new_user_phone", newUserPhone);
-        Log.i("new_user_town", newUserCurrentTown);
-        Log.i("new_user_photo_path", photoPath);
+        if(newUserPhone != null) Log.i("new_user_phone", newUserPhone);
+        if(newUserCurrentTown != null) Log.i("new_user_town", newUserCurrentTown);
+        if(photoPath != null) Log.i("new_user_photo_path", photoPath);
 
         Uri uploadUri = compressImage(photoPath);
         uploadPhotoAndAddUrlToDB(uploadUri);
 
-//        PersonInfo personInfo = new PersonInfo();
-//        personInfo.setEmail(newUserEmail);
-//
-//        db.collection("person_info").document(newUserUid).set(personInfo)
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.i("person_info", e.getMessage());
-//                    }
-//                });
-//
-//        Map<String, Object> data = new HashMap<>();
-//        data.put("uid", newUserUid);
-//
-//        FirebaseFunctions.getInstance().getHttpsCallable("setupProfile").call(data)
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.i("function_call", e.getMessage());
-//                    }
-//                })
-//                .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
-//                    @Override
-//                    public void onSuccess(HttpsCallableResult httpsCallableResult) {
-//                        Log.i("function_call", "successful");
-//                    }
-//                });
-
+        addPersonInfo();
+        setupProfileCloud();
+        // this is done from cloud side too
+        // but it takes a bit of time to finish in cloud
+        // that's why it is also done here, maybe not really needed
+        markProfileCreated();
     }
 
     private void uploadPhotoAndAddUrlToDB(Uri uploadUri){
@@ -152,10 +127,13 @@ public class ProfileSetup extends AppCompatActivity {
                             .build();
                     return user.updateProfile(profileUpdates);
                 }
-            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            }).addOnSuccessListener(ProfileSetup.this, new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     Log.i("photo_uri", "updated");
+                    Intent intent = new Intent(ProfileSetup.this, home.class);
+                    startActivity(intent);
+                    ProfileSetup.this.finish();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -184,7 +162,7 @@ public class ProfileSetup extends AppCompatActivity {
     }
 
     private void addPersonVital(Uri photoUri){
-        String newUserUid = currentUser.getUid();
+        String newUserUid = mAuth.getCurrentUser().getUid();
         String newUserName = mAuth.getCurrentUser().getDisplayName();
 
         Map<String, Object> personVital = new HashMap<>();
@@ -197,6 +175,59 @@ public class ProfileSetup extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.e("person_vital", e.getMessage());
+                    }
+                });
+    }
+
+    private void addPersonInfo(){
+        String newUserUid = mAuth.getCurrentUser().getUid();
+        String newUserEmail = mAuth.getCurrentUser().getEmail();
+        String newUserPhone = personDatabundle.getString("phone");
+
+        PersonInfo personInfo = new PersonInfo();
+        personInfo.setEmail(newUserEmail);
+        if(newUserPhone != null){
+            personInfo.setPhone(newUserPhone);
+        }
+        db.collection("person_info").document(newUserUid).set(personInfo)
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i("person_info", e.getMessage());
+                    }
+                });
+    }
+
+    private void setupProfileCloud(){
+        String newUserUid = mAuth.getCurrentUser().getUid();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("uid", newUserUid);
+        FirebaseFunctions.getInstance().getHttpsCallable("setupProfile").call(data)
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i("function_call", e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
+                    @Override
+                    public void onSuccess(HttpsCallableResult httpsCallableResult) {
+                        Log.i("function_call", "successful");
+                    }
+                });
+    }
+
+    private void markProfileCreated(){
+        Map<String, Object> data = new HashMap<>();
+        data.put("a", false);
+        db.collection("profile_created")
+                .document(mAuth.getCurrentUser().getUid())
+                .set(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.i("profile_creation", "marked as done");
                     }
                 });
     }

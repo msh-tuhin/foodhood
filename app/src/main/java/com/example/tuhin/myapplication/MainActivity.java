@@ -147,9 +147,6 @@ public class MainActivity extends AppCompatActivity {
         }else if(accountType == AccountTypes.PERSON){
             // TODO send to Welcome/ProfileSetup page if user is new
             chooseHomeOrProfileCreation(user);
-            // Intent intent = new Intent(MainActivity.this, home.class);
-            // startActivity(intent);
-            // MainActivity.this.finish();
         }else{
             Intent intent = new Intent(MainActivity.this, RestaurantHome.class);
             startActivity(intent);
@@ -199,7 +196,6 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if(documentSnapshot.exists()){
                             Boolean forPerson = documentSnapshot.getBoolean("forPerson");
-                            // TODO send to Welcome/ProfileSetup page if user is new
                             Intent intent = new Intent(MainActivity.this, EmailVerification.class);
                             intent.putExtra("email", emailString);
                             intent.putExtra("for_person", forPerson);

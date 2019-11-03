@@ -178,14 +178,14 @@ public class EmailVerification extends AppCompatActivity {
 
     private void resendVerificationEmail(){
         emailNotVerifiedTextView.setVisibility(View.INVISIBLE);
-        FirebaseUser user = mAuth.getCurrentUser();
+        final FirebaseUser user = mAuth.getCurrentUser();
         if(user != null){
             user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
                         Log.i(TAG+"ver_e", "sent");
-                        String message = "Verification Email sent to ";
+                        String message = "Verification Email sent to " + user.getEmail();
                         Toast.makeText(EmailVerification.this, message, Toast.LENGTH_LONG).show();
                     }else{
                         // TODO show a dialog with the error message
