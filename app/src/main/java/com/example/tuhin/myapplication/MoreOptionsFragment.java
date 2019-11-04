@@ -64,13 +64,18 @@ public class MoreOptionsFragment extends Fragment {
                 Activity parentActivity = MoreOptionsFragment.this.getActivity();
                 Intent intent;
                 switch (position){
-                    case 3:
-                        intent = new Intent(parentActivity, AdvancedSearchDish.class);
+                    case 0:
+                        intent = new Intent(parentActivity, EditPersonProfile.class);
                         startActivity(intent);
                         break;
                     case 2:
                         intent = new Intent(parentActivity, Wishlist.class);
                         startActivity(intent);
+                        break;
+                    case 3:
+                        intent = new Intent(parentActivity, AdvancedSearchDish.class);
+                        startActivity(intent);
+                        break;
                 }
             }
         });

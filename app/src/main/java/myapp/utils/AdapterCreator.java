@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.example.tuhin.myapplication.ActivityResponse;
 
 import myviewholders.BaseHomeFeedHolder;
+import myviewholders.EditPersonProfileHeaderHolder;
 import myviewholders.HalfPostHolder;
 import myviewholders.PersonDetailHeaderHolder;
 import myviewholders.PostTagHolder;
@@ -431,11 +432,170 @@ public class AdapterCreator {
 
     }
 
-    public static FirestorePagingAdapter<FeedbackModel, RecyclerView.ViewHolder> getDishDetailAdapter(){
+    public static  FirestorePagingAdapter<ActivityResponse, RecyclerView.ViewHolder>
+    getEditPersonProfileAdapter(final LifecycleOwner lifecycleOwner,
+                           final Context context,
+                           final String personLink){
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query bQuery = db.collection("own_activities")
+                .document("ySmyxU4yOwWAG7VG56dz0WwnpPe2")
+                .collection("act")
+                .orderBy("ts", Query.Direction.DESCENDING);
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setPrefetchDistance(10)
+                .setPageSize(10).build();
+        FirestorePagingOptions<ActivityResponse> options = new FirestorePagingOptions.Builder<ActivityResponse>()
+                .setLifecycleOwner(lifecycleOwner)
+                .setQuery(bQuery, config, ActivityResponse.class).build();
 
+        FirestorePagingAdapter<ActivityResponse, RecyclerView.ViewHolder> adapter;
+        adapter = new FirestorePagingAdapter<ActivityResponse, RecyclerView.ViewHolder>(options) {
 
+            @Override
+            protected void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position, @NonNull final ActivityResponse model) {
+                Log.i("recyclerview", "onBindViewHolder");
+                Log.i("currentlistsize", Integer.toString(this.getCurrentList().size()));
+                if(holder instanceof EditPersonProfileHeaderHolder) {
+                    ((EditPersonProfileHeaderHolder) holder).bindTo(context, personLink);
+                    return;
+                }
+                // because holder is used in inner method
+                final RecyclerView.ViewHolder holder1 = holder;
+                Log.i("holder1", holder1.getClass().toString());
+                Log.i("TUHIN-DEBUG", model.getLink());
+                String activityLink = model.getLink();
+                // activityLink cannot be used because the position doesn't match
+//                DocumentReference docRef = db.collection("activities").document(this.getCurrentList().get(position-1).getString("l"));
+                DocumentReference docRef = db.collection("activities").document(this.getCurrentList().get(position).getString("l"));
+                Log.i("download", "start");
+                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        Log.i("download", "finish");
+                        if(task.isSuccessful()){
+                            final DocumentSnapshot documentSnapshot = task.getResult();
+                            if(documentSnapshot.exists()){
+                                ((BaseHomeFeedHolder)holder1).bindTo(context, documentSnapshot);
+                            }
 
-        return null;
+                        }
+                    }
+                });
+
+            }
+
+            @NonNull
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                Log.i("recyclerview", "onCreateViewHolder");
+                RecyclerView.ViewHolder viewHolder;
+                View view;
+                switch(i){
+                    case 0:
+                        // a person posts
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.post_half, viewGroup, false);
+                        viewHolder = new HalfPostHolder(view);
+                        break;
+                    case 2:
+                        // a restaurant posts
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.rest_feed, viewGroup, false);
+                        viewHolder = new RestFeedHolder(view);
+                        break;
+                    case 1:
+                        // a person gets tagged in a post
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.like_tag_post, viewGroup, false);
+                        viewHolder = new PostTagHolder(view);
+                        break;
+                    case 3:
+                        // a person likes a post
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.like_tag_post, viewGroup, false);
+                        viewHolder = new PostLikeTagHolder(view);
+                        break;
+                    case 4:
+                        // a person likes a restaurant feed
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.like_rest_feed, viewGroup, false);
+                        viewHolder = new RestFeedLikeHolder(view);
+                        break;
+                    case 5:
+                        // a person comments on a post
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.comment_post, viewGroup, false);
+                        viewHolder = new PostCommentHolder(view);
+                        break;
+                    case 7:
+                        // a person replies to a comment on a post
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.reply_post, viewGroup, false);
+                        viewHolder = new PostReplyHolder(view);
+                        break;
+
+                    case 6:
+                        // a person comments on a rest feed
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.comment_rest_feed, viewGroup, false);
+                        viewHolder = new RestFeedCommentHolder(view);
+                        break;
+                    case 8:
+                        // a person replies to comment on rest feed
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.reply_rest_feed, viewGroup, false);
+                        viewHolder = new RestFeedReplyHolder(view);
+                        break;
+                    default:
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.edit_person_profile_header, viewGroup, false);
+                        viewHolder = new EditPersonProfileHeaderHolder(view);
+                        break;
+                }
+                return viewHolder;
+            }
+
+            @Override
+            public int getItemViewType(int position) {
+                if(position==0) return 100;
+                Log.i("recyclerview", "getItemViewType");
+                Log.i("position", Integer.toString(position));
+                // damn!!! this is clever !
+//                DocumentSnapshot documentSnapshot = this.getCurrentList().get(position-1);
+                DocumentSnapshot documentSnapshot = this.getCurrentList().get(position);
+                Long type = (Long) documentSnapshot.get("t");
+                Log.i("type", Long.toString(type));
+                return type.intValue();
+            }
+
+            @Override
+            public int getItemCount() {
+                int c = super.getItemCount();
+                Log.i("count", Integer.toString(c));
+                return c;
+            }
+
+            @Override
+            protected void onLoadingStateChanged(@NonNull LoadingState state) {
+                switch (state){
+                    case LOADING_INITIAL:
+                        Log.i("loadingstate", "loading initial");
+                        break;
+                    case LOADING_MORE:
+                        Log.i("loadingstate", "loading more");
+                        break;
+                    case LOADED:
+                        Log.i("loadingstate", "loading done");
+                        break;
+                    case FINISHED:
+                        Log.i("loadingstate", "loading finished");
+                        break;
+                    case ERROR:
+                        Log.i("loadingstate", "error occured");
+                }
+            }
+        };
+        return adapter;
     }
-
 }

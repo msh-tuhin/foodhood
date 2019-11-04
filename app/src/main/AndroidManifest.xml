@@ -56,7 +56,21 @@
         <activity android:name=".FullRestFeed" />
         <activity android:name=".RestAccountSetup" />
         <activity android:name=".RestaurantHome" />
-        <activity android:name=".SetCurrentTown"></activity>
+        <activity android:name=".SetCurrentTown" />
+        <activity
+            android:name=".EditPersonProfile"
+            android:parentActivityName=".home">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".home" />
+        </activity>
+        <activity
+            android:name=".EditPersonProfileForm"
+            android:parentActivityName=".EditPersonProfile">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".EditPersonProfile" />
+        </activity>
     </application>
 
 </manifest>
