@@ -52,12 +52,14 @@ import java.util.regex.Pattern;
 public class EditPersonProfileForm extends AppCompatActivity {
     private String[] months = {"Jan", "Feb", "March", "April", "May", "June",
             "July", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    private String mBio = "";
     private String mPhone = "";
     private String mCurrentTown = "Select Current Town";
     private String mHomeTown = "Select Home Town";
     private String mYearString = "Year";
     private String mMonthString = "Month";
     private String mDateString = "Date";
+    private String oldBio = "";
     private String oldPhone = "";
     private String oldHomeTown = "Select Home Town";
     private String oldCurrentTown = "Select Current Town";
@@ -71,6 +73,8 @@ public class EditPersonProfileForm extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     Toolbar toolbar;
+    ImageView enableBioEdit;
+    TextInputEditText bioEditText;
     ImageView enablePhoneEdit;
     TextInputLayout phoneLayout;
     TextInputEditText phoneEditText;
@@ -102,6 +106,8 @@ public class EditPersonProfileForm extends AppCompatActivity {
         // not sure about this
         // actionBar.setDisplayShowHomeEnabled(true);
 
+        enableBioEdit = findViewById(R.id.enable_bio_edit);
+        bioEditText = findViewById(R.id.bio);
         phoneLayout = findViewById(R.id.phone_layout);
         phoneEditText = findViewById(R.id.phone);
         enablePhoneEdit = findViewById(R.id.enable_phone_edit);
@@ -126,14 +132,18 @@ public class EditPersonProfileForm extends AppCompatActivity {
                     DocumentSnapshot personInfo = task.getResult();
                     if(personInfo.exists()){
                         String personName = personInfo.getString("n");
+                        String personBio = personInfo.getString("bio");
                         Timestamp personBirthdate = personInfo.getTimestamp("b");
                         String personHometown = personInfo.getString("ht");
                         String personCurrentLocation = personInfo.getString("ct");
                         String personPhone = personInfo.getString("p");
+
+                        if(personBio != null){
+                            oldBio = personBio;
+                        }
                         if(personPhone != null){
                             oldPhone = personPhone;
                         }
-                        oldPhone = personPhone;
                         if(personCurrentLocation != null){
                             oldCurrentTown = personCurrentLocation;
                         }
@@ -142,12 +152,33 @@ public class EditPersonProfileForm extends AppCompatActivity {
                         }
                         setOldBirthDate(personBirthdate);
 
+                        bindBio(personBio);
                         bindPhone(personPhone);
                         bindCurrentTownSpinner(personCurrentLocation);
                         bindHomeTownSpinner(personHometown);
                         bindBirthdate(personBirthdate);
                     }
                 }
+            }
+        });
+
+        bioEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mBio = s.toString();
+                Log.i("editing_bio", mBio);
+                saveButtonController.shouldBioBeSaved = shouldBioBeSaved();
+                saveButtonController.enableOrDisableSaveButton();
             }
         });
 
@@ -168,6 +199,14 @@ public class EditPersonProfileForm extends AppCompatActivity {
                 mPhone = getNewPhoneNumber(s.toString());
                 saveButtonController.shouldPhoneBeSaved = shouldPhoneBeSaved();
                 saveButtonController.enableOrDisableSaveButton();
+            }
+        });
+
+        enableBioEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bioEditText.setEnabled(true);
+                bioEditText.requestFocus();
             }
         });
 
@@ -197,10 +236,13 @@ public class EditPersonProfileForm extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Map<String, Object>  personVital = new HashMap<>();
+                if(saveButtonController.shouldBioBeSaved){
+                    personVital.put("bio", mBio);
+                    oldBio = mBio;
+                }
                 if(saveButtonController.shouldPhoneBeSaved){
-                    String phone = phoneEditText.getText().toString();
-                    personVital.put("p", phone);
-                    oldPhone = phone;
+                    personVital.put("p", mPhone);
+                    oldPhone = mPhone;
                 }
                 if(saveButtonController.shouldCurrentTownBeSaved){
                     personVital.put("ct", mCurrentTown);
@@ -234,8 +276,17 @@ public class EditPersonProfileForm extends AppCompatActivity {
                                 Log.i("profile_update", "failed");
                             }
                         });
+
+                bioEditText.setEnabled(false);
+                phoneEditText.setEnabled(false);
             }
         });
+    }
+
+    private void bindBio(String bio){
+        if(bio != null){
+            bioEditText.setText(bio);
+        }
     }
 
     private void bindPhone(String phone){
@@ -433,6 +484,10 @@ public class EditPersonProfileForm extends AppCompatActivity {
         });
     }
 
+    private boolean shouldBioBeSaved(){
+        return !oldBio.equals(mBio);
+    }
+
     private boolean shouldPhoneBeSaved(){
         if(mPhone == null) return false;
         return !oldPhone.equals(mPhone);
@@ -543,6 +598,7 @@ public class EditPersonProfileForm extends AppCompatActivity {
     }
 
     private class SaveButtonController{
+        boolean shouldBioBeSaved = false;
         boolean shouldPhoneBeSaved = false;
         boolean shouldCurrentTownBeSaved = false;
         boolean shouldHomeTownBeSaved = false;
@@ -554,7 +610,7 @@ public class EditPersonProfileForm extends AppCompatActivity {
         }
 
         void enableOrDisableSaveButton(){
-            if(shouldPhoneBeSaved || shouldHomeTownBeSaved
+            if(shouldBioBeSaved || shouldPhoneBeSaved || shouldHomeTownBeSaved
                     || shouldCurrentTownBeSaved || shouldBirthDateBeSaved){
                 saveButton.setEnabled(true);
             }else{
@@ -564,6 +620,7 @@ public class EditPersonProfileForm extends AppCompatActivity {
 
         void refresh(){
             saveButton.setEnabled(false);
+            shouldBioBeSaved = false;
             shouldPhoneBeSaved = false;
             shouldCurrentTownBeSaved = false;
             shouldHomeTownBeSaved = false;
