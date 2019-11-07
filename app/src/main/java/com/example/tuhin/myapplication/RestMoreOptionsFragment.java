@@ -31,7 +31,7 @@ public class RestMoreOptionsFragment extends Fragment {
             R.drawable.outline_people_outline_black_24dp
     };
 
-    private String[] items = {"Profile Info", "Followers"};
+    private String[] items = {"View Profile", "Followers"};
 
     public RestMoreOptionsFragment() {
         // Required empty public constructor
@@ -60,8 +60,8 @@ public class RestMoreOptionsFragment extends Fragment {
                 Intent intent;
                 switch (position){
                     case 0:
-                        // intent = new Intent(parentActivity, AdvancedSearchDish.class);
-                        // startActivity(intent);
+                        intent = new Intent(parentActivity, EditRestProfile.class);
+                        startActivity(intent);
                         Log.i("more_options", "go to info");
                         break;
                     case 1:
