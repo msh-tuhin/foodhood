@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -21,6 +22,7 @@ public class EditRestProfile extends AppCompatActivity {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     Toolbar toolbar;
+    ImageView coverPhoto;
     TextView nameTV;
     TextView ratingTV;
     TextView phoneTV;
@@ -35,6 +37,7 @@ public class EditRestProfile extends AppCompatActivity {
         setContentView(R.layout.activity_edit_rest_profile);
 
         toolbar = findViewById(R.id.toolbar);
+        coverPhoto = findViewById(R.id.cover_photo);
         nameTV = findViewById(R.id.restaurant_name);
         ratingTV = findViewById(R.id.rating);
         phoneTV = findViewById(R.id.phone);
@@ -71,6 +74,14 @@ public class EditRestProfile extends AppCompatActivity {
                     bindEmail(restVitalSnapshot);
                     bindWebsite(restVitalSnapshot);
                 }
+            }
+        });
+
+        coverPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EditRestProfile.this, ChangeRestCoverPhoto.class);
+                startActivity(intent);
             }
         });
 

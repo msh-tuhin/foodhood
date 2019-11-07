@@ -78,7 +78,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".RestaurantHome" />
         </activity>
-        <activity android:name=".EditRestProfileForm"
+        <activity
+            android:name=".EditRestProfileForm"
+            android:parentActivityName=".EditRestProfile">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".EditRestProfile" />
+        </activity>
+        <activity android:name=".ChangeRestCoverPhoto"
             android:parentActivityName=".EditRestProfile">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
