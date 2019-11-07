@@ -281,11 +281,15 @@ public class AdapterCreator {
 
     }
 
-    public static  FirestorePagingAdapter<ActivityResponse, RecyclerView.ViewHolder> getPersonDetailAdapter(final LifecycleOwner lifecycleOwner, final Context context, final String personLink){
+    public static  FirestorePagingAdapter<ActivityResponse, RecyclerView.ViewHolder>
+    getPersonDetailAdapter(final LifecycleOwner lifecycleOwner,
+                           final Context context,
+                           final String personLink){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query bQuery = db.collection("friends_activities")
+        Query bQuery = db.collection("own_activities")
                 .document("ySmyxU4yOwWAG7VG56dz0WwnpPe2")
-                .collection("act").orderBy("ts");
+                // .document(personLink)
+                .collection("act").orderBy("ts", Query.Direction.DESCENDING);
         PagedList.Config config = new PagedList.Config.Builder()
                 .setEnablePlaceholders(false)
                 .setPrefetchDistance(10)
@@ -343,14 +347,18 @@ public class AdapterCreator {
                                 .inflate(R.layout.post_half, viewGroup, false);
                         viewHolder = new HalfPostHolder(view);
                         break;
+                    case 1:
+                        // a person gets tagged in a post
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.like_tag_post, viewGroup, false);
+                        viewHolder = new PostTagHolder(view);
+                        break;
                     case 2:
                         // a restaurant posts
                         view = LayoutInflater.from(viewGroup.getContext())
                                 .inflate(R.layout.rest_feed, viewGroup, false);
                         viewHolder = new RestFeedHolder(view);
                         break;
-                    case 1:
-                        // a person gets tagged in a post
                     case 3:
                         // a person likes a post
                         view = LayoutInflater.from(viewGroup.getContext())
@@ -377,7 +385,17 @@ public class AdapterCreator {
                         break;
 
                     case 6:
+                        // a person comments on a rest feed
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.comment_rest_feed, viewGroup, false);
+                        viewHolder = new RestFeedCommentHolder(view);
+                        break;
                     case 8:
+                        // a person replies to comment on rest feed
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.reply_rest_feed, viewGroup, false);
+                        viewHolder = new RestFeedReplyHolder(view);
+                        break;
                     default:
                         view = LayoutInflater.from(viewGroup.getContext())
                                 .inflate(R.layout.person_detail_header, viewGroup, false);
@@ -498,17 +516,17 @@ public class AdapterCreator {
                                 .inflate(R.layout.post_half, viewGroup, false);
                         viewHolder = new HalfPostHolder(view);
                         break;
-                    case 2:
-                        // a restaurant posts
-                        view = LayoutInflater.from(viewGroup.getContext())
-                                .inflate(R.layout.rest_feed, viewGroup, false);
-                        viewHolder = new RestFeedHolder(view);
-                        break;
                     case 1:
                         // a person gets tagged in a post
                         view = LayoutInflater.from(viewGroup.getContext())
                                 .inflate(R.layout.like_tag_post, viewGroup, false);
                         viewHolder = new PostTagHolder(view);
+                        break;
+                    case 2:
+                        // a restaurant posts
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.rest_feed, viewGroup, false);
+                        viewHolder = new RestFeedHolder(view);
                         break;
                     case 3:
                         // a person likes a post

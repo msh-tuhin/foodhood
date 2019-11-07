@@ -10,9 +10,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.tuhin.myapplication.EditPersonProfile;
 import com.example.tuhin.myapplication.EditPersonProfileForm;
+import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.R;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -60,6 +63,7 @@ public class EditPersonProfileHeaderHolder extends RecyclerView.ViewHolder {
                     @Override
                     public void onSuccess(DocumentSnapshot personVitalSnapshot) {
                         if(personVitalSnapshot.exists()){
+                            setCollapsedTitle(personVitalSnapshot);
                             bindName(personVitalSnapshot);
                             bindBio(personVitalSnapshot);
                             bindPhone(personVitalSnapshot);
@@ -147,5 +151,27 @@ public class EditPersonProfileHeaderHolder extends RecyclerView.ViewHolder {
         int end = start + spannable.length();
         spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableStringBuilder;
+    }
+
+    private void setCollapsedTitle(DocumentSnapshot personVitalSnapshot){
+        final String name = personVitalSnapshot.getString("n");
+        if(name == null) return;
+        ((EditPersonProfile)mContext).appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = true;
+            int scrollRange = -1;
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    ((EditPersonProfile)mContext).collapsingToolbarLayout.setTitle(name);
+                    isShow = true;
+                } else if(isShow) {
+                    ((EditPersonProfile)mContext).collapsingToolbarLayout.setTitle(" ");
+                    isShow = false;
+                }
+            }
+        });
     }
 }

@@ -7,11 +7,13 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -20,13 +22,16 @@ import myapp.utils.AdapterCreator;
 // receives intent with string extra : personLink
 public class PersonDetail extends AppCompatActivity {
 
-    FirebaseFirestore db;
-    RecyclerView rv;
+    float prev = 1f;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirestorePagingAdapter<ActivityResponse, RecyclerView.ViewHolder> adapter;
-    AppBarLayout appBarLayout;
+
+    public CollapsingToolbarLayout collapsingToolbarLayout;
+    public AppBarLayout appBarLayout;
+    Toolbar toolbar;
     CircleImageView personAvatar;
     Animation scaleAnimation;
-    float prev = 1f;
+    RecyclerView rv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +39,9 @@ public class PersonDetail extends AppCompatActivity {
         setContentView(R.layout.activity_person_detail);
         String personLink = getIntent().getStringExtra("personLink");
 
-        db = FirebaseFirestore.getInstance();
+        collapsingToolbarLayout = findViewById(R.id.collapsingToolbarLayout);
         appBarLayout = findViewById(R.id.appBarLayout);
+        toolbar = findViewById(R.id.toolbar);
         personAvatar = findViewById(R.id.person_avatar);
         rv = findViewById(R.id.rv);
 

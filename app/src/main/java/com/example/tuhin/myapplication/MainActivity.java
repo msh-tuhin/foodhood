@@ -111,14 +111,14 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(AuthResult authResult) {
                         final FirebaseUser user = authResult.getUser();
                         if(user != null){
-//                             chooseAndLaunchHome(user);
-                            if(user.isEmailVerified()){
-                                Log.i("sign_in", "Successful");
-                                chooseAndLaunchHome(user);
-                            }else{
-                                Log.i("sign_in", "Email not verified");
-                                sendEmailVerification(user, email);
-                            }
+                             chooseAndLaunchHome(user);
+//                            if(user.isEmailVerified()){
+//                                Log.i("sign_in", "Successful");
+//                                chooseAndLaunchHome(user);
+//                            }else{
+//                                Log.i("sign_in", "Email not verified");
+//                                sendEmailVerification(user, email);
+//                            }
                         }else{
                             // maybe this never happens
                             Log.i("sign_in", "User is null");

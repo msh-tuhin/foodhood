@@ -28,8 +28,8 @@ public class EditPersonProfile extends AppCompatActivity {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     RecyclerView rv;
     FirestorePagingAdapter<ActivityResponse, RecyclerView.ViewHolder> adapter;
-    CollapsingToolbarLayout collapsingToolbarLayout;
-    AppBarLayout appBarLayout;
+    public CollapsingToolbarLayout collapsingToolbarLayout;
+    public AppBarLayout appBarLayout;
     CircleImageView personAvatar;
     Animation scaleAnimation;
     float prev = 1f;
@@ -39,10 +39,10 @@ public class EditPersonProfile extends AppCompatActivity {
         setContentView(R.layout.activity_edit_person_profile);
 
         collapsingToolbarLayout = findViewById(R.id.collapsingToolbarLayout);
-        collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
+        // collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
         toolbar = findViewById(R.id.toolbar);
 
-        toolbar.setTitle("Profile");
+        toolbar.setTitle(" ");
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
