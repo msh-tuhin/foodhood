@@ -3,8 +3,10 @@ package com.example.tuhin.myapplication;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import myapp.utils.AccountTypes;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +17,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firestore.v1.StructuredQuery;
+import com.squareup.picasso.Picasso;
 
 public class EditRestProfile extends AppCompatActivity {
 
@@ -67,6 +71,7 @@ public class EditRestProfile extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentSnapshot restVitalSnapshot) {
                 if(restVitalSnapshot.exists()){
+                    bindCoverPhoto(restVitalSnapshot);
                     bindName(restVitalSnapshot);
                     bindAddress(restVitalSnapshot);
                     bindPhone(restVitalSnapshot);
@@ -81,6 +86,7 @@ public class EditRestProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EditRestProfile.this, ChangeRestCoverPhoto.class);
+                intent.putExtra("entity", AccountTypes.RESTAURANT);
                 startActivity(intent);
             }
         });
@@ -92,6 +98,17 @@ public class EditRestProfile extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void bindCoverPhoto(DocumentSnapshot restVitalSnapshot){
+        if(restVitalSnapshot == null) return;
+        String coverPhotoLink = restVitalSnapshot.getString("cp");
+        if(coverPhotoLink != null && !coverPhotoLink.equals("")){
+            Picasso.get().load(coverPhotoLink)
+                    .placeholder(R.drawable.gray)
+                    .error(R.drawable.gray)
+                    .into(coverPhoto);
+        }
     }
 
     private void bindName(DocumentSnapshot restVitalSnapshot){

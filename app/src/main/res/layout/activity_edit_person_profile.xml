@@ -26,10 +26,11 @@
                 android:layout_height="wrap_content"
                 android:background="#ffffff">
                 <ImageView
+                    android:id="@+id/cover_photo"
+                    android:src="@drawable/gray"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/restaurant" />
+                    android:scaleType="fitXY"/>
             </FrameLayout>
 
             <androidx.appcompat.widget.Toolbar
@@ -43,14 +44,14 @@
     </com.google.android.material.appbar.AppBarLayout>
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/person_avatar"
+        android:src="@drawable/ltgray"
         android:layout_width="100dp"
         android:layout_height="100dp"
         app:civ_border_color="#ffffff"
         app:civ_border_width="2dp"
-        android:src="@drawable/popeye"
         android:layout_marginLeft="32dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="150dp"/>
+        android:layout_marginTop="150dp" />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv"
         android:layout_width="match_parent"

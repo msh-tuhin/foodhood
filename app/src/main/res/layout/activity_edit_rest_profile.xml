@@ -29,10 +29,10 @@
             android:orientation="vertical">
             <ImageView
                 android:id="@+id/cover_photo"
+                android:src="@drawable/gray"
                 android:layout_width="match_parent"
-                android:layout_height="160dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/restaurant" />
+                android:layout_height="200dp"
+                android:scaleType="fitXY"/>
             <TextView
                 android:textColor="#000000"
                 android:textSize="24sp"

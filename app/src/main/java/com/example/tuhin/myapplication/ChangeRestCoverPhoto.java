@@ -9,6 +9,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import id.zelory.compressor.Compressor;
+import myapp.utils.AccountTypes;
 import myapp.utils.RealPathUtil;
 
 import android.Manifest;
@@ -16,6 +17,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -42,6 +44,7 @@ import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +56,9 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
     final int IMAGE_CHOOSE_REQUEST_CODE = 1;
     final int REQUEST_EXTERNAL_STORAGE_READ_PERM = 1;
 
-    private String mRestaurantLink;
+    private String mPersonOrRestaurantLink;
+    private String mCollectonName;
+    private int mEntity;
     Uri uploadUri = null;
     String photoPath;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -86,7 +91,7 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
         progressTV = findViewById(R.id.progress_text);
         frameLayoutImage = findViewById(R.id.framelayout_image);
 
-        mRestaurantLink = mAuth.getCurrentUser().getUid();
+        mPersonOrRestaurantLink = mAuth.getCurrentUser().getUid();
 
         toolbar.setTitle("Cover Photo");
         setSupportActionBar(toolbar);
@@ -95,6 +100,9 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         // not sure about this
         // actionBar.setDisplayShowHomeEnabled(true);
+
+        mEntity = getIntent().getIntExtra("entity", AccountTypes.PERSON);
+        mCollectonName = mEntity==AccountTypes.PERSON ? "person_vital":"rest_vital";
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             Log.i("Permission", "External storage : denied");
@@ -105,14 +113,14 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
             // TODO maybe nothing
         }
 
-        db.collection("rest_vital")
-                .document(mRestaurantLink)
+        db.collection(mCollectonName)
+                .document(mPersonOrRestaurantLink)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot restVitalSnapshot) {
-                        if(restVitalSnapshot.exists()){
-                            bindImage(restVitalSnapshot);
+                    public void onSuccess(DocumentSnapshot vitalSnapshot) {
+                        if(vitalSnapshot.exists()){
+                            bindImage(vitalSnapshot);
                         }
                     }
                 });
@@ -162,6 +170,13 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
                 progressTV.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        // return super.onSupportNavigateUp();
+        onBackPressed();
+        return true;
     }
 
     @Override
@@ -279,7 +294,7 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
                         throw new Exception("User null");
                     }
                     Log.i("current_user", user.getEmail());
-                    updateRestaurantVital(uri);
+                    updateVital(uri);
                     UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                             .setPhotoUri(uri)
                             .build();
@@ -302,21 +317,32 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
         }
     }
 
-    private void updateRestaurantVital(Uri uri){
-        Map<String, Object> restVital = new HashMap<>();
-        restVital.put("cp", uri.toString());
+    private void updateVital(Uri uri){
+        Map<String, Object> restOrPersonVital = new HashMap<>();
+        restOrPersonVital.put("cp", uri.toString());
 
-        db.collection("rest_vital")
-                .document(mRestaurantLink).update(restVital)
+        db.collection(mCollectonName)
+                .document(mPersonOrRestaurantLink).update(restOrPersonVital)
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.e("rest_vital", e.getMessage());
+                        Log.e("vital_info_update", e.getMessage());
                     }
                 });
     }
 
-    private void bindImage(DocumentSnapshot restVitalSnapshot){
-        if(restVitalSnapshot == null) return;
+    private void bindImage(DocumentSnapshot vitalSnapshot){
+        if(vitalSnapshot == null) return;
+        String coverPhotoLink = vitalSnapshot.getString("cp");
+        if(coverPhotoLink == null || coverPhotoLink.equals("")){
+            deleteImage.setVisibility(View.VISIBLE);
+            imageSourceChooser.setVisibility(View.VISIBLE);
+        }else{
+            Picasso.get().load(coverPhotoLink)
+                    .placeholder(R.drawable.gray)
+                    .error(R.drawable.gray)
+                    .into(coverPhotoIV);
+            deleteImage.setVisibility(View.VISIBLE);
+        }
     }
 }

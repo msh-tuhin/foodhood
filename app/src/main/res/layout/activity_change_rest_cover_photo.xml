@@ -33,6 +33,7 @@
 
         <ImageView
             android:id="@+id/cover_photo"
+            android:src="@drawable/gray"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
@@ -44,14 +45,14 @@
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_delete"
             android:layout_gravity="end"
-            android:visibility="visible"/>
+            android:visibility="invisible"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/image_source_chooser"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#eeeeee"
-            android:visibility="visible">
+            android:visibility="invisible">
 
             <ImageButton
                 android:id="@+id/camera"
