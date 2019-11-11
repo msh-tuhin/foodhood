@@ -86,7 +86,7 @@ public class EditRestProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EditRestProfile.this, ChangeRestCoverPhoto.class);
-                intent.putExtra("entity", AccountTypes.RESTAURANT);
+                intent.putExtra("changeable", "restaurant_cover_pic");
                 startActivity(intent);
             }
         });

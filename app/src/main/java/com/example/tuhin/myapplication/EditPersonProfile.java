@@ -97,7 +97,16 @@ public class EditPersonProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EditPersonProfile.this, ChangeRestCoverPhoto.class);
-                intent.putExtra("entity", AccountTypes.PERSON);
+                intent.putExtra("changeable", "person_cover_pic");
+                startActivity(intent);
+            }
+        });
+
+        personAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EditPersonProfile.this, ChangeRestCoverPhoto.class);
+                intent.putExtra("changeable", "person_profile_pic");
                 startActivity(intent);
             }
         });

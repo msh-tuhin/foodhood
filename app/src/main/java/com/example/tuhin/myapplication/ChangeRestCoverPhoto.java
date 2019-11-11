@@ -39,6 +39,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
@@ -58,7 +59,7 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
 
     private String mPersonOrRestaurantLink;
     private String mCollectonName;
-    private int mEntity;
+    private String mChangeable;
     Uri uploadUri = null;
     String photoPath;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -93,7 +94,7 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
 
         mPersonOrRestaurantLink = mAuth.getCurrentUser().getUid();
 
-        toolbar.setTitle("Cover Photo");
+        toolbar.setTitle("Change Photo");
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -101,8 +102,8 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
         // not sure about this
         // actionBar.setDisplayShowHomeEnabled(true);
 
-        mEntity = getIntent().getIntExtra("entity", AccountTypes.PERSON);
-        mCollectonName = mEntity==AccountTypes.PERSON ? "person_vital":"rest_vital";
+        mChangeable = getIntent().getStringExtra("changeable");
+        mCollectonName = mChangeable.equals("restaurant_cover_pic") ? "rest_vital":"person_vital";
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             Log.i("Permission", "External storage : denied");
@@ -284,32 +285,14 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
                     saveButton.setVisibility(View.VISIBLE);
                     return storageReference.getDownloadUrl();
                 }
-            }).continueWithTask(new Continuation<Uri, Task<Void>>() {
+            }).addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
-                public Task<Void> then(@NonNull Task<Uri> task) throws Exception {
-                    Uri uri = task.getResult();
-                    Log.i("download_uri", uri.toString());
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    if(user == null){
-                        throw new Exception("User null");
-                    }
-                    Log.i("current_user", user.getEmail());
+                public void onSuccess(Uri uri) {
                     updateVital(uri);
-                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                            .setPhotoUri(uri)
-                            .build();
-                    return user.updateProfile(profileUpdates);
-                }
-            }).addOnSuccessListener(ChangeRestCoverPhoto.this, new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.i("photo_uri", "updated");
-                }
-            }).addOnFailureListener(ChangeRestCoverPhoto.this, new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    // TODO
-                    Log.e("error", e.getMessage());
+                    if(mChangeable.equals("person_profile_pic") ||
+                            mChangeable.equals("restaurant_cover_pic")){
+                        updatePhotoUri(uri);
+                    }
                 }
             });
         } else {
@@ -319,7 +302,11 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
 
     private void updateVital(Uri uri){
         Map<String, Object> restOrPersonVital = new HashMap<>();
-        restOrPersonVital.put("cp", uri.toString());
+        if(mChangeable.equals("person_profile_pic")){
+            restOrPersonVital.put("pp", uri.toString());
+        }else{
+            restOrPersonVital.put("cp", uri.toString());
+        }
 
         db.collection(mCollectonName)
                 .document(mPersonOrRestaurantLink).update(restOrPersonVital)
@@ -331,9 +318,36 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
                 });
     }
 
+    private void updatePhotoUri(Uri uri){
+        FirebaseUser user = mAuth.getCurrentUser();
+        if(user == null) return;
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setPhotoUri(uri)
+                .build();
+        user.updateProfile(profileUpdates)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.i("photo_uri", "updated");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("photo_uri", e.getMessage());
+                    }
+                });
+    }
+
     private void bindImage(DocumentSnapshot vitalSnapshot){
         if(vitalSnapshot == null) return;
-        String coverPhotoLink = vitalSnapshot.getString("cp");
+        String coverPhotoLink;
+        if(mChangeable.equals("person_profile_pic")){
+            coverPhotoLink = vitalSnapshot.getString("pp");
+        }else {
+            coverPhotoLink = vitalSnapshot.getString("cp");
+        }
+
         if(coverPhotoLink == null || coverPhotoLink.equals("")){
             deleteImage.setVisibility(View.VISIBLE);
             imageSourceChooser.setVisibility(View.VISIBLE);
