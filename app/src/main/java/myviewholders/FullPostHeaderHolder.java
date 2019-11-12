@@ -47,15 +47,15 @@ import myapp.utils.SourceAllDishes;
 public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         implements PostHolderInterface{
 
-    FirebaseFirestore db;
-    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
 
-    private Context mContext;
-    private DocumentReference mPostReference;
-    private String mPostLink;
-    private PostBuilder mPostBuilder;
-    private DocumentSnapshot mPostSnapShot;
-    private Task<DocumentSnapshot> mTaskPost;
+    public Context mContext;
+    public DocumentReference mPostReference;
+    public String mPostLink;
+    public PostBuilder mPostBuilder;
+    public DocumentSnapshot mPostSnapShot;
+    public Task<DocumentSnapshot> mTaskPost;
 
     public CircleImageView profileImage;
     public TextView namePostedBy;
@@ -98,7 +98,6 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
                        Task<DocumentSnapshot> taskPost,
                        String postLink){
         Log.i("bindTo", this.getClass().toString());
-        db = FirebaseFirestore.getInstance();
 
         setmContext(context);
         setmTaskPost(taskPost);
@@ -112,34 +111,35 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         addTheFeedbacks();
     }
 
-    private void setmContext(Context context){
+    public void setmContext(Context context){
         mContext = context;
     }
 
-    private void setmPostLink(String postLink){
+    public void setmPostLink(String postLink){
         mPostLink = postLink;
     }
 
-    private void setmPostReference(String postLink){
+    public void setmPostReference(String postLink){
         mPostReference = db.collection("posts").document(postLink);
     }
 
-    private void setmPostSnapshot(DocumentSnapshot post){
+    public void setmPostSnapshot(DocumentSnapshot post){
         mPostSnapShot = post;
     }
 
-    private void setmPostBuilder(Context context, DocumentSnapshot post){
+    public void setmPostBuilder(Context context, DocumentSnapshot post){
         mPostBuilder = new PostBuilder(context, post);
     }
 
-    private void setmTaskPost(Task<DocumentSnapshot> taskPost) {
+    public void setmTaskPost(Task<DocumentSnapshot> taskPost) {
         mTaskPost = taskPost;
     }
 
-    private void setBindValuesOnClickListenersDependentOnPostDownload(){
+    public void setBindValuesOnClickListenersDependentOnPostDownload(){
         mTaskPost.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                Log.i("Post", "downloaded");
                 DocumentSnapshot post = task.getResult();
                 if(post.exists()){
                     setmPostSnapshot(post);
@@ -151,7 +151,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         });
     }
 
-    private void bindValuesDependentOnPostDownload() {
+    public void bindValuesDependentOnPostDownload() {
         bindHeader();
         bindAvatar();
         bindNamePostedBy();
@@ -166,12 +166,12 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         bindNoOfComment();
     }
 
-    private void bindValuesIndependent(){
+    public void bindValuesIndependent(){
         bindGoToFull();
         bindCommentIcon();
     }
 
-    private void setOnClickListenersDependentOnPostDownload(){
+    public void setOnClickListenersDependentOnPostDownload(){
         setHeaderOnClickListener();
         setAvatarOnClickListener();
         setNamePostedByOnClickListener();
@@ -185,7 +185,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         setNoOfCommentOnClickListener();
     }
 
-    private void setOnClickListenersIndependent(){
+    public void setOnClickListenersIndependent(){
         setGoToFullOnClickListener();
         setLikeIconOnClickListener();
         setCommentIconOnClickListener();
@@ -420,7 +420,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
 
     }
 
-    private void addLikeToPost(){
+    public void addLikeToPost(){
         String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mPostReference.update("l", FieldValue.arrayUnion(likedBy))
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -436,7 +436,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
                 });
     }
 
-    private void removeLikeFromPost(){
+    public void removeLikeFromPost(){
         String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
         mPostReference.update("l", FieldValue.arrayRemove(likedBy))
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -452,7 +452,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
                 });
     }
 
-    private void createActivityForLike(){
+    public void createActivityForLike(){
         final String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
         final DocumentReference postsLikedByUserRef = db.collection("liked_once").document(likedBy);
         postsLikedByUserRef.get()
@@ -492,7 +492,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
                 });
     }
 
-    private void addTheFeedbacks(){
+    public void addTheFeedbacks(){
         mTaskPost.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot post) {
@@ -507,7 +507,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         });
     }
 
-    private void addRestaurantFeedback(DocumentSnapshot post){
+    public void addRestaurantFeedback(DocumentSnapshot post){
         String restaurantFeedback = post.getString("rf");
         final Map<String, String> restaurant = (Map<String, String>) post.get("r");
         db.collection("feedbacks").document(restaurantFeedback)
@@ -527,7 +527,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         });
     }
 
-    private View getViewForRestaurantFeedback(DocumentSnapshot restaurantFeedbackSnapshot,
+    public View getViewForRestaurantFeedback(DocumentSnapshot restaurantFeedbackSnapshot,
                                               String restaurantName){
         float rating = restaurantFeedbackSnapshot.getDouble("r").floatValue();
         View view = LayoutInflater.from(mContext).inflate(R.layout.feedback_full_post, null);
@@ -537,10 +537,14 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         return view;
     }
 
-    private void addDishFeedbacks(DocumentSnapshot post){
+    public void addDishFeedbacks(DocumentSnapshot post){
         final Map<String, String> dishes = (Map<String, String>) post.get("d");
         List<String> dishFeedbacksList = (List<String>) post.get("f");
+        addEmptyViews(dishFeedbacksList);
+        int i = -1;
         for(final String dishFeedback : dishFeedbacksList){
+            i++;
+            final int j = i;
             db.collection("feedbacks").document(dishFeedback).get()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
@@ -548,8 +552,9 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
                             if(task.isSuccessful()){
                                 DocumentSnapshot feedback = task.getResult();
                                 if(feedback.exists()){
-                                    View view = getViewForDishFeedback(feedback, dishes);
-                                    dishesFeedbackLayout.addView(view);
+                                    Log.i("feedback", "adding");
+                                    View view = dishesFeedbackLayout.getChildAt(j);
+                                    bindDishFeedbackView(view, feedback, dishes);
                                 }
                             }
                         }
@@ -558,17 +563,26 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         }
     }
 
-    private View getViewForDishFeedback(DocumentSnapshot dishFeedbackSnapshot,
-                                        Map<String, String> dishes){
-        float rating = dishFeedbackSnapshot.getDouble("r").floatValue();
-        String dishLink = dishFeedbackSnapshot.getString("wh");
-        View view = LayoutInflater.from(mContext).inflate(R.layout.feedback_full_post, null);
-        String review = dishFeedbackSnapshot.getString("re");
-        bindFeedbackView(view, dishes.get(dishLink), rating, review);
-        return view;
+    public void addEmptyViews(List<String> dishFeedbacksList){
+        for(int i=0; i<dishFeedbacksList.size(); i++){
+            Log.i("child #: ", Integer.toString(i));
+            View view = LayoutInflater.from(mContext).inflate(R.layout.feedback_full_post, null);
+            if(dishesFeedbackLayout.getChildAt(i) != null){
+                dishesFeedbackLayout.removeViewAt(i);
+            }
+            dishesFeedbackLayout.addView(view, i);
+        }
     }
 
-    private void bindFeedbackView(View view, String name,
+    public void bindDishFeedbackView(View view, DocumentSnapshot dishFeedbackSnapshot,
+                                       Map<String, String> dishes) {
+        float rating = dishFeedbackSnapshot.getDouble("r").floatValue();
+        String dishLink = dishFeedbackSnapshot.getString("wh");
+        String review = dishFeedbackSnapshot.getString("re");
+        bindFeedbackView(view, dishes.get(dishLink), rating, review);
+    }
+
+    public void bindFeedbackView(View view, String name,
                                   float rating, String review){
         ((TextView)view.findViewById(R.id.dish_name)).setText(name);
         ((TextView)view.findViewById(R.id.review)).setText(review);
@@ -576,13 +590,13 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         ((RatingBar)view.findViewById(R.id.dish_ratingBar)).setIsIndicator(true);
     }
 
-    private void decreaseNumOfLikes(){
+    public void decreaseNumOfLikes(){
         String str = (String) noOfLikesTV.getText();
         int numOfLikes = Integer.valueOf(str);
         noOfLikesTV.setText(Integer.toString(numOfLikes-1));
     }
 
-    private void increaseNumOfLikes(){
+    public void increaseNumOfLikes(){
         String str = noOfLikesTV.getText().toString();
         int numOfLikes = Integer.valueOf(str);
         noOfLikesTV.setText(Integer.toString(numOfLikes+1));

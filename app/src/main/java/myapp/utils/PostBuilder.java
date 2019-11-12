@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import models.PostModel;
 
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -45,6 +46,27 @@ public class PostBuilder {
         restaurant = (Map) post.get("r");
         who = (Map) post.get("w");
         taggedPeople = (Map) post.get("tp");
+
+        noOfTaggedPeople = taggedPeople.keySet().size();
+        noOfDishes = dishes.keySet().size();
+        restaurantName = restaurant.get("n");
+        restaurantLink = restaurant.get("l");
+        nameOfPostedBy = who.get("n");
+        linkToPostedBy = who.get("l");
+        this.context = context;
+        sortedDishLinks = getSortedLinks(dishes.keySet());
+        sortedTaggedPeopleLinks = getSortedLinks(taggedPeople.keySet());
+    }
+
+    public PostBuilder(Context context, PostModel postModel){
+        caption = postModel.getCaption();
+        Log.i("caption", caption);
+
+        dishes = postModel.getDishes();
+        Log.i("noofdishes",Integer.toString(dishes.keySet().size()));
+        restaurant = postModel.getRestaurant();
+        who = postModel.getWho();
+        taggedPeople = postModel.getTaggedPeople();
 
         noOfTaggedPeople = taggedPeople.keySet().size();
         noOfDishes = dishes.keySet().size();

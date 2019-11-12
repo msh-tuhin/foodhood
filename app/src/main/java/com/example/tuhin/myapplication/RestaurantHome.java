@@ -30,7 +30,7 @@ public class RestaurantHome extends AppCompatActivity {
 
     private int[] drawables_unselected = {
             R.drawable.outline_home_black_24dp,
-            R.drawable.outline_search_black_24dp,
+            R.drawable.outline_rate_review_black_24dp,
             R.drawable.baseline_notifications_none_black_24dp,
             R.drawable.outline_insert_invitation_black_24dp,
             R.drawable.outline_menu_black_24dp
@@ -96,7 +96,7 @@ public class RestaurantHome extends AppCompatActivity {
                 case 0:
                     return new RestHomeFeedFragment();
                 case 1:
-                    return new BlankFragment();
+                    return new PeoplePosts();
                 case 2:
                     return new AllNotificationsFragment();
                 case 3:
