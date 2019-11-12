@@ -5,6 +5,8 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,15 +15,18 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.AllDishes;
+import com.example.tuhin.myapplication.MainActivity;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.RestDetail;
 import com.example.tuhin.myapplication.RestaurantAllDishes;
+import com.example.tuhin.myapplication.RestaurantHome;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -30,20 +35,31 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.Map;
 
+import myapp.utils.AccountTypes;
 import myapp.utils.SourceAllDishes;
 
 public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
-    TextView restaurantName, restaurantAddress, restaurantPhone, restaurantEmail;
-    TextView restaurantWebsite, numFollowedBy, restaurantRating, seeAll;
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final String currentUserUid;
+    private Context mContext;
+    private String mRestaurantLink;
+
+    TextView restaurantName;
+    TextView restaurantAddress;
+    TextView restaurantPhone;
+    TextView restaurantEmail;
+    TextView restaurantWebsite;
+    TextView numFollowedBy;
+    TextView restaurantRating;
+    TextView seeAll;
     Button followRestaurant;
     RecyclerView rv;
-    private FirebaseFirestore db;
-    private final String currentUserUid;
 
     public RestaurantDetailHeaderHolder(@NonNull View v) {
         super(v);
-        db = FirebaseFirestore.getInstance();
-        currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        currentUserUid = mAuth.getCurrentUser().getUid();
         restaurantName = v.findViewById(R.id.restaurant_name);
         followRestaurant = v.findViewById(R.id.follow_restaurant);
         restaurantAddress = v.findViewById(R.id.restaurant_address);
@@ -60,6 +76,11 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
     }
 
     public void bindTo(final Context context, final String restaurantLink){
+        if(restaurantLink==null || restaurantLink.equals("")) return;
+
+        mContext = context;
+        mRestaurantLink = restaurantLink;
+
         db.collection("rest_vital").document(restaurantLink)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -122,32 +143,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
             }
         });
 
-        db.collection("rest_followers").document(restaurantLink)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
-                            try{
-                                ArrayList<String> followers = (ArrayList) documentSnapshot.get("a");
-                                if(followers.contains(currentUserUid)){
-                                    followRestaurant.setText("UNFOLLOW");
-                                }
-                            } catch (NullPointerException e){
-                                Log.i("Error", e.getMessage());
-                            }
-                        }
-                        followRestaurant.setVisibility(View.VISIBLE);
-                        followRestaurant.setOnClickListener(getFollowRestaurantOnClickListener(restaurantLink));
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        followRestaurant.setVisibility(View.VISIBLE);
-                        followRestaurant.setOnClickListener(getFollowRestaurantOnClickListener(restaurantLink));
-                    }
-                });
+        bindFollowButton();
     }
 
     private class RestaurantDishesAdapter extends RecyclerView.Adapter<RestaurantDishHolder>{
@@ -175,6 +171,38 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                     .inflate(R.layout.wishlist_item, viewGroup, false);
             return new RestaurantDishHolder(view);
         }
+    }
+
+    private void bindFollowButton(){
+        if(getAccountType() == AccountTypes.RESTAURANT){
+            return;
+        }
+        db.collection("rest_followers").document(mRestaurantLink)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            try{
+                                ArrayList<String> followers = (ArrayList) documentSnapshot.get("a");
+                                if(followers.contains(currentUserUid)){
+                                    followRestaurant.setText("UNFOLLOW");
+                                }
+                            } catch (NullPointerException e){
+                                Log.i("Error", e.getMessage());
+                            }
+                        }
+                        followRestaurant.setVisibility(View.VISIBLE);
+                        followRestaurant.setOnClickListener(getFollowRestaurantOnClickListener(mRestaurantLink));
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        followRestaurant.setVisibility(View.VISIBLE);
+                        followRestaurant.setOnClickListener(getFollowRestaurantOnClickListener(mRestaurantLink));
+                    }
+                });
     }
 
     private View.OnClickListener getFollowRestaurantOnClickListener(final String restaurantLink){
@@ -225,5 +253,13 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                 }
             }
         });
+    }
+
+    private int getAccountType(){
+        FirebaseUser user = mAuth.getCurrentUser();
+        SharedPreferences sPref = mContext.getSharedPreferences(
+                mContext.getString(R.string.account_type),
+                Context.MODE_PRIVATE);
+        return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
     }
 }

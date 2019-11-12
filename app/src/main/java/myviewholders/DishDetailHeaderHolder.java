@@ -1,8 +1,12 @@
 package myviewholders;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import myapp.utils.AccountTypes;
+
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
@@ -17,6 +21,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -26,6 +31,9 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
+
+    private Context mContext;
+    private String mDishLink;
 
     private TextView name, restNameAddress, rating, price, description;
     private Button addToWishlist;
@@ -45,8 +53,13 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
         description = v.findViewById(R.id.dish_description);
     }
 
-    public void bindTo(final String dishLink){
+    public void bindTo(final Context context, final String dishLink){
+        if(dishLink==null || dishLink.equals("")) return;
+
+        mContext = context;
+        mDishLink = dishLink;
         personLink = mAuth.getCurrentUser().getUid();
+
         db.collection("dish_vital").document(dishLink)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -89,10 +102,17 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
                         }
                     }
                 }
-                addToWishlist.setVisibility(View.VISIBLE);
-                addToWishlist.setOnClickListener(getAddToWishlistOnClickListener(dishLink));
+                setAddToWishlistButton();
             }
         });
+    }
+
+    private void setAddToWishlistButton(){
+        if(getAccountType() == AccountTypes.RESTAURANT){
+            return;
+        }
+        addToWishlist.setVisibility(View.VISIBLE);
+        addToWishlist.setOnClickListener(getAddToWishlistOnClickListener(mDishLink));
     }
 
     private void setRestaurantNameAddress(final String restaurantName, String restaurantLink){
@@ -143,5 +163,13 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
                 }
             }
         };
+    }
+
+    private int getAccountType(){
+        FirebaseUser user = mAuth.getCurrentUser();
+        SharedPreferences sPref = mContext.getSharedPreferences(
+                mContext.getString(R.string.account_type),
+                Context.MODE_PRIVATE);
+        return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
     }
 }
