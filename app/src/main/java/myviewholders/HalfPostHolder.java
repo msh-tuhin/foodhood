@@ -46,13 +46,13 @@ public class HalfPostHolder extends BaseHomeFeedHolder
         implements PostHolderInterface{
 
     final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    public FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
 
-    private Context mContext;
-    private DocumentReference mPostReference;
-    private String mPostLink;
-    private PostBuilder mPostBuilder;
-    private DocumentSnapshot mPostSnapShot;
+    public Context mContext;
+    public DocumentReference mPostReference;
+    public String mPostLink;
+    public PostBuilder mPostBuilder;
+    public DocumentSnapshot mPostSnapShot;
 
     public CircleImageView profileImage;
     public TextView namePostedBy;
@@ -97,27 +97,27 @@ public class HalfPostHolder extends BaseHomeFeedHolder
         setBindValuesOnClickListenersDependentOnPostDownload();
     }
 
-    private void setmContext(Context context){
+    public void setmContext(Context context){
         mContext = context;
     }
 
-    private void setmPostLink(String postLink){
+    public void setmPostLink(String postLink){
         mPostLink = postLink;
     }
 
-    private void setmPostReference(String postLink){
+    public void setmPostReference(String postLink){
         mPostReference = db.collection("posts").document(postLink);
     }
 
-    private void setmPostSnapshot(DocumentSnapshot post){
+    public void setmPostSnapshot(DocumentSnapshot post){
         mPostSnapShot = post;
     }
 
-    private void setmPostBuilder(Context context, DocumentSnapshot post){
+    public void setmPostBuilder(Context context, DocumentSnapshot post){
         mPostBuilder = new PostBuilder(context, post);
     }
 
-    private void setBindValuesOnClickListenersDependentOnPostDownload(){
+    public void setBindValuesOnClickListenersDependentOnPostDownload(){
         mPostReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -132,7 +132,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
         });
     }
 
-    private void bindValuesDependentOnPostDownload() {
+    public void bindValuesDependentOnPostDownload() {
         bindHeader();
         bindAvatar();
         bindNamePostedBy();
@@ -147,12 +147,12 @@ public class HalfPostHolder extends BaseHomeFeedHolder
         bindNoOfComment();
     }
 
-    private void bindValuesIndependent(){
+    public void bindValuesIndependent(){
         bindGoToFull();
         bindCommentIcon();
     }
 
-    private void setOnClickListenersDependentOnPostDownload(){
+    public void setOnClickListenersDependentOnPostDownload(){
         setHeaderOnClickListener();
         setAvatarOnClickListener();
         setNamePostedByOnClickListener();
@@ -166,7 +166,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
         setNoOfCommentOnClickListener();
     }
 
-    private void setOnClickListenersIndependent(){
+    public void setOnClickListenersIndependent(){
         setGoToFullOnClickListener();
         setLikeIconOnClickListener();
         setCommentIconOnClickListener();

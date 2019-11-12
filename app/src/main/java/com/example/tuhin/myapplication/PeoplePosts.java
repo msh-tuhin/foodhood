@@ -26,6 +26,7 @@ import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -83,8 +84,8 @@ public class PeoplePosts extends Fragment {
                                                     int i,
                                                     @NonNull PostModel postModel) {
                         Log.i("calling", "onBindViewHolder");
-                        String postLink = this.getCurrentList().get(i).getId();
-                        halfPostHolderForRestaurant.bindTo(postModel, PeoplePosts.this.getActivity(), postLink);
+                        DocumentSnapshot postSnapshot = this.getCurrentList().get(i);
+                        halfPostHolderForRestaurant.bindTo(PeoplePosts.this.getActivity(), postSnapshot);
                     }
 
                     @NonNull

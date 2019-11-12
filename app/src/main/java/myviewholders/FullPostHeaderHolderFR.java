@@ -13,8 +13,18 @@ public class FullPostHeaderHolderFR extends FullPostHeaderHolder {
         super(v);
     }
 
-    public void bindTo(){
+    @Override
+    public void bindLikeIcon() {
 
     }
 
+    @Override
+    public void setLikeIconOnClickListener() {
+
+    }
+
+    @Override
+    public void setCommentIconOnClickListener() {
+
+    }
 }

@@ -32,6 +32,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
+
+// TODO
+// might receive a PostModel object as intent extra
+// if in FullPostHeaderHolder postsnapshot is
+// converted to a PostModel object for binding purposes
+// FullPostHeaderHolderFR can be called with a PostModel object
+// this will save a Post download
 public class FullPostForRestaurant extends AppCompatActivity {
 
     public final int REQUEST_COMMENT = 0;
