@@ -19,6 +19,7 @@ import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import models.DishFeedback;
 import myviewholders.DishDetailHeaderHolder;
 import myviewholders.FeedbackHolder;
 import myviewholders.FeedbackWithoutReviewHolder;
@@ -85,7 +86,7 @@ public class DishDetail extends AppCompatActivity {
 //                    return;
 //                }
                 if(holder instanceof DishDetailHeaderHolder){
-                    ((DishDetailHeaderHolder) holder).bindTo(dishLink);
+                    ((DishDetailHeaderHolder) holder).bindTo(DishDetail.this, dishLink);
                     return;
                 }
                 FeedbackModel mModel = this.getCurrentList().get(position-1).toObject(FeedbackModel.class);
