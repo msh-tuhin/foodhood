@@ -5,28 +5,36 @@ import androidx.paging.PagedList;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import androidx.viewpager.widget.ViewPager;
 import myapp.utils.CoverImagesAdapter;
 import myviewholders.FeedbackHolder;
+import myviewholders.FeedbackHolderCommon;
 import myviewholders.FeedbackWithoutReviewHolder;
 import myviewholders.RestaurantDetailHeaderHolder;
 
@@ -34,7 +42,8 @@ import myviewholders.RestaurantDetailHeaderHolder;
 public class RestDetail extends AppCompatActivity {
 
     RecyclerView rv;
-    FirestorePagingAdapter<FeedbackModel, RecyclerView.ViewHolder> adapter;
+    // FirestorePagingAdapter<FeedbackModel, RecyclerView.ViewHolder> adapter;
+    MyFeedbackAdapter adapter;
     String restaurantLink;
     ViewPager viewPager;
     public AppBarLayout appBarLayout;
@@ -61,24 +70,42 @@ public class RestDetail extends AppCompatActivity {
         rv.setLayoutManager(layoutManager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(), layoutManager.getOrientation());
         rv.addItemDecoration(dividerItemDecoration);
-        getAdapter();
+        // adapter = getAdapter();
+        adapter = new MyFeedbackAdapter(this);
         adapter.notifyDataSetChanged();
         rv.setAdapter(adapter);
+        FirebaseFirestore.getInstance().collection("feedbacks_list")
+                .document(restaurantLink)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot feedbacksArraySnapshot) {
+                        if(feedbacksArraySnapshot.exists()){
+                            try{
+                                ArrayList<String> feedbacksList = (ArrayList<String>)feedbacksArraySnapshot.get("a");
+                                adapter.feedbacksLinks.addAll(feedbacksList);
+                                adapter.notifyDataSetChanged();
+                            }catch (NullPointerException e){
+                                Log.e("error", e.getMessage());
+                            }
+                        }
+                    }
+                });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        adapter.startListening();
+        // adapter.startListening();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        adapter.stopListening();
+        // adapter.stopListening();
     }
 
-    private void getAdapter(){
+    private FirestorePagingAdapter<FeedbackModel, RecyclerView.ViewHolder> getAdapter(){
         final int HEADER = 0;
         final int FEEDBACK_WITHOUT_REVIEW = 1;
         final int FEEDBACK = 2;
@@ -95,7 +122,7 @@ public class RestDetail extends AppCompatActivity {
                 .setLifecycleOwner(this)
                 .setQuery(bQuery, config, FeedbackModel.class).build();
 
-        adapter = new FirestorePagingAdapter<FeedbackModel, RecyclerView.ViewHolder>(options) {
+        return new FirestorePagingAdapter<FeedbackModel, RecyclerView.ViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position, @NonNull FeedbackModel model) {
 //                if(position == getItemCount()-1) return;
@@ -144,5 +171,60 @@ public class RestDetail extends AppCompatActivity {
                 return FEEDBACK_WITHOUT_REVIEW;
             }
         };
+    }
+
+    private class MyFeedbackAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+        private final int HEADER = 0;
+        private final int FEEDBACK = 1;
+
+        private Context context;
+        ArrayList<String> feedbacksLinks = new ArrayList<>();
+
+        MyFeedbackAdapter(Context context){
+            this.context = context;
+            feedbacksLinks.add("");
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+            if(holder instanceof RestaurantDetailHeaderHolder){
+                ((RestaurantDetailHeaderHolder) holder).bindTo(rv.getContext(), restaurantLink);
+                return;
+            }
+            ((FeedbackHolderCommon)holder).bindTo(context, feedbacksLinks.get(position));
+        }
+
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view;
+            RecyclerView.ViewHolder viewHolder;
+            switch (viewType){
+                case(HEADER):
+                    view = LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.restaurant_detail_header, parent, false);
+                    viewHolder = new RestaurantDetailHeaderHolder(view);
+                    break;
+                default:
+                    view = LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.feedback, parent, false);
+                    viewHolder = new FeedbackHolderCommon(view);
+                    break;
+            }
+            return viewHolder;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if(position == 0){
+                return HEADER;
+            }
+            return FEEDBACK;
+        }
+
+        @Override
+        public int getItemCount() {
+            return feedbacksLinks.size();
+        }
     }
 }
