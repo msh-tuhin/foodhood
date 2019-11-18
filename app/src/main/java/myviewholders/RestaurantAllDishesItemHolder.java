@@ -59,33 +59,28 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
                             dishNameTV.setText(dishName);
                             Double dishRating = documentSnapshot.getDouble("r");
                             dishRatingTV.setText(Double.toString(dishRating));
+                            Double price = documentSnapshot.getDouble("p");
+                            dishPriceTV.setText(Double.toString(price)+" BDT");
                         }
                     }
                 });
 
-        // set the price
-        db.collection("dish_extra").document(dishLink)
+        db.collection("wishers").document(dishLink)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
-                            Double price = documentSnapshot.getDouble("p");
-                            dishPriceTV.setText(Double.toString(price)+" BDT");
+                    public void onSuccess(DocumentSnapshot wishersSnap) {
+                        if (wishersSnap.exists()) {
                             try{
-                                ArrayList<String> inWishlistOf = (ArrayList<String>) documentSnapshot.get("in_wishlist_of");
-                                if(inWishlistOf.contains(currentUserUid)){
-                                    // addToWishlistButton.setText("ADDED TO WISHLIST");
+                                ArrayList<String> wishersList = (ArrayList<String>) wishersSnap.get("a");
+                                if(wishersList.contains(currentUserUid)){
                                     addToWishlistIB.setImageResource(R.drawable.outline_done_black_24dp);
                                     isInWishlist = true;
-                                    // addToWishlistIB.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.outline_done_black_24dp));
                                 }
-                            } catch (NullPointerException e){
-                                Log.i("in_wishlist_of", e.getMessage());
+                            }catch (NullPointerException e){
+                                Log.e("error", e.getMessage());
                             }
                         }
-                        // addToWishlistButton.setVisibility(View.VISIBLE);
-                        // addToWishlistButton.setOnClickListener(getAddToWishlistOnClickListener(dishLink));
                         addToWishlistIB.setVisibility(View.VISIBLE);
                         addToWishlistIB.setOnClickListener(getAddToWishlistIBOnClickListener(dishLink));
                     }
@@ -93,8 +88,6 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        // addToWishlistButton.setVisibility(View.VISIBLE);
-                        // addToWishlistButton.setOnClickListener(getAddToWishlistOnClickListener(dishLink));
                         addToWishlistIB.setVisibility(View.VISIBLE);
                         addToWishlistIB.setOnClickListener(getAddToWishlistIBOnClickListener(dishLink));
                     }
@@ -107,23 +100,24 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
                 DocumentReference personRef = db.collection("person_extra")
                         .document(currentUserUid);
-                DocumentReference dishRef = db.collection("dish_extra")
+                DocumentReference inWishlistRef = db.collection("wishers")
+                        .document(dishLink);
+                DocumentReference dishVitalRef = db.collection("dish_vital")
                         .document(dishLink);
                 switch (((Button)v).getText().toString()){
                     case "ADD TO WISHLIST":
                         // TODO: this should be done if and only if the updates are successful
                         addToWishlistButton.setText("ADDED TO WISHLIST");
                         personRef.update("wishlist", FieldValue.arrayUnion(dishLink));
-
-                        dishRef.update("in_wishlist_of", FieldValue.arrayUnion(currentUserUid),
-                                "num_wishlist", FieldValue.increment(1));
+                        inWishlistRef.update("a", FieldValue.arrayUnion(currentUserUid));
+                        dishVitalRef.update("num_wishlist", FieldValue.increment(1));
                         break;
                     case "ADDED TO WISHLIST":
                         // TODO: this should be done if and only if the updates are successful
                         addToWishlistButton.setText("ADD TO WISHLIST");
                         personRef.update("wishlist", FieldValue.arrayRemove(dishLink));
-                        dishRef.update("in_wishlist_of", FieldValue.arrayRemove(currentUserUid),
-                                "num_wishlist", FieldValue.increment(-1));
+                        inWishlistRef.update("a", FieldValue.arrayRemove(currentUserUid));
+                        dishVitalRef.update("num_wishlist", FieldValue.increment(-1));
                         break;
                 }
             }
@@ -136,23 +130,24 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
                 DocumentReference personRef = db.collection("person_extra")
                         .document(currentUserUid);
-                DocumentReference dishRef = db.collection("dish_extra")
+                DocumentReference inWishlistRef = db.collection("wishers")
+                        .document(dishLink);
+                DocumentReference dishVitalRef = db.collection("dish_vital")
                         .document(dishLink);
                 if(isInWishlist){
                     // TODO: this should be done if and only if the updates are successful
                     isInWishlist = false;
                     addToWishlistIB.setImageResource(R.drawable.outline_add_black_24dp);
                     personRef.update("wishlist", FieldValue.arrayRemove(dishLink));
-                    dishRef.update("in_wishlist_of", FieldValue.arrayRemove(currentUserUid),
-                            "num_wishlist", FieldValue.increment(-1));
+                    inWishlistRef.update("a", FieldValue.arrayRemove(currentUserUid));
+                    dishVitalRef.update("num_wishlist", FieldValue.increment(-1));
                 } else{
                     // TODO: this should be done if and only if the updates are successful
                     isInWishlist = true;
                     addToWishlistIB.setImageResource(R.drawable.outline_done_black_24dp);
                     personRef.update("wishlist", FieldValue.arrayUnion(dishLink));
-
-                    dishRef.update("in_wishlist_of", FieldValue.arrayUnion(currentUserUid),
-                            "num_wishlist", FieldValue.increment(1));
+                    inWishlistRef.update("a", FieldValue.arrayUnion(currentUserUid));
+                    dishVitalRef.update("num_wishlist", FieldValue.increment(1));
                 }
             }
         };

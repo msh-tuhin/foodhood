@@ -177,7 +177,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
         if(getAccountType() == AccountTypes.RESTAURANT){
             return;
         }
-        db.collection("rest_followers").document(mRestaurantLink)
+        db.collection("followers").document(mRestaurantLink)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -211,7 +211,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
             public void onClick(View v) {
                 DocumentReference personRestFollowRef = db.collection("following_restaurants")
                         .document(currentUserUid);
-                DocumentReference restaurantFollowerRef = db.collection("rest_followers")
+                DocumentReference restaurantFollowerRef = db.collection("followers")
                         .document(restaurantLink);
                 DocumentReference restRef = db.collection("rest_extra")
                         .document(restaurantLink);

@@ -71,6 +71,11 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
                         Double dishRating = dishVital.getDouble("r");
                         name.setText(dishName);
                         rating.setText(Double.toString(dishRating));
+                        Double dishPrice = dishVital.getDouble("p");
+                        String priceText = Double.toString(dishPrice) + " BDT";
+                        price.setText(priceText);
+                        String dishDescription = dishVital.getString("d");
+                        description.setText(dishDescription);
                         Map<String, String> restaurant = (Map) dishVital.get("re");
                         String restaurantLink = restaurant.get("l");
                         String restaurantName = restaurant.get("n");
@@ -80,31 +85,27 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
             }
         });
 
-        db.collection("dish_extra").document(dishLink)
-                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
-                    DocumentSnapshot dishExtra = task.getResult();
-                    if(dishExtra.exists()){
-                        Double dishPrice = dishExtra.getDouble("p");
-                        String priceText = Double.toString(dishPrice) + " BDT";
-                        price.setText(priceText);
-                        String dishDescription = dishExtra.getString("d");
-                        description.setText(dishDescription);
-                        try{
-                            ArrayList<String> inWishlistOf = (ArrayList<String>) dishExtra.get("in_wishlist_of");
-                            if(inWishlistOf.contains(personLink)){
-                                addToWishlist.setText("ADDED TO WISHLIST");
+        db.collection("wishers").document(dishLink)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            DocumentSnapshot wishersSnap = task.getResult();
+                            if(wishersSnap.exists()){
+                                try{
+                                    ArrayList<String> wishersList = (ArrayList<String>) wishersSnap.get("a");
+                                    if(wishersList.contains(personLink)){
+                                        addToWishlist.setText("ADDED TO WISHLIST");
+                                    }
+                                }catch (NullPointerException e){
+                                    Log.e("error", e.getMessage());
+                                }
                             }
-                        } catch (NullPointerException e){
-                            Log.i("in_wishlist_of", e.getMessage());
                         }
+                        setAddToWishlistButton();
                     }
-                }
-                setAddToWishlistButton();
-            }
-        });
+                });
     }
 
     private void setAddToWishlistButton(){
@@ -142,23 +143,24 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
                 DocumentReference personRef = db.collection("person_extra")
                         .document(personLink);
-                DocumentReference dishRef = db.collection("dish_extra")
+                DocumentReference inWishlistRef = db.collection("wishers")
+                        .document(dishLink);
+                DocumentReference dishVitalRef = db.collection("dish_vital")
                         .document(dishLink);
                 switch (((Button)v).getText().toString()){
                     case "ADD TO WISHLIST":
                         // TODO: this should be done if and only if the updates are successful
                         addToWishlist.setText("ADDED TO WISHLIST");
                         personRef.update("wishlist", FieldValue.arrayUnion(dishLink));
-
-                        dishRef.update("in_wishlist_of", FieldValue.arrayUnion(personLink),
-                                "num_wishlist", FieldValue.increment(1));
+                        inWishlistRef.update("a", FieldValue.arrayUnion(personLink));
+                        dishVitalRef.update("num_wishlist", FieldValue.increment(1));
                         break;
                     case "ADDED TO WISHLIST":
                         // TODO: this should be done if and only if the updates are successful
                         addToWishlist.setText("ADD TO WISHLIST");
                         personRef.update("wishlist", FieldValue.arrayRemove(dishLink));
-                        dishRef.update("in_wishlist_of", FieldValue.arrayRemove(personLink),
-                                "num_wishlist", FieldValue.increment(-1));
+                        inWishlistRef.update("a", FieldValue.arrayRemove(personLink));
+                        dishVitalRef.update("num_wishlist", FieldValue.increment(-1));
                         break;
                 }
             }

@@ -36,24 +36,10 @@ public class RestaurantDishHolder extends RecyclerView.ViewHolder {
                     if(dishInfo.exists()){
                         String dishName = dishInfo.getString("n");
                         Double rating = dishInfo.getDouble("r");
+                        Double price = dishInfo.getDouble("p");
                         dishhName.setText(dishName);
                         dishRating.setText(Double.toString(rating));
-                    }
-                }
-            }
-        });
-
-        db.collection("dish_extra").document(dishLink)
-                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
-                    DocumentSnapshot dishInfo = task.getResult();
-                    if(dishInfo.exists()){
-                        Double price = dishInfo.getDouble("p");
                         dishPrice.setText(Double.toString(price)+" BDT");
-                    }else{
-                        Log.i(NO_DOCUMENT, "document not found");
                     }
                 }
             }
