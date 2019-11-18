@@ -94,19 +94,36 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                         restaurantRating.setText(Double.toString(rating));
 //                        ((RestDetail)context).toolbar.setTitle(name);
                         setCollapsedTitle(context, name);
+
+                        String address = restaurantVital.getString("a");
+                        String phone = restaurantVital.getString("p");
+                        String web = restaurantVital.getString("w");
+                        String email = restaurantVital.getString("e");
+                        Double followedBy = restaurantVital.getDouble("nfb");
+                        restaurantAddress.setText(address);
+                        restaurantPhone.setText(phone);
+                        restaurantWebsite.setText(web);
+                        restaurantEmail.setText(email);
+                        numFollowedBy.setText("Followed by " + Double.toString(followedBy));
                     }
                 }
             }
         });
 
-        db.collection("rest_extra").document(restaurantLink)
+        db.collection("dishes").document(restaurantLink)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
-                    DocumentSnapshot restaurantExtra = task.getResult();
-                    if(restaurantExtra.exists()){
-                        final ArrayList<String> dishes = (ArrayList) restaurantExtra.get("dishes");
+                    DocumentSnapshot dishesSnap = task.getResult();
+                    if(dishesSnap.exists()){
+                        final ArrayList<String> dishes = new ArrayList<>();
+                        try{
+                            ArrayList<String> d = (ArrayList) dishesSnap.get("a");
+                            dishes.addAll(d);
+                        }catch (NullPointerException e){
+                            Log.e("error", e.getMessage());
+                        }
                         seeAll.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -124,20 +141,6 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                         RestaurantDishesAdapter adapter = new RestaurantDishesAdapter(dishes);
                         adapter.notifyDataSetChanged();
                         rv.setAdapter(adapter);
-
-                        Map<String, String> addressMap = (Map) restaurantExtra.get("a");
-                        String addressLine1 = addressMap.get("l1");
-                        String addressLine2 = addressMap.get("l2");
-                        String address = addressLine1 + "\n" + addressLine2;
-                        String phone = restaurantExtra.getString("p");
-                        String web = restaurantExtra.getString("w");
-                        String email = restaurantExtra.getString("e");
-                        Double followedBy = restaurantExtra.getDouble("nfb");
-                        restaurantAddress.setText(address);
-                        restaurantPhone.setText(phone);
-                        restaurantWebsite.setText(web);
-                        restaurantEmail.setText(email);
-                        numFollowedBy.setText("Followed by " + Double.toString(followedBy));
                     }
                 }
             }
@@ -213,7 +216,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                         .document(currentUserUid);
                 DocumentReference restaurantFollowerRef = db.collection("followers")
                         .document(restaurantLink);
-                DocumentReference restRef = db.collection("rest_extra")
+                DocumentReference restRef = db.collection("rest_vital")
                         .document(restaurantLink);
                 switch (((Button)v).getText().toString()){
                     case "FOLLOW":

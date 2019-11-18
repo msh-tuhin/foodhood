@@ -128,8 +128,7 @@ public class EmailVerification extends AppCompatActivity {
                                 if(forPerson){
                                     intent = new Intent(EmailVerification.this, SetProfilePicture.class);
                                 } else{
-                                    addNameToDB(user);
-                                    addEmailToDB(user);
+                                    addNameAndEmailToDB(user);
                                     intent = new Intent(EmailVerification.this, RestaurantHome.class);
                                 }
                                 startActivity(intent);
@@ -204,30 +203,19 @@ public class EmailVerification extends AppCompatActivity {
         }
     }
 
-    private void addNameToDB(FirebaseUser user){
+    private void addNameAndEmailToDB(FirebaseUser user){
         String name = user.getDisplayName() == null ? mName : user.getDisplayName();
         Log.i("name", name);
+        String emailString = user.getEmail() == null ? mEmail : user.getEmail();
+        Log.i("email", emailString);
+
         Map<String, String> restVital = new HashMap<>();
         restVital.put("n", name);
+        restVital.put("e", emailString);
+
         FirebaseFirestore.getInstance()
                 .collection("rest_vital").document(user.getUid())
                 .set(restVital)
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                    }
-                });
-    }
-
-    private void addEmailToDB(FirebaseUser user){
-        String emailString = user.getEmail() == null ? mEmail : user.getEmail();
-        Log.i("email", emailString);
-        Map<String, String> restExtra = new HashMap<>();
-        restExtra.put("e", emailString);
-        FirebaseFirestore.getInstance()
-                .collection("rest_extra").document(user.getUid())
-                .set(restExtra)
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {

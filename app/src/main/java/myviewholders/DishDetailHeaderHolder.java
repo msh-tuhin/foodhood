@@ -117,17 +117,15 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
     }
 
     private void setRestaurantNameAddress(final String restaurantName, String restaurantLink){
-        db.collection("rest_extra").document(restaurantLink)
+        db.collection("rest_vital").document(restaurantLink)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
-                    DocumentSnapshot restExtra = task.getResult();
-                    if(restExtra.exists()){
-                        Map<String, String> restAddress = (Map) restExtra.get("a");
-                        String line1 = restAddress.get("l1");
-                        String line2 = restAddress.get("l2");
-                        String nameAddress = restaurantName + "\n" + line1 + "\n" + line2;
+                    DocumentSnapshot restVital = task.getResult();
+                    if(restVital.exists()){
+                        Map<String, String> restAddress = (Map) restVital.get("a");
+                        String nameAddress = restaurantName + "\n" + restAddress;
                         SpannableString spannableNameAddress = new SpannableString(nameAddress);
                         spannableNameAddress.setSpan(new StyleSpan(Typeface.BOLD), 0, restaurantName.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         restNameAddress.setText(spannableNameAddress, TextView.BufferType.SPANNABLE);

@@ -70,7 +70,7 @@ public class SelfWishlistItemHolder extends RecyclerView.ViewHolder {
     }
 
     private void setRestAddress(String restLink){
-        FirebaseFirestore.getInstance().collection("rest_extra")
+        FirebaseFirestore.getInstance().collection("rest_vital")
                 .document();
     }
 
