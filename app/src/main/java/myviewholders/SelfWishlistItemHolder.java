@@ -62,9 +62,9 @@ public class SelfWishlistItemHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
                 adapter.removeItem(dishLink);
                 String currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                FirebaseFirestore.getInstance().collection("person_extra")
+                FirebaseFirestore.getInstance().collection("wishlist")
                         .document(currentUserUid)
-                        .update("wishlist", FieldValue.arrayRemove(dishLink));
+                        .update("a", FieldValue.arrayRemove(dishLink));
             }
         });
     }

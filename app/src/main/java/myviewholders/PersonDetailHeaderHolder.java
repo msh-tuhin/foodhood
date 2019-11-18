@@ -88,16 +88,16 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
             }
         });
 
-        db.collection("person_extra").document(personLink)
+        db.collection("wishlist").document(personLink)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
-                    DocumentSnapshot personExtraData = task.getResult();
-                    if(personExtraData.exists()){
+                    DocumentSnapshot wishlistSnapshot = task.getResult();
+                    if(wishlistSnapshot.exists()){
                         // horizontal wishlist
                         // firestore array --> JAVA arraylist
-                        final ArrayList<String> wishlist = (ArrayList) personExtraData.get("w");
+                        final ArrayList<String> wishlist = (ArrayList) wishlistSnapshot.get("a");
                         seeAllTV.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {

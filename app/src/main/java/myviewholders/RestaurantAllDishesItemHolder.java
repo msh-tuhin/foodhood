@@ -98,7 +98,7 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DocumentReference personRef = db.collection("person_extra")
+                DocumentReference wishlistRef = db.collection("wishlist")
                         .document(currentUserUid);
                 DocumentReference inWishlistRef = db.collection("wishers")
                         .document(dishLink);
@@ -108,14 +108,14 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
                     case "ADD TO WISHLIST":
                         // TODO: this should be done if and only if the updates are successful
                         addToWishlistButton.setText("ADDED TO WISHLIST");
-                        personRef.update("wishlist", FieldValue.arrayUnion(dishLink));
+                        wishlistRef.update("a", FieldValue.arrayUnion(dishLink));
                         inWishlistRef.update("a", FieldValue.arrayUnion(currentUserUid));
                         dishVitalRef.update("num_wishlist", FieldValue.increment(1));
                         break;
                     case "ADDED TO WISHLIST":
                         // TODO: this should be done if and only if the updates are successful
                         addToWishlistButton.setText("ADD TO WISHLIST");
-                        personRef.update("wishlist", FieldValue.arrayRemove(dishLink));
+                        wishlistRef.update("wishlist", FieldValue.arrayRemove(dishLink));
                         inWishlistRef.update("a", FieldValue.arrayRemove(currentUserUid));
                         dishVitalRef.update("num_wishlist", FieldValue.increment(-1));
                         break;
@@ -128,7 +128,7 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DocumentReference personRef = db.collection("person_extra")
+                DocumentReference wishlistRef = db.collection("wishlist")
                         .document(currentUserUid);
                 DocumentReference inWishlistRef = db.collection("wishers")
                         .document(dishLink);
@@ -138,14 +138,14 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
                     // TODO: this should be done if and only if the updates are successful
                     isInWishlist = false;
                     addToWishlistIB.setImageResource(R.drawable.outline_add_black_24dp);
-                    personRef.update("wishlist", FieldValue.arrayRemove(dishLink));
+                    wishlistRef.update("a", FieldValue.arrayRemove(dishLink));
                     inWishlistRef.update("a", FieldValue.arrayRemove(currentUserUid));
                     dishVitalRef.update("num_wishlist", FieldValue.increment(-1));
                 } else{
                     // TODO: this should be done if and only if the updates are successful
                     isInWishlist = true;
                     addToWishlistIB.setImageResource(R.drawable.outline_done_black_24dp);
-                    personRef.update("wishlist", FieldValue.arrayUnion(dishLink));
+                    wishlistRef.update("a", FieldValue.arrayUnion(dishLink));
                     inWishlistRef.update("a", FieldValue.arrayUnion(currentUserUid));
                     dishVitalRef.update("num_wishlist", FieldValue.increment(1));
                 }

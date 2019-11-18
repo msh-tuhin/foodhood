@@ -48,13 +48,13 @@ public class Wishlist extends AppCompatActivity {
 
         final WishlistAdapter adapter = new WishlistAdapter();
 
-        FirebaseFirestore.getInstance().collection("person_extra")
+        FirebaseFirestore.getInstance().collection("wishlist")
                 .document(currentUserUid).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
-                            adapter.wishlist.addAll((List<String>)documentSnapshot.get("wishlist"));
+                    public void onSuccess(DocumentSnapshot wishlistSnapshot) {
+                        if(wishlistSnapshot.exists()){
+                            adapter.wishlist.addAll((List<String>)wishlistSnapshot.get("a"));
                             adapter.notifyDataSetChanged();
                         }
                     }
