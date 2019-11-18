@@ -14,12 +14,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.AllDishes;
-import com.example.tuhin.myapplication.MainActivity;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.RestDetail;
 import com.example.tuhin.myapplication.RestaurantAllDishes;
-import com.example.tuhin.myapplication.RestaurantHome;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -32,11 +29,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Map;
 
 import myapp.utils.AccountTypes;
-import myapp.utils.SourceAllDishes;
 
 public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
 
@@ -89,9 +85,16 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                     DocumentSnapshot restaurantVital = task.getResult();
                     if(restaurantVital.exists()){
                         String name = restaurantVital.getString("n");
-                        Double rating = restaurantVital.getDouble("r");
+                        Double noOfRatings = restaurantVital.getDouble("npr");
+                        Double totalRating = restaurantVital.getDouble("tr");
+                        Double rating = noOfRatings==0 ? 0:totalRating/noOfRatings;
                         restaurantName.setText(name);
-                        restaurantRating.setText(Double.toString(rating));
+                        if(rating == 0){
+                            restaurantRating.setText("N/A");
+                        }else{
+                            DecimalFormat formatter = new DecimalFormat("#.0");
+                            restaurantRating.setText(formatter.format(rating));
+                        }
 //                        ((RestDetail)context).toolbar.setTitle(name);
                         setCollapsedTitle(context, name);
 
@@ -99,12 +102,12 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                         String phone = restaurantVital.getString("p");
                         String web = restaurantVital.getString("w");
                         String email = restaurantVital.getString("e");
-                        Double followedBy = restaurantVital.getDouble("nfb");
+                        Long followedBy = restaurantVital.getLong("nfb");
                         restaurantAddress.setText(address);
                         restaurantPhone.setText(phone);
                         restaurantWebsite.setText(web);
                         restaurantEmail.setText(email);
-                        numFollowedBy.setText("Followed by " + Double.toString(followedBy));
+                        numFollowedBy.setText("Followed by " + Long.toString(followedBy));
                     }
                 }
             }
