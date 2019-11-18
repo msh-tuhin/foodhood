@@ -70,7 +70,6 @@ public class ProfileSetup extends AppCompatActivity {
         Uri uploadUri = compressImage(photoPath);
         uploadPhotoAndAddUrlToDB(uploadUri);
 
-        addPersonInfo();
         setupProfileCloud();
         // this is done from cloud side too
         // but it takes a bit of time to finish in cloud
@@ -164,10 +163,16 @@ public class ProfileSetup extends AppCompatActivity {
     private void addPersonVital(Uri photoUri){
         String newUserUid = mAuth.getCurrentUser().getUid();
         String newUserName = mAuth.getCurrentUser().getDisplayName();
+        String newUserEmail = mAuth.getCurrentUser().getEmail();
+        String newUserPhone = personDatabundle.getString("phone");
 
         Map<String, Object> personVital = new HashMap<>();
         personVital.put("n", newUserName);
         personVital.put("pp", photoUri.toString());
+        personVital.put("e", newUserEmail);
+        if(newUserPhone != null){
+            personVital.put("p", newUserPhone);
+        }
         Log.i("new_user", newUserUid);
 
         db.collection("person_vital").document(newUserUid).set(personVital)
@@ -175,25 +180,6 @@ public class ProfileSetup extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.e("person_vital", e.getMessage());
-                    }
-                });
-    }
-
-    private void addPersonInfo(){
-        String newUserUid = mAuth.getCurrentUser().getUid();
-        String newUserEmail = mAuth.getCurrentUser().getEmail();
-        String newUserPhone = personDatabundle.getString("phone");
-
-        PersonInfo personInfo = new PersonInfo();
-        personInfo.setEmail(newUserEmail);
-        if(newUserPhone != null){
-            personInfo.setPhone(newUserPhone);
-        }
-        db.collection("person_info").document(newUserUid).set(personInfo)
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i("person_info", e.getMessage());
                     }
                 });
     }
