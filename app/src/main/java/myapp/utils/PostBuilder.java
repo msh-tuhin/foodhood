@@ -96,6 +96,7 @@ public class PostBuilder {
     }
 
     public String getPeopleText(){
+        if(sortedTaggedPeopleLinks.size() == 0) return "";
         String text = taggedPeople.get(sortedTaggedPeopleLinks.get(0));
         if(noOfTaggedPeople > 1){
             text = text + "  +" + Integer.toString(noOfTaggedPeople - 1);

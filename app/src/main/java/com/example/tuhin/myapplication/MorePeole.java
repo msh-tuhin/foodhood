@@ -33,7 +33,7 @@ public class MorePeole extends AppCompatActivity {
         toolbar.setTitle("All People");
         setSupportActionBar(toolbar);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rv.setLayoutManager(layoutManager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(), layoutManager.getOrientation());
         rv.addItemDecoration(dividerItemDecoration);

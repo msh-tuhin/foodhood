@@ -29,7 +29,7 @@ public class DateTimeExtractor {
                 + dateString + " " + monthString + ", " + yearString;
     }
 
-    public static String getDateTimeStringShort(Timestamp ts){
+    public static String getDateOrTimeString(Timestamp ts){
         if(ts == null) return null;
         Date dateObj = ts.toDate();
         Calendar cal = Calendar.getInstance();
@@ -51,6 +51,20 @@ public class DateTimeExtractor {
             String dateString = Integer.toString(date);
             return dateString + " " + monthString + ", " + yearString;
         }
+    }
+
+    public static String getDateString(Timestamp ts){
+        if(ts == null) return null;
+        Date dateObj = ts.toDate();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dateObj);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int date = cal.get(Calendar.DATE);
+        String yearString = Integer.toString(year);
+        String monthString = months[month];
+        String dateString = Integer.toString(date);
+        return dateString + " " + monthString + ", " + yearString;
     }
 
     public static Boolean isDateToday(Date comparable){

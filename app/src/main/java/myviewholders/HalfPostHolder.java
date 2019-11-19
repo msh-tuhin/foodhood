@@ -10,6 +10,7 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.ActivityResponse;
@@ -55,6 +56,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
     public PostBuilder mPostBuilder;
     public DocumentSnapshot mPostSnapShot;
 
+    public LinearLayout parentLayout;
     public CircleImageView profileImage;
     public TextView namePostedBy;
     public TextView postTime;
@@ -73,6 +75,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     public HalfPostHolder(@NonNull View v) {
         super(v);
+        parentLayout = v.findViewById(R.id.parent_layout);
         profileImage = v.findViewById(R.id.profile_image);
         namePostedBy = v.findViewById(R.id.name);
         restaurantName = v.findViewById(R.id.restaurant_name);

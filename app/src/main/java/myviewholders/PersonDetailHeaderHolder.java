@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import myapp.utils.DateTimeExtractor;
 import myapp.utils.SourceAllDishes;
 
 public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
@@ -143,7 +144,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindBirthdate(DocumentSnapshot personVitalSnapshot){
         Timestamp personBirthdateTS = personVitalSnapshot.getTimestamp("b");
-        String birthdate = getBirthDateString(personBirthdateTS);
+        String birthdate = DateTimeExtractor.getDateString(personBirthdateTS);
         if(birthdate != null){
             String fullText = "Born on: " + birthdate;
             SpannableStringBuilder ssb = getSpannedText(fullText, "Born on: ");
@@ -163,20 +164,6 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
         if(personHomeTown != null){
             hometownTV.setText(personHomeTown);
         }
-    }
-
-    private String getBirthDateString(Timestamp birthDate){
-        if(birthDate == null) return null;
-        Date dateObj = birthDate.toDate();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(dateObj);
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        int date = cal.get(Calendar.DATE);
-        String yearString = Integer.toString(year);
-        String monthString = months[month];
-        String dateString = Integer.toString(date);
-        return dateString + " " + monthString + ", " + yearString;
     }
 
     private SpannableStringBuilder getSpannedText(String fullText, String spannable){
