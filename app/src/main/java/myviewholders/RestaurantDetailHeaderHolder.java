@@ -221,6 +221,8 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                         .document(restaurantLink);
                 DocumentReference restRef = db.collection("rest_vital")
                         .document(restaurantLink);
+                DocumentReference personRef = db.collection("person_vital")
+                        .document(currentUserUid);
                 switch (((Button)v).getText().toString()){
                     case "FOLLOW":
                         // TODO: this should be done if and only if the updates are successful
@@ -228,6 +230,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                         personRestFollowRef.update("a", FieldValue.arrayUnion(restaurantLink));
                         restaurantFollowerRef.update("a", FieldValue.arrayUnion(currentUserUid));
                         restRef.update("nfb", FieldValue.increment(1));
+                        personRef.update("nfr", FieldValue.increment(1));
                         break;
                     case "UNFOLLOW":
                         // TODO: this should be done if and only if the updates are successful
@@ -235,6 +238,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                         personRestFollowRef.update("a", FieldValue.arrayRemove(restaurantLink));
                         restaurantFollowerRef.update("a", FieldValue.arrayRemove(currentUserUid));
                         restRef.update("nfb", FieldValue.increment(-1));
+                        personRef.update("nfr", FieldValue.increment(-1));
                         break;
                 }
             }

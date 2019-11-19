@@ -131,6 +131,7 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
 
     private void bindName(DocumentSnapshot dishVitalSnapshot){
         String dishName = dishVitalSnapshot.getString("n");
+        if(dishName==null || dishName.equals("")) return;
         dishNameTV.setText(dishName);
     }
 
@@ -147,11 +148,13 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
 
     private void bindRating(DocumentSnapshot dishVitalSnapshot){
         Double dishRating = dishVitalSnapshot.getDouble("r");
+        if(dishRating==null) return;
         dishRatingTV.setText(Double.toString(dishRating));
     }
 
     private void bindPrice(DocumentSnapshot dishVitalSnapshot){
         Double price = dishVitalSnapshot.getDouble("p");
+        if(price==null) return;
         dishPriceTV.setText(Double.toString(price)+" BDT");
     }
 

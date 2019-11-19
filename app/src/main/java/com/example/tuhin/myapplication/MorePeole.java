@@ -1,6 +1,7 @@
 package com.example.tuhin.myapplication;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -26,12 +27,16 @@ public class MorePeole extends AppCompatActivity {
 
         ArrayList<String> links = getIntent().getStringArrayListExtra("personsList");
 
-
         rv = findViewById(R.id.rv);
         toolbar = findViewById(R.id.toolbar);
 
         toolbar.setTitle("All People");
         setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        // not sure about this
+        // actionBar.setDisplayShowHomeEnabled(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rv.setLayoutManager(layoutManager);
@@ -40,6 +45,12 @@ public class MorePeole extends AppCompatActivity {
         PersonsAdapter adapter = new PersonsAdapter(links);
         adapter.notifyDataSetChanged();
         rv.setAdapter(adapter);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     // the adapter
@@ -51,7 +62,7 @@ public class MorePeole extends AppCompatActivity {
         }
         @Override
         public void onBindViewHolder(@NonNull MorePeopleItemHolder personHolder, int i) {
-            personHolder.bindTo(persons.get(i));
+            personHolder.bindTo(MorePeole.this, persons.get(i));
         }
         @Override
         public int getItemCount() {
