@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.DateTimeExtractor;
+import myapp.utils.PictureBinder;
 
 public class FeedbackHolderCommon extends RecyclerView.ViewHolder {
     private String[] months = {"Jan", "Feb", "March", "April", "May", "June",
@@ -86,14 +87,7 @@ public class FeedbackHolderCommon extends RecyclerView.ViewHolder {
     }
 
     private void bindAvatar(DocumentSnapshot personVitalSnapshot){
-        if(personVitalSnapshot == null) return;
-        String profilePictureLink = personVitalSnapshot.getString("pp");
-        if(profilePictureLink != null && !profilePictureLink.equals("")){
-            Picasso.get().load(profilePictureLink)
-                    .placeholder(R.drawable.ltgray)
-                    .error(R.drawable.ltgray)
-                    .into(avatar);
-        }
+        PictureBinder.bindProfilePicture(avatar, personVitalSnapshot);
     }
 
     private void setAvatarOnClickListener(final String personLink){

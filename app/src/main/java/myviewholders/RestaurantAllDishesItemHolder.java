@@ -1,12 +1,16 @@
 package myviewholders;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.tuhin.myapplication.DishDetail;
 import com.example.tuhin.myapplication.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -17,15 +21,18 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.PictureBinder;
 
 public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
 
+    private LinearLayout parentLayout;
     private CircleImageView dishAvatar;
     private TextView dishNameTV, dishRatingTV, dishPriceTV;
     private Button addToWishlistButton;
@@ -38,6 +45,7 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
         super(v);
         db = FirebaseFirestore.getInstance();
         currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        parentLayout = v.findViewById(R.id.parent_layout);
         dishAvatar = v.findViewById(R.id.dish_avatar);
         dishNameTV = v.findViewById(R.id.dish_name);
         dishRatingTV = v.findViewById(R.id.dish_rating);
@@ -46,7 +54,7 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
         addToWishlistIB = v.findViewById(R.id.add_to_wishlist_IB);
     }
 
-    public void bindTo(final String dishLink){
+    public void bindTo(final Context context, final String dishLink){
         addToWishlistButton.setVisibility(View.GONE);
         // set name and rating
         FirebaseFirestore.getInstance().collection("dish_vital")
@@ -55,12 +63,13 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if(documentSnapshot.exists()){
-                            String dishName = documentSnapshot.getString("n");
-                            dishNameTV.setText(dishName);
-                            Double dishRating = documentSnapshot.getDouble("r");
-                            dishRatingTV.setText(Double.toString(dishRating));
-                            Double price = documentSnapshot.getDouble("p");
-                            dishPriceTV.setText(Double.toString(price)+" BDT");
+                            setParentLayoutOnClickListener(context, dishLink);
+                            bindAvatar(documentSnapshot);
+                            setAvatarOnClickListener(context, dishLink);
+                            bindName(documentSnapshot);
+                            setNameOnClickListener(context, dishLink);
+                            bindRating(documentSnapshot);
+                            bindPrice(documentSnapshot);
                         }
                     }
                 });
@@ -92,6 +101,58 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
                         addToWishlistIB.setOnClickListener(getAddToWishlistIBOnClickListener(dishLink));
                     }
                 });
+    }
+
+    private void setParentLayoutOnClickListener(final Context context, final String dishLink){
+        parentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, DishDetail.class);
+                intent.putExtra("dishLink", dishLink);
+                context.startActivity(intent);
+            }
+        });
+    }
+
+    private void bindAvatar(DocumentSnapshot dishVitalSnapshot){
+        PictureBinder.bindCoverPicture(dishAvatar, dishVitalSnapshot);
+    }
+
+    private void setAvatarOnClickListener(final Context context, final String dishLink){
+        dishAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, DishDetail.class);
+                intent.putExtra("dishLink", dishLink);
+                context.startActivity(intent);
+            }
+        });
+    }
+
+    private void bindName(DocumentSnapshot dishVitalSnapshot){
+        String dishName = dishVitalSnapshot.getString("n");
+        dishNameTV.setText(dishName);
+    }
+
+    private void setNameOnClickListener(final Context context, final String dishLink){
+        dishNameTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, DishDetail.class);
+                intent.putExtra("dishLink", dishLink);
+                context.startActivity(intent);
+            }
+        });
+    }
+
+    private void bindRating(DocumentSnapshot dishVitalSnapshot){
+        Double dishRating = dishVitalSnapshot.getDouble("r");
+        dishRatingTV.setText(Double.toString(dishRating));
+    }
+
+    private void bindPrice(DocumentSnapshot dishVitalSnapshot){
+        Double price = dishVitalSnapshot.getDouble("p");
+        dishPriceTV.setText(Double.toString(price)+" BDT");
     }
 
     private View.OnClickListener getAddToWishlistOnClickListener(final String dishLink){

@@ -19,6 +19,7 @@ import com.example.tuhin.myapplication.MorePeole;
 import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.RestDetail;
+import com.example.tuhin.myapplication.RestaurantAllDishes;
 import com.example.tuhin.myapplication.WriteComment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -285,10 +286,9 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         dishes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, AllDishes.class);
+                Intent intent = new Intent(mContext, RestaurantAllDishes.class);
                 intent.putStringArrayListExtra("dishesList",
                         mPostBuilder.getSortedDishLinks());
-                intent.putExtra("source", SourceAllDishes.POST);
                 mContext.startActivity(intent);
             }
         });

@@ -74,7 +74,7 @@ public class RestaurantAllDishes extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull RestaurantAllDishesItemHolder holder, int position) {
-            holder.bindTo(dishes.get(position));
+            holder.bindTo(RestaurantAllDishes.this, dishes.get(position));
         }
 
         @Override
