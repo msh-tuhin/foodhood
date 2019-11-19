@@ -24,7 +24,6 @@ import myviewholders.PostCommentHolder;
 import myviewholders.PostReplyHolder;
 import myviewholders.RestFeedReplyHolder;
 
-import com.example.tuhin.myapplication.FeedbackModel;
 import com.example.tuhin.myapplication.R;
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;

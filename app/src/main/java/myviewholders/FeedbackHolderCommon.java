@@ -5,7 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.FeedbackModel;
+import models.FeedbackModel;
 import com.example.tuhin.myapplication.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

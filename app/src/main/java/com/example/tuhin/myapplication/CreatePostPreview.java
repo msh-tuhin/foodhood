@@ -336,6 +336,8 @@ public class CreatePostPreview extends AppCompatActivity {
     private FeedbackModel getFeedback(Serializable data, int type){
         String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
         FeedbackModel feedback = new FeedbackModel();
+        Map<String, String> whoMap = new HashMap<>();
+        whoMap.put("l", currentUserLink);
         if(type == FeedbackTypes.DISH_FEEDBACK){
             DishFeedback dishFeedback = (DishFeedback)data;
             feedback.setRating(dishFeedback.rating);
@@ -344,7 +346,7 @@ public class CreatePostPreview extends AppCompatActivity {
                 feedback.setReview(dishFeedback.review);
             }
             feedback.setType(FeedbackTypes.DISH_FEEDBACK);
-            feedback.setWho(currentUserLink);
+            feedback.setWho(whoMap);
             feedback.setWhere(dishFeedback.link);
         }else{
             RestaurantFeedback restaurantFeedback = (RestaurantFeedback) data;
@@ -354,7 +356,7 @@ public class CreatePostPreview extends AppCompatActivity {
                 feedback.setReview(restaurantFeedback.review);
             }
             feedback.setType(FeedbackTypes.RESTAURANT_FEEDBACK);
-            feedback.setWho(currentUserLink);
+            feedback.setWho(whoMap);
             feedback.setWhere(restaurantFeedback.link);
         }
 

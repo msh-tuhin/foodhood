@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import androidx.viewpager.widget.ViewPager;
+import models.FeedbackModel;
 import myapp.utils.CoverImagesAdapter;
 import myviewholders.FeedbackHolder;
 import myviewholders.FeedbackHolderCommon;

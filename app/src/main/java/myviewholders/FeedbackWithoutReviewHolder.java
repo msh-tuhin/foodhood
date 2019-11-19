@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.FeedbackModel;
+import models.FeedbackModel;
 import com.example.tuhin.myapplication.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,18 +28,5 @@ public class FeedbackWithoutReviewHolder extends RecyclerView.ViewHolder {
 
     public void bindTo(FeedbackModel feedback){
         rating.setText(Double.toString(feedback.getRating()));
-        FirebaseFirestore.getInstance().collection("person_vital").document(feedback.getWho())
-                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
-                    DocumentSnapshot personVital = task.getResult();
-                    if(personVital.exists()){
-                        String name = personVital.getString("n");
-                        personName.setText(name);
-                    }
-                }
-            }
-        });
     }
 }

@@ -1,7 +1,10 @@
 package models;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 import com.google.firebase.firestore.PropertyName;
+
+import java.util.Map;
 
 @IgnoreExtraProperties
 public class FeedbackModel {
@@ -19,10 +22,13 @@ public class FeedbackModel {
     private int type;
 
     @PropertyName("w")
-    private String who;
+    private Map<String, String> who;
 
     @PropertyName("wh")
     private String where;
+
+    @PropertyName("ts")
+    public Timestamp timestamp;
 
     public FeedbackModel(){
 
@@ -69,12 +75,12 @@ public class FeedbackModel {
     }
 
     @PropertyName("w")
-    public String getWho() {
+    public Map<String, String> getWho() {
         return who;
     }
 
     @PropertyName("w")
-    public void setWho(String who) {
+    public void setWho(Map<String, String> who) {
         this.who = who;
     }
 
@@ -86,5 +92,15 @@ public class FeedbackModel {
     @PropertyName("wh")
     public void setWhere(String where) {
         this.where = where;
+    }
+
+    @PropertyName("ts")
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    @PropertyName("ts")
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 }

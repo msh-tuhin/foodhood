@@ -26,6 +26,7 @@ import com.google.firebase.firestore.Query;
 import java.util.ArrayList;
 
 import models.DishFeedback;
+import models.FeedbackModel;
 import myviewholders.DishDetailHeaderHolder;
 import myviewholders.FeedbackHolder;
 import myviewholders.FeedbackHolderCommon;
