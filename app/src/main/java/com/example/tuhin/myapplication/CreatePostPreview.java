@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -40,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -336,8 +338,9 @@ public class CreatePostPreview extends AppCompatActivity {
     private FeedbackModel getFeedback(Serializable data, int type){
         String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
         FeedbackModel feedback = new FeedbackModel();
-        Map<String, String> whoMap = new HashMap<>();
-        whoMap.put("l", currentUserLink);
+        feedback.setTimestamp(new Timestamp(new Date()));
+        // Map<String, String> whoMap = new HashMap<>();
+        // whoMap.put("l", currentUserLink);
         if(type == FeedbackTypes.DISH_FEEDBACK){
             DishFeedback dishFeedback = (DishFeedback)data;
             feedback.setRating(dishFeedback.rating);
@@ -346,7 +349,8 @@ public class CreatePostPreview extends AppCompatActivity {
                 feedback.setReview(dishFeedback.review);
             }
             feedback.setType(FeedbackTypes.DISH_FEEDBACK);
-            feedback.setWho(whoMap);
+            // feedback.setWho(whoMap);
+            feedback.setWho(currentUserLink);
             feedback.setWhere(dishFeedback.link);
         }else{
             RestaurantFeedback restaurantFeedback = (RestaurantFeedback) data;
@@ -356,7 +360,8 @@ public class CreatePostPreview extends AppCompatActivity {
                 feedback.setReview(restaurantFeedback.review);
             }
             feedback.setType(FeedbackTypes.RESTAURANT_FEEDBACK);
-            feedback.setWho(whoMap);
+            // feedback.setWho(whoMap);
+            feedback.setWho(currentUserLink);
             feedback.setWhere(restaurantFeedback.link);
         }
 

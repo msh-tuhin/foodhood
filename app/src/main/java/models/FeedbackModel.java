@@ -22,7 +22,7 @@ public class FeedbackModel {
     private int type;
 
     @PropertyName("w")
-    private Map<String, String> who;
+    private String who;
 
     @PropertyName("wh")
     private String where;
@@ -75,12 +75,12 @@ public class FeedbackModel {
     }
 
     @PropertyName("w")
-    public Map<String, String> getWho() {
+    public String getWho() {
         return who;
     }
 
     @PropertyName("w")
-    public void setWho(Map<String, String> who) {
+    public void setWho(String who) {
         this.who = who;
     }
 
