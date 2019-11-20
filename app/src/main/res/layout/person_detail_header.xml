@@ -40,7 +40,8 @@
             app:layout_constraintStart_toStartOf="@id/name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/name"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:visibility="gone"/>
 
         <TextView
             android:textColor="#000000"
@@ -54,7 +55,8 @@
             app:layout_constraintTop_toBottomOf="@id/bio"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp"
-            app:layout_constraintHorizontal_bias="0"/>
+            app:layout_constraintHorizontal_bias="0"
+            android:visibility="gone"/>
 
         <LinearLayout
             android:id="@+id/current_location_layout"
@@ -64,7 +66,8 @@
             app:layout_constraintStart_toStartOf="@+id/name"
             app:layout_constraintTop_toBottomOf="@id/birthdate"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            android:visibility="gone">
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="match_parent"
@@ -88,7 +91,8 @@
             app:layout_constraintStart_toStartOf="@+id/name"
             app:layout_constraintTop_toBottomOf="@id/current_location_layout"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            android:visibility="gone">
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="match_parent"
@@ -112,7 +116,8 @@
             app:layout_constraintStart_toStartOf="@+id/name"
             app:layout_constraintTop_toBottomOf="@id/hometown_layout"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            android:visibility="gone">
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="match_parent"
@@ -129,8 +134,7 @@
         </LinearLayout>
 
         <TextView
-            android:textColor="#000000"
-            android:textSize="16sp"
+            style="@style/TextClickableSimple"
             android:id="@+id/num_following"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -140,9 +144,11 @@
             app:layout_constraintTop_toBottomOf="@id/phone_layout"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp"
-            app:layout_constraintHorizontal_bias="0"/>
+            app:layout_constraintHorizontal_bias="0"
+            android:visibility="gone"/>
 
         <TextView
+            style="@style/TextClickableSimple"
             android:textColor="#000000"
             android:textSize="16sp"
             android:id="@+id/num_followed_by"
@@ -154,9 +160,11 @@
             app:layout_constraintTop_toBottomOf="@id/num_following"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="8dp"
-            app:layout_constraintHorizontal_bias="0"/>
+            app:layout_constraintHorizontal_bias="0"
+            android:visibility="gone"/>
 
         <TextView
+            style="@style/TextClickableSimple"
             android:textColor="#000000"
             android:textSize="16sp"
             android:id="@+id/num_followed_restaurants"
@@ -168,17 +176,19 @@
             app:layout_constraintTop_toBottomOf="@id/num_followed_by"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="8dp"
-            app:layout_constraintHorizontal_bias="0"/>
+            app:layout_constraintHorizontal_bias="0"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/follow_person"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Follow"
+            android:text="FOLLOW"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/num_followed_restaurants"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:visibility="gone"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

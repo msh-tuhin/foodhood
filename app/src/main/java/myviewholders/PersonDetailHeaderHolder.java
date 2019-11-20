@@ -1,5 +1,6 @@
 package myviewholders;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import androidx.annotation.NonNull;
@@ -15,16 +16,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.AllDishes;
+import com.example.tuhin.myapplication.MorePeole;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.PersonDetail;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.w3c.dom.Text;
@@ -35,38 +43,54 @@ import java.util.Date;
 
 import myapp.utils.DateTimeExtractor;
 import myapp.utils.SourceAllDishes;
+import myapp.utils.SourceMorePeople;
 
 public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
     private String[] months = {"Jan", "Feb", "March", "April", "May", "June",
             "July", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private Context mContext;
+    private String mCurrentUserUid;
 
+    private LinearLayout currentLocationLayout;
+    private LinearLayout hometownLayout;
+    private LinearLayout phoneLayout;
     private TextView nameTV;
     private TextView bioTV;
     private TextView birthdateTV;
     private TextView hometownTV;
     private TextView currentLocationTV;
     private TextView phoneTV;
+    private TextView numFollowingTV;
+    private TextView numFollowerTV;
+    private TextView numFollowedRestaurantTV;
     private TextView seeAllTV;
     private Button followButton;
     private RecyclerView rvWishlist;
 
     public PersonDetailHeaderHolder(@NonNull View v) {
         super(v);
+        currentLocationLayout = v.findViewById(R.id.current_location_layout);
+        hometownLayout = v.findViewById(R.id.hometown_layout);
+        phoneLayout = v.findViewById(R.id.phone_layout);
         nameTV = v.findViewById(R.id.name);
         bioTV = v.findViewById(R.id.bio);
         birthdateTV = v.findViewById(R.id.birthdate);
         hometownTV = v.findViewById(R.id.hometown);
         currentLocationTV = v.findViewById(R.id.current_location);
         phoneTV = v.findViewById(R.id.phone);
+        numFollowingTV = v.findViewById(R.id.num_following);
+        numFollowerTV = v.findViewById(R.id.num_followed_by);
+        numFollowedRestaurantTV = v.findViewById(R.id.num_followed_restaurants);
         seeAllTV = v.findViewById(R.id.see_all);
         followButton = v.findViewById(R.id.follow_person);
         rvWishlist = v.findViewById(R.id.wishlist);
     }
 
-    public void bindTo(final Context context, String personLink){
+    public void bindTo(final Context context, final String personLink){
+        mCurrentUserUid = mAuth.getCurrentUser().getUid();
         mContext = context;
         if(personLink==null || personLink.equals("")) return;
 
@@ -84,6 +108,11 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
                         bindBirthdate(personVitalSnapshot);
                         bindCurrentTown(personVitalSnapshot);
                         bindHomeTown(personVitalSnapshot);
+                        bindFollowings(personVitalSnapshot);
+                        setFollowingsOnClickListener(context, personLink);
+                        bindFollowers(personVitalSnapshot);
+                        setFollowersOnClickListener(context, personLink);
+                        bindFollowingRestaurants(personVitalSnapshot);
                     }
                 }
             }
@@ -119,6 +148,8 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
                 }
             }
         });
+
+        bindFollowButton(context, personLink);
     }
 
     private void bindName(DocumentSnapshot personVitalSnapshot){
@@ -132,6 +163,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
         String bio = personVitalSnapshot.getString("bio");
         if(bio != null){
             bioTV.setText(bio);
+            bioTV.setVisibility(View.VISIBLE);
         }
     }
 
@@ -139,6 +171,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
         String personPhone = personVitalSnapshot.getString("p");
         if(personPhone != null){
             phoneTV.setText(personPhone);
+            phoneLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -149,6 +182,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
             String fullText = "Born on: " + birthdate;
             SpannableStringBuilder ssb = getSpannedText(fullText, "Born on: ");
             birthdateTV.setText(ssb);
+            birthdateTV.setVisibility(View.VISIBLE);
         }
     }
 
@@ -156,6 +190,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
         String personCurrentTown = personVitalSnapshot.getString("ct");
         if(personCurrentTown != null){
             currentLocationTV.setText(personCurrentTown);
+            currentLocationLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -163,7 +198,135 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
         String personHomeTown = personVitalSnapshot.getString("ht");
         if(personHomeTown != null){
             hometownTV.setText(personHomeTown);
+            hometownLayout.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void bindFollowings(DocumentSnapshot personVitalSnapshot){
+        Long numFollwing = personVitalSnapshot.getLong("nf");
+        if(numFollwing==null) numFollwing = 0L;
+        String numString = Long.toString(numFollwing);
+        String fullText = "Follows " + numString + " people";
+        SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
+        numFollowingTV.setText(spannedText);
+        numFollowingTV.setVisibility(View.VISIBLE);
+    }
+
+    private void setFollowingsOnClickListener(final Context context, final String personLink){
+        numFollowingTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, MorePeole.class);
+                intent.putExtra("source", SourceMorePeople.FOLLOWINGS);
+                intent.putExtra("personLink", personLink);
+                context.startActivity(intent);
+            }
+        });
+    }
+
+    private void setFollowersOnClickListener(final Context context, final String personLink){
+        numFollowerTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, MorePeole.class);
+                intent.putExtra("source", SourceMorePeople.FOLLOWERS);
+                intent.putExtra("personLink", personLink);
+                context.startActivity(intent);
+            }
+        });
+    }
+
+    private void setFollowingRestaurantsOnClickListener(){
+        numFollowedRestaurantTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
+    private void bindFollowers(DocumentSnapshot personVitalSnapshot){
+        Long numFollower = personVitalSnapshot.getLong("nfb");
+        if(numFollower==null) numFollower = 0L;
+        String numString = Long.toString(numFollower);
+        String fullText = "Followed by " + numString + " people";
+        SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
+        numFollowerTV.setText(spannedText);
+        numFollowerTV.setVisibility(View.VISIBLE);
+    }
+
+    private void bindFollowingRestaurants(DocumentSnapshot personVitalSnapshot){
+        Long numFollwedRestaurant = personVitalSnapshot.getLong("nfr");
+        if(numFollwedRestaurant==null) numFollwedRestaurant = 0L;
+        String numString = Long.toString(numFollwedRestaurant);
+        String fullText = "Follows " + numString + " restaurants";
+        SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
+        numFollowedRestaurantTV.setText(spannedText);
+        numFollowedRestaurantTV.setVisibility(View.VISIBLE);
+    }
+
+    private void bindFollowButton(final Context context, final String personLink){
+        db.collection("followings")
+                .document(mCurrentUserUid)
+                .get()
+                .addOnSuccessListener((Activity)context, new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            try{
+                                ArrayList<String> followings = (ArrayList) documentSnapshot.get("a");
+                                if(followings.contains(personLink)){
+                                    followButton.setText("UNFOLLOW");
+                                }
+                            } catch (NullPointerException e){
+                                Log.i("Error", e.getMessage());
+                            }
+                        }
+                        followButton.setVisibility(View.VISIBLE);
+                        followButton.setOnClickListener(getFollowPersonOnClickListener(personLink));
+                    }
+                })
+                .addOnFailureListener((Activity)context, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        followButton.setVisibility(View.VISIBLE);
+                        followButton.setOnClickListener(getFollowPersonOnClickListener(personLink));
+                    }
+                });
+    }
+
+    private View.OnClickListener getFollowPersonOnClickListener(final String personLink){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DocumentReference followingRef = db.collection("followings")
+                        .document(mCurrentUserUid);
+                DocumentReference followerRef = db.collection("followers")
+                        .document(personLink);
+                DocumentReference followerVitalRef = db.collection("person_vital")
+                        .document(mCurrentUserUid);
+                DocumentReference followedVitalRef = db.collection("person_vital")
+                        .document(personLink);
+                switch (((Button)v).getText().toString()){
+                    case "FOLLOW":
+                        // TODO: this should be done if and only if the updates are successful
+                        followButton.setText("UNFOLLOW");
+                        followingRef.update("a", FieldValue.arrayUnion(personLink));
+                        followerRef.update("a", FieldValue.arrayUnion(mCurrentUserUid));
+                        followerVitalRef.update("nf", FieldValue.increment(1));
+                        followedVitalRef.update("nfb", FieldValue.increment(1));
+                        break;
+                    case "UNFOLLOW":
+                        // TODO: this should be done if and only if the updates are successful
+                        followButton.setText("FOLLOW");
+                        followingRef.update("a", FieldValue.arrayRemove(personLink));
+                        followerRef.update("a", FieldValue.arrayRemove(mCurrentUserUid));
+                        followerVitalRef.update("nf", FieldValue.increment(-1));
+                        followedVitalRef.update("nfb", FieldValue.increment(-1));
+                        break;
+                }
+            }
+        };
     }
 
     private SpannableStringBuilder getSpannedText(String fullText, String spannable){
