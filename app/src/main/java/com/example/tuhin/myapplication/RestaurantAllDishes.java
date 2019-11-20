@@ -16,10 +16,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 
 public class RestaurantAllDishes extends AppCompatActivity {
-
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     Toolbar toolbar;
     RecyclerView rv;
 
@@ -59,9 +65,12 @@ public class RestaurantAllDishes extends AppCompatActivity {
     public class RestaurantAllDishesAdapter extends RecyclerView.Adapter<RestaurantAllDishesItemHolder>{
 
         public ArrayList<String> dishes;
+        Task<DocumentSnapshot> taskWithCurrentUserWishlist;
 
         RestaurantAllDishesAdapter(ArrayList<String> dishes){
             this.dishes = dishes;
+            taskWithCurrentUserWishlist = db.collection("wishlist")
+                    .document(mAuth.getCurrentUser().getUid()).get();
         }
 
         @NonNull
@@ -74,7 +83,7 @@ public class RestaurantAllDishes extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull RestaurantAllDishesItemHolder holder, int position) {
-            holder.bindTo(RestaurantAllDishes.this, dishes.get(position));
+            holder.bindTo(RestaurantAllDishes.this, dishes.get(position), taskWithCurrentUserWishlist);
         }
 
         @Override

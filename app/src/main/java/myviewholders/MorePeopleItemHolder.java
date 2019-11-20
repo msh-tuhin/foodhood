@@ -3,11 +3,13 @@ package myviewholders;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.AccountTypes;
 import myapp.utils.PictureBinder;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,7 +20,9 @@ import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -42,7 +46,9 @@ public class MorePeopleItemHolder extends RecyclerView.ViewHolder {
         followButton = v.findViewById(R.id.follow);
     }
 
-    public void bindTo(final Context context, final String personLink){
+    public void bindTo(final Context context,
+                       final String personLink,
+                       Task<DocumentSnapshot> taskWithCurrentUserFollowings){
         mCurrentUserUid = mAuth.getCurrentUser().getUid();
         followButton.setVisibility(View.INVISIBLE);
         db.collection("person_vital")
@@ -57,7 +63,7 @@ public class MorePeopleItemHolder extends RecyclerView.ViewHolder {
                         setNameOnClickListener(context, personLink);
                     }
                 });
-        bindFollowButton(context, personLink);
+        bindFollowButton(context, personLink, taskWithCurrentUserFollowings);
     }
 
     private void bindAvatar(DocumentSnapshot personVitalSnapshot){
@@ -92,10 +98,14 @@ public class MorePeopleItemHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    private void bindFollowButton(final Context context, final String personLink){
-        db.collection("followings")
-                .document(mCurrentUserUid)
-                .get()
+    private void bindFollowButton(final Context context,
+                                  final String personLink,
+                                  Task<DocumentSnapshot> taskWithCurrentUserFollowings){
+        if(getAccountType(context) == AccountTypes.RESTAURANT){
+            return;
+        }
+        if(personLink.equals(mAuth.getCurrentUser().getUid())) return;
+        taskWithCurrentUserFollowings
                 .addOnSuccessListener((Activity)context, new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -154,5 +164,14 @@ public class MorePeopleItemHolder extends RecyclerView.ViewHolder {
                 }
             }
         };
+    }
+
+    private int getAccountType(Context context){
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        SharedPreferences sPref = context.getSharedPreferences(
+                context.getString(R.string.account_type),
+                Context.MODE_PRIVATE);
+        return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
     }
 }

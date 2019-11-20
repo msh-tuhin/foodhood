@@ -3,6 +3,7 @@ package myviewholders;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +18,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.AccountTypes;
 import myapp.utils.PictureBinder;
 
 public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
@@ -54,7 +57,9 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
         addToWishlistIB = v.findViewById(R.id.add_to_wishlist_IB);
     }
 
-    public void bindTo(final Context context, final String dishLink){
+    public void bindTo(final Context context,
+                       final String dishLink,
+                       Task<DocumentSnapshot> taskWithCurrentUserWishlist){
         addToWishlistButton.setVisibility(View.GONE);
         // set name and rating
         FirebaseFirestore.getInstance().collection("dish_vital")
@@ -73,34 +78,7 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
                         }
                     }
                 });
-
-        db.collection("wishers").document(dishLink)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot wishersSnap) {
-                        if (wishersSnap.exists()) {
-                            try{
-                                ArrayList<String> wishersList = (ArrayList<String>) wishersSnap.get("a");
-                                if(wishersList.contains(currentUserUid)){
-                                    addToWishlistIB.setImageResource(R.drawable.outline_done_black_24dp);
-                                    isInWishlist = true;
-                                }
-                            }catch (NullPointerException e){
-                                Log.e("error", e.getMessage());
-                            }
-                        }
-                        addToWishlistIB.setVisibility(View.VISIBLE);
-                        addToWishlistIB.setOnClickListener(getAddToWishlistIBOnClickListener(dishLink));
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        addToWishlistIB.setVisibility(View.VISIBLE);
-                        addToWishlistIB.setOnClickListener(getAddToWishlistIBOnClickListener(dishLink));
-                    }
-                });
+        bindAddToWishlistIB(context, dishLink, taskWithCurrentUserWishlist);
     }
 
     private void setParentLayoutOnClickListener(final Context context, final String dishLink){
@@ -188,6 +166,40 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
         };
     }
 
+    private void bindAddToWishlistIB(final Context context,
+                                     final String dishLink,
+                                     Task<DocumentSnapshot> taskWithCurrentUserWishlist){
+        if(getAccountType(context) == AccountTypes.RESTAURANT){
+            return;
+        }
+        taskWithCurrentUserWishlist
+                .addOnSuccessListener((Activity)context, new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot wishListSnap) {
+                        if (wishListSnap.exists()) {
+                            try{
+                                ArrayList<String> wishList = (ArrayList<String>) wishListSnap.get("a");
+                                if(wishList.contains(dishLink)){
+                                    addToWishlistIB.setImageResource(R.drawable.outline_done_black_24dp);
+                                    isInWishlist = true;
+                                }
+                            }catch (NullPointerException e){
+                                Log.e("error", e.getMessage());
+                            }
+                        }
+                        addToWishlistIB.setVisibility(View.VISIBLE);
+                        addToWishlistIB.setOnClickListener(getAddToWishlistIBOnClickListener(dishLink));
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        addToWishlistIB.setVisibility(View.VISIBLE);
+                        addToWishlistIB.setOnClickListener(getAddToWishlistIBOnClickListener(dishLink));
+                    }
+                });
+    }
+
     private View.OnClickListener getAddToWishlistIBOnClickListener(final String dishLink){
         return new View.OnClickListener() {
             @Override
@@ -215,5 +227,14 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
                 }
             }
         };
+    }
+
+    private int getAccountType(Context context){
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        SharedPreferences sPref = context.getSharedPreferences(
+                context.getString(R.string.account_type),
+                Context.MODE_PRIVATE);
+        return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
     }
 }

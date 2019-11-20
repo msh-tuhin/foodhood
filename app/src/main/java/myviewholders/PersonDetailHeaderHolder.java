@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -30,6 +31,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -41,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import myapp.utils.AccountTypes;
 import myapp.utils.DateTimeExtractor;
 import myapp.utils.SourceAllDishes;
 import myapp.utils.SourceMorePeople;
@@ -266,6 +269,10 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
     }
 
     private void bindFollowButton(final Context context, final String personLink){
+        if(getAccountType() == AccountTypes.RESTAURANT){
+            return;
+        }
+        if(personLink.equals(mCurrentUserUid)) return;
         db.collection("followings")
                 .document(mCurrentUserUid)
                 .get()
@@ -403,5 +410,13 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
                     .inflate(R.layout.followed_restaurants_item, viewGroup, false);
             return new FollowedRestaurantItemHolder(view);
         }
+    }
+
+    private int getAccountType(){
+        FirebaseUser user = mAuth.getCurrentUser();
+        SharedPreferences sPref = mContext.getSharedPreferences(
+                mContext.getString(R.string.account_type),
+                Context.MODE_PRIVATE);
+        return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
     }
 }

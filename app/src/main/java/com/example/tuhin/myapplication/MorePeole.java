@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -111,12 +112,15 @@ public class MorePeole extends AppCompatActivity {
     // might use a different adapter later
     private class PersonsAdapter extends RecyclerView.Adapter<MorePeopleItemHolder>{
         ArrayList<String> persons;
+        Task<DocumentSnapshot> taskWithCurrentUserFollowings;
         PersonsAdapter(ArrayList<String> persons){
             this.persons = persons;
+            taskWithCurrentUserFollowings = db.collection("followings")
+                    .document(mAuth.getCurrentUser().getUid()).get();
         }
         @Override
         public void onBindViewHolder(@NonNull MorePeopleItemHolder personHolder, int i) {
-            personHolder.bindTo(MorePeole.this, persons.get(i));
+            personHolder.bindTo(MorePeole.this, persons.get(i), taskWithCurrentUserFollowings);
         }
         @Override
         public int getItemCount() {
