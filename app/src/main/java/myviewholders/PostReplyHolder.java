@@ -72,22 +72,22 @@ public class PostReplyHolder extends HalfPostHolder
     TextView numOfLikesInReply;
     TextView numOfRepliesToReply;
 
-    public FirebaseFirestore db = FirebaseFirestore.getInstance();
-    public FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    public Context mContext;
-    public String mCommentText;
-    public String mCommentLink;
-    public String mPostLink;
-    public String mNameCommentBy;
-    public String mLinkCommentBy;
-    public String mReplyText;
-    public String mReplyLink;
-    public String mNameReplyBy;
-    public String mLinkReplyBy;
-    public Task<DocumentSnapshot> mTaskReply;
-    public Task<DocumentSnapshot> mTaskComment;
-    public DocumentSnapshot mReplySnapshot;
-    public DocumentSnapshot mCommentSnapshot;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    // public Context mContext;
+    private String mCommentText;
+    private String mCommentLink;
+    // public String mPostLink;
+    private String mNameCommentBy;
+    private String mLinkCommentBy;
+    private String mReplyText;
+    private String mReplyLink;
+    private String mNameReplyBy;
+    private String mLinkReplyBy;
+    private Task<DocumentSnapshot> mTaskReply;
+    private Task<DocumentSnapshot> mTaskComment;
+    private DocumentSnapshot mReplySnapshot;
+    private DocumentSnapshot mCommentSnapshot;
 
     public PostReplyHolder(@NonNull View v) {
         super(v);
@@ -118,13 +118,13 @@ public class PostReplyHolder extends HalfPostHolder
         super.bindTo(context, activity);
 
         setpublicGlobalFields(context, activity);
-        bindValuesIndependent();
-        setOnClickListenersIndependent();
+        bindValuesIndependentOfOtherDownloads();
+        setOnClickListenersIndependentOfOtherDownloads();
         setElementsDependentOnCommentDownload();
         setElementsDependentOnReplyDownload();
     }
 
-    public void setpublicGlobalFields(Context context, DocumentSnapshot activity){
+    private void setpublicGlobalFields(Context context, DocumentSnapshot activity){
         setmContext(context);
 
         // set mNameReplyBy, mLinkReplyBy;
@@ -151,7 +151,7 @@ public class PostReplyHolder extends HalfPostHolder
         setmTaskReply();
     }
 
-    public void bindValuesIndependent(){
+    private void bindValuesIndependentOfOtherDownloads(){
         bindHeader();
         bindCommentByAvatar();
         bindNameCommentBy();
@@ -162,7 +162,7 @@ public class PostReplyHolder extends HalfPostHolder
         bindReply();
     }
 
-    public void setOnClickListenersIndependent(){
+    private void setOnClickListenersIndependentOfOtherDownloads(){
         setCommentByAvatarOnClickListener();
         setNameCommentByOnClickListener();
         setCommentOnClickListener();
@@ -176,7 +176,7 @@ public class PostReplyHolder extends HalfPostHolder
         setCommentReplyLayoutOnClickListener();
     }
 
-    public void setElementsDependentOnCommentDownload(){
+    private void setElementsDependentOnCommentDownload(){
         mTaskComment.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -192,7 +192,7 @@ public class PostReplyHolder extends HalfPostHolder
         });
     }
 
-    public void bindValuesDependentOnCommentDownload(){
+    private void bindValuesDependentOnCommentDownload(){
         bindCommentTime();
         bindRepliesLink();
         bindLikeCommentIcon();
@@ -201,7 +201,7 @@ public class PostReplyHolder extends HalfPostHolder
         bindNoOfRepliesToComment();
     }
 
-    public void setOnClickListenersDependentOnCommentDownload(){
+    private void setOnClickListenersDependentOnCommentDownload(){
         setCommentTimeOnClickListener();
         setRepliesLinkOnClickListener();
         setLikeCommentIconOnClickListener();
@@ -210,7 +210,7 @@ public class PostReplyHolder extends HalfPostHolder
         setNoOfRepliesToCommentOnClickListener();
     }
 
-    public void setElementsDependentOnReplyDownload(){
+    private void setElementsDependentOnReplyDownload(){
         mTaskReply.addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -226,7 +226,7 @@ public class PostReplyHolder extends HalfPostHolder
         });
     }
 
-    public void bindValuesDependentOnReplyDownload(){
+    private void bindValuesDependentOnReplyDownload(){
         bindReplyTime();
         bindReplyingToLink();
         bindLikeReplyIcon();
@@ -235,7 +235,7 @@ public class PostReplyHolder extends HalfPostHolder
         bindNoOfRepliesToReply();
     }
 
-    public void setOnClickListenersDependentOnReplyDownload(){
+    private void setOnClickListenersDependentOnReplyDownload(){
         setReplyTimeOnClickListener();
         setReplyingToLinkOnClickListener();
         setLikeReplyIconOnClickListener();
@@ -244,51 +244,51 @@ public class PostReplyHolder extends HalfPostHolder
         setNoOfRepliesToReplyOnClickListener();
     }
 
-    public void setmContext(Context mContext) {
-        this.mContext = mContext;
-    }
+//    public void setmContext(Context mContext) {
+//        this.mContext = mContext;
+//    }
 
-    public void setmCommentText(String mCommentText) {
+    private void setmCommentText(String mCommentText) {
         this.mCommentText = mCommentText;
     }
 
-    public void setmCommentLink(String mCommentLink) {
+    private void setmCommentLink(String mCommentLink) {
         this.mCommentLink = mCommentLink;
     }
 
-    public void setmPostLink(String mPostLink) {
-        this.mPostLink = mPostLink;
-    }
+//    public void setmPostLink(String mPostLink) {
+//        this.mPostLink = mPostLink;
+//    }
 
-    public void setmNameCommentBy(String mNameCommentBy) {
+    private void setmNameCommentBy(String mNameCommentBy) {
         this.mNameCommentBy = mNameCommentBy;
     }
 
-    public void setmLinkCommentBy(String mLinkCommentBy) {
+    private void setmLinkCommentBy(String mLinkCommentBy) {
         this.mLinkCommentBy = mLinkCommentBy;
     }
 
-    public void setmReplyText(String mReplyText) {
+    private void setmReplyText(String mReplyText) {
         this.mReplyText = mReplyText;
     }
 
-    public void setmReplyLink(String mReplyLink) {
+    private void setmReplyLink(String mReplyLink) {
         this.mReplyLink = mReplyLink;
     }
 
-    public void setmNameReplyBy(String mNameReplyBy) {
+    private void setmNameReplyBy(String mNameReplyBy) {
         this.mNameReplyBy = mNameReplyBy;
     }
 
-    public void setmLinkReplyBy(String mLinkReplyBy) {
+    private void setmLinkReplyBy(String mLinkReplyBy) {
         this.mLinkReplyBy = mLinkReplyBy;
     }
 
-    public void setmTaskComment(){
+    private void setmTaskComment(){
         mTaskComment = db.collection("comments").document(mCommentLink).get();
     }
 
-    public void setmTaskReply(){
+    private void setmTaskReply(){
         mTaskReply = db.collection("comments").document(mReplyLink).get();
     }
 
