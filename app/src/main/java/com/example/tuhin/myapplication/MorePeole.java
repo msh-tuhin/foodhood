@@ -91,7 +91,7 @@ public class MorePeole extends AppCompatActivity {
             db.collection(collectionName)
                     .document(personLink)
                     .get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    .addOnSuccessListener(MorePeole.this, new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             if(documentSnapshot.exists()){

@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.AllDishes;
+import com.example.tuhin.myapplication.AllRestaurants;
 import com.example.tuhin.myapplication.MorePeole;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.PersonDetail;
@@ -116,6 +117,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
                         bindFollowers(personVitalSnapshot);
                         setFollowersOnClickListener(context, personLink);
                         bindFollowingRestaurants(personVitalSnapshot);
+                        setFollowingRestaurantsOnClickListener(context, personLink);
                     }
                 }
             }
@@ -239,11 +241,13 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    private void setFollowingRestaurantsOnClickListener(){
+    private void setFollowingRestaurantsOnClickListener(final Context context, final String personLink){
         numFollowedRestaurantTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(context, AllRestaurants.class);
+                intent.putExtra("personLink", personLink);
+                context.startActivity(intent);
             }
         });
     }

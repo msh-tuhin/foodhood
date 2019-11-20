@@ -25,6 +25,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
@@ -125,9 +126,17 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
     }
 
     private void bindRating(DocumentSnapshot dishVitalSnapshot){
-        Double dishRating = dishVitalSnapshot.getDouble("r");
-        if(dishRating==null) return;
-        dishRatingTV.setText(Double.toString(dishRating));
+        Double noOfRatings = dishVitalSnapshot.getDouble("npr");
+        if(noOfRatings==null) return;
+        Double totalRating = dishVitalSnapshot.getDouble("tr");
+        if(totalRating==null) return;
+        Double rating = noOfRatings==0 ? 0:totalRating/noOfRatings;
+        if(rating == 0){
+            dishRatingTV.setText("N/A");
+        }else{
+            DecimalFormat formatter = new DecimalFormat("#.0");
+            dishRatingTV.setText(formatter.format(rating));
+        }
     }
 
     private void bindPrice(DocumentSnapshot dishVitalSnapshot){
