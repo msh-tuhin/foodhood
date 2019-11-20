@@ -1,5 +1,7 @@
 package com.example.tuhin.myapplication;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.view.ActionMode;
 import androidx.paging.PagedList;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,10 +17,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -34,8 +39,11 @@ import myviewholders.FeedbackWithoutReviewHolder;
 
 // receives explicit intent with String extra : dishLink
 public class DishDetail extends AppCompatActivity {
-
+    public AppBarLayout appBarLayout;
+    public CollapsingToolbarLayout collapsingToolbarLayout;
+    public Toolbar toolbar;
     RecyclerView rv;
+    public ImageView coverPhoto;
     // FirestorePagingAdapter<FeedbackModel, RecyclerView.ViewHolder> adapter;
     MyFeedbackAdapter adapter;
     String dishLink;
@@ -45,7 +53,20 @@ public class DishDetail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dish_detail);
         dishLink = getIntent().getExtras().getString("dishLink");
+
+        coverPhoto = findViewById(R.id.cover_photo);
+        appBarLayout = findViewById(R.id.appBarLayout);
+        collapsingToolbarLayout = findViewById(R.id.collapsingToolbarLayout);
+        toolbar = findViewById(R.id.toolbar);
         rv = findViewById(R.id.dish_detail_rv);
+
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        // not sure about this
+        // actionBar.setDisplayShowHomeEnabled(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rv.setLayoutManager(layoutManager);
@@ -72,6 +93,12 @@ public class DishDetail extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override
