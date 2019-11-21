@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.tuhin.myapplication.MorePeole;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.RestDetail;
 import com.example.tuhin.myapplication.RestaurantAllDishes;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 
 import myapp.utils.AccountTypes;
 import myapp.utils.PictureBinder;
+import myapp.utils.SourceMorePeople;
 
 public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
 
@@ -108,6 +110,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                         bindWebsite(restaurantVital);
                         bindRating(restaurantVital);
                         bindFollowers(restaurantVital);
+                        setFollowersOnClickListener(context, restaurantLink);
                     }
                 }
             }
@@ -185,6 +188,18 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
         SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
         numFollowedByTV.setText(spannedText);
         numFollowedByTV.setVisibility(View.VISIBLE);
+    }
+
+    private void setFollowersOnClickListener(final Context context, final String restaurantLink){
+        numFollowedByTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, MorePeole.class);
+                intent.putExtra("source", SourceMorePeople.FOLLOWERS);
+                intent.putExtra("personLink", restaurantLink);
+                context.startActivity(intent);
+            }
+        });
     }
 
     private void bindDishesListLayout(final Context context, final String restaurantLink){

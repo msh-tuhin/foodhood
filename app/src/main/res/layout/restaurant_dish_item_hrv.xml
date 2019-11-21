@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parent_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -15,14 +16,12 @@
         android:layout_width="168dp"
         android:layout_height="200dp"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/key_lime_pie" />
+        app:srcCompat="@drawable/ltgray" />
 
     <TextView
-        android:textColor="#000000"
-        android:textStyle="bold"
-        android:textSize="16sp"
+        style="@style/TextClickableBlack"
         android:id="@+id/wishlist_dish_name"
-        android:layout_width="wrap_content"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
@@ -42,7 +41,7 @@
         <TextView
             android:textColor="#000000"
             android:id="@+id/wishlist_dish_rating"
-            android:layout_width="wrap_content"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
             android:text="Dish Rating"
             android:layout_marginLeft="8dp"
@@ -63,7 +62,7 @@
         <TextView
             android:textColor="#000000"
             android:id="@+id/price"
-            android:layout_width="wrap_content"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
