@@ -40,12 +40,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.w3c.dom.Text;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 import myapp.utils.AccountTypes;
 import myapp.utils.DateTimeExtractor;
+import myapp.utils.PictureBinder;
 import myapp.utils.SourceAllDishes;
 import myapp.utils.SourceMorePeople;
 
@@ -58,6 +60,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
     private Context mContext;
     private String mCurrentUserUid;
 
+    private LinearLayout wishlistLayout;
     private LinearLayout currentLocationLayout;
     private LinearLayout hometownLayout;
     private LinearLayout phoneLayout;
@@ -76,6 +79,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     public PersonDetailHeaderHolder(@NonNull View v) {
         super(v);
+        wishlistLayout = v.findViewById(R.id.wishlist_layout);
         currentLocationLayout = v.findViewById(R.id.current_location_layout);
         hometownLayout = v.findViewById(R.id.hometown_layout);
         phoneLayout = v.findViewById(R.id.phone_layout);
@@ -105,6 +109,8 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
                 if(task.isSuccessful()){
                     DocumentSnapshot personVitalSnapshot = task.getResult();
                     if(personVitalSnapshot.exists()){
+                        bindCoverPhoto(context, personVitalSnapshot);
+                        bindProfilePicture(context, personVitalSnapshot);
                         setCollapsedTitle(personVitalSnapshot);
                         bindName(personVitalSnapshot);
                         bindBio(personVitalSnapshot);
@@ -123,38 +129,16 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
             }
         });
 
-        db.collection("wishlist").document(personLink)
-                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
-                    DocumentSnapshot wishlistSnapshot = task.getResult();
-                    if(wishlistSnapshot.exists()){
-                        // horizontal wishlist
-                        // firestore array --> JAVA arraylist
-                        final ArrayList<String> wishlist = (ArrayList) wishlistSnapshot.get("a");
-                        seeAllTV.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Log.i("CLICKED", "See All Clicked");
-                                Intent intent = new Intent(context, AllDishes.class);
-                                intent.putStringArrayListExtra("dishesList", wishlist);
-                                intent.putExtra("source", SourceAllDishes.WISHLIST);
-                                context.startActivity(intent);
-                            }
-                        });
-                        LinearLayoutManager wishlistLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
-                        rvWishlist.setLayoutManager(wishlistLayoutManager);
-                        rvWishlist.setNestedScrollingEnabled(false);
-                        WishlistAdapter adapter = new WishlistAdapter(wishlist);
-                        rvWishlist.setAdapter(adapter);
-                        adapter.notifyDataSetChanged();
-                    }
-                }
-            }
-        });
-
+        bindWishlistLayout(context, personLink);
         bindFollowButton(context, personLink);
+    }
+
+    private void bindProfilePicture(Context context, DocumentSnapshot personVitalSnapshot){
+        PictureBinder.bindProfilePicture(((PersonDetail)context).profilePicture, personVitalSnapshot);
+    }
+
+    private void bindCoverPhoto(Context context, DocumentSnapshot personVitalSnapshot){
+        PictureBinder.bindCoverPicture(((PersonDetail)context).coverPhoto, personVitalSnapshot);
     }
 
     private void bindName(DocumentSnapshot personVitalSnapshot){
@@ -209,7 +193,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindFollowings(DocumentSnapshot personVitalSnapshot){
         Long numFollwing = personVitalSnapshot.getLong("nf");
-        if(numFollwing==null) numFollwing = 0L;
+        if(numFollwing==null || numFollwing==0L) return;
         String numString = Long.toString(numFollwing);
         String fullText = "Follows " + numString + " people";
         SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
@@ -254,7 +238,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindFollowers(DocumentSnapshot personVitalSnapshot){
         Long numFollower = personVitalSnapshot.getLong("nfb");
-        if(numFollower==null) numFollower = 0L;
+        if(numFollower==null || numFollower==0L) return;
         String numString = Long.toString(numFollower);
         String fullText = "Followed by " + numString + " people";
         SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
@@ -264,7 +248,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindFollowingRestaurants(DocumentSnapshot personVitalSnapshot){
         Long numFollwedRestaurant = personVitalSnapshot.getLong("nfr");
-        if(numFollwedRestaurant==null) numFollwedRestaurant = 0L;
+        if(numFollwedRestaurant==null || numFollwedRestaurant==0L) return;
         String numString = Long.toString(numFollwedRestaurant);
         String fullText = "Follows " + numString + " restaurants";
         SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
@@ -338,6 +322,56 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
                 }
             }
         };
+    }
+
+    private void bindWishlistLayout(final Context context, final String personLink){
+        db.collection("wishlist").document(personLink)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot wishlistSnapshot = task.getResult();
+                    if(wishlistSnapshot.exists()){
+                        final ArrayList<String> wishlist = new ArrayList<>();
+                        try{
+                            // firestore array --> JAVA arraylist
+                            ArrayList<String> w = (ArrayList) wishlistSnapshot.get("a");
+                            wishlist.addAll(w);
+                        }catch (NullPointerException e){
+                            Log.e("error", e.getMessage());
+                        }
+                        if(wishlist.size() > 0){
+                            setSeeAllOnClickListener(context, wishlist);
+                            bindWishlistRV(context, wishlist);
+                            wishlistLayout.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private void setSeeAllOnClickListener(final Context context,
+                                          final ArrayList<String> wishlist){
+        seeAllTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("CLICKED", "See All Clicked");
+                Intent intent = new Intent(context, AllDishes.class);
+                intent.putStringArrayListExtra("dishesList", wishlist);
+                intent.putExtra("source", SourceAllDishes.WISHLIST);
+                context.startActivity(intent);
+            }
+        });
+    }
+
+    private void bindWishlistRV(Context context, ArrayList<String> wishlist){
+        LinearLayoutManager wishlistLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+        rvWishlist.setLayoutManager(wishlistLayoutManager);
+        rvWishlist.setNestedScrollingEnabled(false);
+        WishlistAdapter adapter = new WishlistAdapter(wishlist);
+        rvWishlist.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     private SpannableStringBuilder getSpannedText(String fullText, String spannable){

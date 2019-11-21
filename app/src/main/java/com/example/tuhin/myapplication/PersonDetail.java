@@ -1,11 +1,15 @@
 package com.example.tuhin.myapplication;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
+import android.widget.ImageView;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -29,7 +33,8 @@ public class PersonDetail extends AppCompatActivity {
     public CollapsingToolbarLayout collapsingToolbarLayout;
     public AppBarLayout appBarLayout;
     Toolbar toolbar;
-    CircleImageView personAvatar;
+    public CircleImageView profilePicture;
+    public ImageView coverPhoto;
     Animation scaleAnimation;
     RecyclerView rv;
 
@@ -42,8 +47,18 @@ public class PersonDetail extends AppCompatActivity {
         collapsingToolbarLayout = findViewById(R.id.collapsingToolbarLayout);
         appBarLayout = findViewById(R.id.appBarLayout);
         toolbar = findViewById(R.id.toolbar);
-        personAvatar = findViewById(R.id.person_avatar);
+        profilePicture = findViewById(R.id.profile_picture);
+        coverPhoto = findViewById(R.id.cover_photo);
         rv = findViewById(R.id.rv);
+
+        collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
+        //toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        // not sure about this
+        // actionBar.setDisplayShowHomeEnabled(true);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rv.setLayoutManager(linearLayoutManager);
@@ -66,6 +81,12 @@ public class PersonDetail extends AppCompatActivity {
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         adapter.startListening();
@@ -84,19 +105,19 @@ public class PersonDetail extends AppCompatActivity {
         if(absoluteVerticalOffset <= range/2){
             float avatarAlpha = 1 - absoluteVerticalOffset/(range/2);
             Log.i("avatarAlpha", Float.toString(avatarAlpha));
-            personAvatar.setAlpha(avatarAlpha);
+            profilePicture.setAlpha(avatarAlpha);
         } else{
-            personAvatar.setAlpha(0f);
+            profilePicture.setAlpha(0f);
         }
 
-        float personAvatarHeight = personAvatar.getHeight();
+        float personAvatarHeight = profilePicture.getHeight();
         Log.i("personAvatarHeight", Float.toString(personAvatarHeight));
         if(absoluteVerticalOffset<=personAvatarHeight/2){
             float nextVal = 1-absoluteVerticalOffset/personAvatarHeight;
             scaleAnimation = new ScaleAnimation(prev, nextVal, prev, nextVal);
             scaleAnimation.setFillAfter(true);
             scaleAnimation.setDuration(1);
-            personAvatar.startAnimation(scaleAnimation);
+            profilePicture.startAnimation(scaleAnimation);
             prev = nextVal;
         }
     }
