@@ -1,5 +1,6 @@
 package com.example.tuhin.myapplication;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.paging.PagedList;
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
@@ -42,11 +44,12 @@ import myviewholders.RestaurantDetailHeaderHolder;
 // receives explicit intent with String extra : restaurantLink
 public class RestDetail extends AppCompatActivity {
 
+    public ImageView coverPhoto;
     RecyclerView rv;
     // FirestorePagingAdapter<FeedbackModel, RecyclerView.ViewHolder> adapter;
     MyFeedbackAdapter adapter;
     String restaurantLink;
-    ViewPager viewPager;
+    // ViewPager viewPager;
     public AppBarLayout appBarLayout;
     public CollapsingToolbarLayout collapsingToolbarLayout;
     public Toolbar toolbar;
@@ -57,16 +60,26 @@ public class RestDetail extends AppCompatActivity {
         setContentView(R.layout.activity_rest_detail);
 
         restaurantLink = getIntent().getExtras().getString("restaurantLink");
+
+        coverPhoto = findViewById(R.id.cover_photo);
         appBarLayout = findViewById(R.id.appBarLayout);
         collapsingToolbarLayout = findViewById(R.id.collapsingToolbarLayout);
         toolbar = findViewById(R.id.toolbar);
         rv = findViewById(R.id.restaurant_detail_rv);
-        viewPager = findViewById(R.id.viewPager);
+        // viewPager = findViewById(R.id.viewPager);
 
-        imagesAdapter = new CoverImagesAdapter(this, new ArrayList<Integer>(Arrays.asList(R.drawable.restaurant, R.drawable.key_lime_pie)));
-        viewPager.setAdapter(imagesAdapter);
+        // imagesAdapter = new CoverImagesAdapter(this, new ArrayList<Integer>(Arrays.asList(R.drawable.restaurant, R.drawable.key_lime_pie)));
+        // viewPager.setAdapter(imagesAdapter);
 
-//        collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
+        collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
+        //toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        // not sure about this
+        // actionBar.setDisplayShowHomeEnabled(true);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rv.setLayoutManager(layoutManager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(), layoutManager.getOrientation());
@@ -92,6 +105,12 @@ public class RestDetail extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -60,7 +61,8 @@ public class DishDetail extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         rv = findViewById(R.id.dish_detail_rv);
 
-        toolbar.setTitle("");
+        collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
+        // toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();

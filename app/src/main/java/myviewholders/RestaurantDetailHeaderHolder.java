@@ -7,11 +7,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.R;
@@ -33,6 +38,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import myapp.utils.AccountTypes;
+import myapp.utils.PictureBinder;
 
 public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
 
@@ -42,13 +48,19 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
     private Context mContext;
     private String mRestaurantLink;
 
-    TextView restaurantName;
-    TextView restaurantAddress;
-    TextView restaurantPhone;
-    TextView restaurantEmail;
-    TextView restaurantWebsite;
-    TextView numFollowedBy;
-    TextView restaurantRating;
+    LinearLayout addressLayout;
+    LinearLayout phoneLayout;
+    LinearLayout emailLayout;
+    LinearLayout websiteLayout;
+    LinearLayout ratingLayout;
+    LinearLayout dishesListLayout;
+    TextView restaurantNameTV;
+    TextView restaurantAddressTV;
+    TextView restaurantPhoneTV;
+    TextView restaurantEmailTV;
+    TextView restaurantWebsiteTV;
+    TextView numFollowedByTV;
+    TextView restaurantRatingTV;
     TextView seeAll;
     Button followRestaurant;
     RecyclerView rv;
@@ -56,19 +68,22 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
     public RestaurantDetailHeaderHolder(@NonNull View v) {
         super(v);
         currentUserUid = mAuth.getCurrentUser().getUid();
-        restaurantName = v.findViewById(R.id.restaurant_name);
+        addressLayout = v.findViewById(R.id.address_layout);
+        phoneLayout = v.findViewById(R.id.phone_layout);
+        emailLayout = v.findViewById(R.id.email_layout);
+        websiteLayout = v.findViewById(R.id.website_layout);
+        ratingLayout = v.findViewById(R.id.rating_layout);
+        dishesListLayout = v.findViewById(R.id.dishes_layout);
+        restaurantNameTV = v.findViewById(R.id.restaurant_name);
         followRestaurant = v.findViewById(R.id.follow_restaurant);
-        restaurantAddress = v.findViewById(R.id.restaurant_address);
-        restaurantPhone = v.findViewById(R.id.phone);
-        restaurantEmail = v.findViewById(R.id.email);
-        restaurantWebsite = v.findViewById(R.id.web);
-        numFollowedBy = v.findViewById(R.id.num_followed_by);
-        restaurantRating = v.findViewById(R.id.rating);
+        restaurantAddressTV = v.findViewById(R.id.restaurant_address);
+        restaurantPhoneTV = v.findViewById(R.id.phone);
+        restaurantEmailTV = v.findViewById(R.id.email);
+        restaurantWebsiteTV = v.findViewById(R.id.web);
+        numFollowedByTV = v.findViewById(R.id.num_followed_by);
+        restaurantRatingTV = v.findViewById(R.id.rating);
         seeAll = v.findViewById(R.id.see_all);
         rv = v.findViewById(R.id.all_dishes);
-
-        // TODO set seeAll buttons onClickListener
-
     }
 
     public void bindTo(final Context context, final String restaurantLink){
@@ -84,35 +99,95 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                 if(task.isSuccessful()){
                     DocumentSnapshot restaurantVital = task.getResult();
                     if(restaurantVital.exists()){
-                        String name = restaurantVital.getString("n");
-                        Double noOfRatings = restaurantVital.getDouble("npr");
-                        Double totalRating = restaurantVital.getDouble("tr");
-                        Double rating = noOfRatings==0 ? 0:totalRating/noOfRatings;
-                        restaurantName.setText(name);
-                        if(rating == 0){
-                            restaurantRating.setText("N/A");
-                        }else{
-                            DecimalFormat formatter = new DecimalFormat("#.0");
-                            restaurantRating.setText(formatter.format(rating));
-                        }
-//                        ((RestDetail)context).toolbar.setTitle(name);
-                        setCollapsedTitle(context, name);
-
-                        String address = restaurantVital.getString("a");
-                        String phone = restaurantVital.getString("p");
-                        String web = restaurantVital.getString("w");
-                        String email = restaurantVital.getString("e");
-                        Long followedBy = restaurantVital.getLong("nfb");
-                        restaurantAddress.setText(address);
-                        restaurantPhone.setText(phone);
-                        restaurantWebsite.setText(web);
-                        restaurantEmail.setText(email);
-                        numFollowedBy.setText("Followed by " + Long.toString(followedBy));
+                        setCollapsedTitle(context, restaurantVital);
+                        bindCoverPhoto(context, restaurantVital);
+                        bindName(restaurantVital);
+                        bindAddress(restaurantVital);
+                        bindPhone(restaurantVital);
+                        bindEmail(restaurantVital);
+                        bindWebsite(restaurantVital);
+                        bindRating(restaurantVital);
+                        bindFollowers(restaurantVital);
                     }
                 }
             }
         });
+        bindDishesListLayout(context, restaurantLink);
+        bindFollowButton();
+    }
 
+    private void bindCoverPhoto(Context context, DocumentSnapshot dishVitalSnapshot){
+        PictureBinder.bindCoverPicture(((RestDetail)context).coverPhoto, dishVitalSnapshot);
+    }
+
+    private void bindName(DocumentSnapshot restVitalSnapshot){
+        String name = restVitalSnapshot.getString("n");
+        if(name==null || name.equals("")) return;
+        restaurantNameTV.setText(name);
+    }
+
+    private void bindAddress(DocumentSnapshot restVitalSnapshot){
+        String address = restVitalSnapshot.getString("a");
+        if(address==null || address.equals("")) return;
+        restaurantAddressTV.setText(address);
+        addressLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void bindPhone(DocumentSnapshot restVitalSnapshot){
+        String phone = restVitalSnapshot.getString("p");
+        if(phone==null || phone.equals("")) return;
+        restaurantPhoneTV.setText(phone);
+        phoneLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void bindEmail(DocumentSnapshot restVitalSnapshot){
+        String email = restVitalSnapshot.getString("e");
+        if(email==null || email.equals("")) return;
+        restaurantEmailTV.setText(email);
+        emailLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void bindWebsite(DocumentSnapshot restVitalSnapshot){
+        String website = restVitalSnapshot.getString("w");
+        if(website==null || website.equals("")) return;
+        restaurantWebsiteTV.setText(website);
+        websiteLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void bindRating(DocumentSnapshot restVitalSnapshot){
+        Double noOfRatings = restVitalSnapshot.getDouble("npr");
+        if(noOfRatings==null){
+            restaurantRatingTV.setText("N/A");
+            ratingLayout.setVisibility(View.VISIBLE);
+            return;
+        }
+        Double totalRating = restVitalSnapshot.getDouble("tr");
+        if(totalRating==null){
+            restaurantRatingTV.setText("N/A");
+            ratingLayout.setVisibility(View.VISIBLE);
+            return;
+        }
+        Double rating = noOfRatings==0 ? 0:totalRating/noOfRatings;
+        if(rating == 0){
+            restaurantRatingTV.setText("N/A");
+        }else{
+            DecimalFormat formatter = new DecimalFormat("#.0");
+            restaurantRatingTV.setText(formatter.format(rating));
+        }
+        ratingLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void bindFollowers(DocumentSnapshot restVitalSnapshot){
+        Long numFollowers = restVitalSnapshot.getLong("nfb");
+        if(numFollowers==null || numFollowers==0L) return;
+        String numString = Long.toString(numFollowers);
+        String fullText = "Followed by " + numString + " people";
+        SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
+        numFollowedByTV.setText(spannedText);
+        numFollowedByTV.setVisibility(View.VISIBLE);
+    }
+
+    private void bindDishesListLayout(final Context context, final String restaurantLink){
         db.collection("dishes").document(restaurantLink)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -127,29 +202,40 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                         }catch (NullPointerException e){
                             Log.e("error", e.getMessage());
                         }
-                        seeAll.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Log.i("CLICKED", "See All Clicked");
-                                // Intent intent = new Intent(context, AllDishes.class);
-                                Intent intent = new Intent(context, RestaurantAllDishes.class);
-                                intent.putStringArrayListExtra("dishesList", dishes);
-                                // intent.putExtra("source", SourceAllDishes.RESTAURANT_ALL_DISHES);
-                                context.startActivity(intent);
-                            }
-                        });
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
-                        rv.setLayoutManager(linearLayoutManager);
-                        rv.setNestedScrollingEnabled(false);
-                        RestaurantDishesAdapter adapter = new RestaurantDishesAdapter(dishes);
-                        adapter.notifyDataSetChanged();
-                        rv.setAdapter(adapter);
+                        if(dishes.size() > 0){
+                            setSeeAllOnClickListener(context, dishes);
+                            bindDishesRV(context, dishes);
+                            dishesListLayout.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
             }
         });
+    }
 
-        bindFollowButton();
+    private void setSeeAllOnClickListener(final Context context,
+                                          final ArrayList<String> dishes){
+        seeAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("CLICKED", "See All Clicked");
+                // Intent intent = new Intent(context, AllDishes.class);
+                Intent intent = new Intent(context, RestaurantAllDishes.class);
+                intent.putStringArrayListExtra("dishesList", dishes);
+                // intent.putExtra("source", SourceAllDishes.RESTAURANT_ALL_DISHES);
+                context.startActivity(intent);
+            }
+        });
+    }
+
+
+    private void bindDishesRV(Context context, ArrayList<String> dishes){
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+        rv.setLayoutManager(linearLayoutManager);
+        rv.setNestedScrollingEnabled(false);
+        RestaurantDishesAdapter adapter = new RestaurantDishesAdapter(dishes);
+        adapter.notifyDataSetChanged();
+        rv.setAdapter(adapter);
     }
 
     private class RestaurantDishesAdapter extends RecyclerView.Adapter<RestaurantDishHolder>{
@@ -245,7 +331,9 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
         };
     }
 
-    private void setCollapsedTitle(final Context context, final String name){
+    private void setCollapsedTitle(final Context context, DocumentSnapshot restVitalSnapshot){
+        final String name = restVitalSnapshot.getString("n");
+        if(name==null) return;
         ((RestDetail)context).appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = true;
             int scrollRange = -1;
@@ -271,5 +359,13 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                 mContext.getString(R.string.account_type),
                 Context.MODE_PRIVATE);
         return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
+    }
+
+    private SpannableStringBuilder getSpannedText(String fullText, String spannable){
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(fullText);
+        int start = fullText.indexOf(spannable);
+        int end = start + spannable.length();
+        spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannableStringBuilder;
     }
 }
