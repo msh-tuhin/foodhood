@@ -1,6 +1,7 @@
 package com.example.tuhin.myapplication;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -11,8 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 
+import myapp.utils.SourceAllDishes;
 import myviewholders.AllDishesItemHolder;
 
 
@@ -24,7 +31,8 @@ import myviewholders.AllDishesItemHolder;
 // and wishlist
 // might be decided by checking intExtra : source
 public class AllDishes extends AppCompatActivity {
-
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     RecyclerView rv;
     Toolbar toolbar;
     @Override
@@ -41,9 +49,14 @@ public class AllDishes extends AppCompatActivity {
         rv = findViewById(R.id.rv);
         toolbar = findViewById(R.id.toolbar);
 
-        String title = source == 1 ? "Wishlist" : "All Dishes";
+        String title = source == SourceAllDishes.WISHLIST ? "Wishlist" : "All Dishes";
         toolbar.setTitle(title);
         setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        // not sure about this
+        // actionBar.setDisplayShowHomeEnabled(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rv.setLayoutManager(layoutManager);
@@ -55,15 +68,27 @@ public class AllDishes extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
     // might use a different adapter later
     private class DishesAdapter extends RecyclerView.Adapter<AllDishesItemHolder>{
+
         ArrayList<String> dishes;
+        Task<DocumentSnapshot> taskWithCurrentUserWishlist;
+
         DishesAdapter(ArrayList<String> dishes){
             this.dishes = dishes;
+            taskWithCurrentUserWishlist = db.collection("wishlist")
+                    .document(mAuth.getCurrentUser().getUid()).get();
         }
+
         @Override
         public void onBindViewHolder(@NonNull AllDishesItemHolder dishHolder, int i) {
-            dishHolder.bindTo(dishes.get(i));
+            dishHolder.bindTo(AllDishes.this, dishes.get(i), taskWithCurrentUserWishlist);
         }
         @Override
         public int getItemCount() {
