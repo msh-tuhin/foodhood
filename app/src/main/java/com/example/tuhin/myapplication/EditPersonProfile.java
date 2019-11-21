@@ -113,6 +113,12 @@ public class EditPersonProfile extends AppCompatActivity {
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         adapter.startListening();

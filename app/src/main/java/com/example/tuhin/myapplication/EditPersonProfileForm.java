@@ -283,6 +283,12 @@ public class EditPersonProfileForm extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
     private void bindBio(String bio){
         if(bio != null){
             bioEditText.setText(bio);

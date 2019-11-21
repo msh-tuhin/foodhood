@@ -29,12 +29,11 @@
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
-            android:textColor="#000000"
-            android:textSize="16sp"
+            style="@style/TextClickableSimple"
             android:id="@+id/bio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/post_caption"
+            android:text="Bio"
             app:layout_constrainedWidth="true"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="@id/name"
@@ -43,8 +42,7 @@
             android:layout_marginTop="16dp"/>
 
         <TextView
-            android:textColor="#000000"
-            android:textSize="16sp"
+            style="@style/TextClickableSimple"
             android:id="@+id/birthdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -84,8 +82,7 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/outline_room_black_24dp"/>
             <TextView
-                android:textColor="#000000"
-                android:textSize="16sp"
+                style="@style/TextClickableSimple"
                 android:id="@+id/current_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -121,8 +118,7 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/outline_home_black_24dp"/>
             <TextView
-                android:textColor="#000000"
-                android:textSize="16sp"
+                style="@style/TextClickableSimple"
                 android:id="@+id/hometown"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -158,12 +154,11 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/baseline_phone_black_24dp"/>
             <TextView
-                android:textColor="#000000"
-                android:textSize="16sp"
+                style="@style/TextClickableSimple"
                 android:id="@+id/phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="01XXXXXXXXX"
+                android:text="Phone"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"/>
         </LinearLayout>
@@ -179,13 +174,12 @@
             android:layout_marginTop="16dp"/>
 
         <TextView
-            android:textColor="#000000"
-            android:textSize="16sp"
+            style="@style/TextClickableSimple"
             android:id="@+id/num_following"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constrainedWidth="true"
-            android:text="Follows X People"
+            android:text=""
             app:layout_constraintStart_toStartOf="@+id/name"
             app:layout_constraintTop_toBottomOf="@id/edit_profile_button"
             app:layout_constraintEnd_toEndOf="parent"
@@ -193,13 +187,12 @@
             app:layout_constraintHorizontal_bias="0"/>
 
         <TextView
-            android:textColor="#000000"
-            android:textSize="16sp"
+            style="@style/TextClickableSimple"
             android:id="@+id/num_followed_by"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constrainedWidth="true"
-            android:text="Followed by Y People"
+            android:text=""
             app:layout_constraintStart_toStartOf="@+id/name"
             app:layout_constraintTop_toBottomOf="@id/num_following"
             app:layout_constraintEnd_toEndOf="parent"
@@ -207,13 +200,12 @@
             app:layout_constraintHorizontal_bias="0"/>
 
         <TextView
-            android:textColor="#000000"
-            android:textSize="16sp"
+            style="@style/TextClickableSimple"
             android:id="@+id/num_followed_restaurants"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constrainedWidth="true"
-            android:text="Follows Z Restaurants"
+            android:text=""
             app:layout_constraintStart_toStartOf="@+id/name"
             app:layout_constraintTop_toBottomOf="@id/num_followed_by"
             app:layout_constraintEnd_toEndOf="parent"
