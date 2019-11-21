@@ -248,7 +248,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
 
         @Override
         public void onBindViewHolder(@NonNull RestaurantDishHolder dishHolder, int i) {
-            dishHolder.bindTo(dishes.get(i));
+            dishHolder.bindTo(mContext, dishes.get(i));
         }
 
         @Override
@@ -260,7 +260,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
         @Override
         public RestaurantDishHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             View view = LayoutInflater.from(viewGroup.getContext())
-                    .inflate(R.layout.wishlist_item, viewGroup, false);
+                    .inflate(R.layout.restaurant_dish_item_hrv, viewGroup, false);
             return new RestaurantDishHolder(view);
         }
     }

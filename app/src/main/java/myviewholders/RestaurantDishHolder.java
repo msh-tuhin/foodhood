@@ -2,6 +2,8 @@ package myviewholders;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,10 +24,10 @@ public class RestaurantDishHolder extends RecyclerView.ViewHolder {
         dishImage = v.findViewById(R.id.wishlist_dish_image);
         dishhName = v.findViewById(R.id.wishlist_dish_name);
         dishRating = v.findViewById(R.id.wishlist_dish_rating);
-        dishPrice = v.findViewById(R.id.wishlist_dish_rest_name);
+        dishPrice = v.findViewById(R.id.price);
     }
 
-    public void bindTo(String dishLink){
+    public void bindTo(Context context, String dishLink){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("dish_vital").document(dishLink)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

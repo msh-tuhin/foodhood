@@ -411,7 +411,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
         }
         @Override
         public void onBindViewHolder(@NonNull WishlistItemHolder wishlistItemHolder, int i) {
-            wishlistItemHolder.bindTo(wishlist.get(i));
+            wishlistItemHolder.bindTo(mContext, wishlist.get(i));
         }
         @Override
         public int getItemCount() {
