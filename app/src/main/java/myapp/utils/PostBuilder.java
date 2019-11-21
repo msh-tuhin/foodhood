@@ -21,6 +21,7 @@ import com.example.tuhin.myapplication.DishDetail;
 import com.example.tuhin.myapplication.MorePeole;
 import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.RestDetail;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
@@ -36,8 +37,10 @@ public class PostBuilder {
     private Map<String, String> restaurant, dishes, who, taggedPeople;
     private ArrayList<String> sortedDishLinks, sortedTaggedPeopleLinks;
     private Context context;
+    private Timestamp postTime;
 
     public PostBuilder(Context context, DocumentSnapshot post) {
+        postTime = post.getTimestamp("ts");
         caption = post.getString("c");
         Log.i("caption", caption);
 
@@ -122,6 +125,10 @@ public class PostBuilder {
 
     public String getCaption(){
         return caption;
+    }
+
+    public Timestamp getPostTime(){
+        return postTime;
     }
 
     private ArrayList<String> getSortedLinks(Set<String> set){

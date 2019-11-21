@@ -1,5 +1,6 @@
 package myviewholders;
 
+import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -24,7 +25,9 @@ import com.example.tuhin.myapplication.RestDetail;
 import com.example.tuhin.myapplication.RestaurantAllDishes;
 import com.example.tuhin.myapplication.WriteComment;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -40,7 +43,9 @@ import java.util.Map;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.CommentIntentExtra;
+import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
+import myapp.utils.PictureBinder;
 import myapp.utils.PostBuilder;
 import myapp.utils.SourceAllDishes;
 
@@ -188,12 +193,34 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     @Override
     public void bindAvatar() {
-
+        // Map<String, String> person = (Map<String, String>)mPostSnapShot.get("w");
+        // if(person==null) return;
+        // String personLink = person.get("l");
+        String personLink = mPostBuilder.getLinkToPostedBy();
+        if(personLink==null || personLink.equals("")) return;
+        db.collection("person_vital")
+                .document(personLink)
+                .get()
+                .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot personVitalSnapshot) {
+                        PictureBinder.bindProfilePicture(profileImage, personVitalSnapshot);
+                    }
+                });
     }
 
     @Override
     public void setAvatarOnClickListener() {
-
+        final String personLink = mPostBuilder.getLinkToPostedBy();
+        if(personLink==null || personLink.equals("")) return;
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, PersonDetail.class);
+                intent.putExtra("personLink", personLink);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -216,7 +243,10 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     @Override
     public void bindPostTime() {
-
+        Timestamp ts = mPostBuilder.getPostTime();
+        if(ts==null) return;
+        String dateOrTimeString = DateTimeExtractor.getDateOrTimeString(ts);
+        postTime.setText(dateOrTimeString);
     }
 
     @Override

@@ -10,7 +10,7 @@
         android:id="@+id/profile_image"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:src="@drawable/popeye"/>
+        android:src="@drawable/ltgray"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="8 hr" />
+            android:text="time" />
 
         <LinearLayout
             android:layout_width="match_parent"
