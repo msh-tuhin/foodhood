@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parent_layout"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,7 +11,7 @@
         android:id="@+id/dish_avatar"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:src="@drawable/key_lime_pie"/>
+        android:src="@drawable/ltgray"/>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -20,24 +21,11 @@
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp">
         <TextView
-            android:textSize="16sp"
+            style="@style/TextClickableBlack"
             android:id="@+id/dish_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="dish name"/>
-        <TextView
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:id="@+id/rest_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="rest name"
-            android:layout_marginTop="8dp"/>
-        <TextView
-            android:id="@+id/rest_address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="rest address"/>
+            android:text=""/>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,27 +36,52 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/baseline_star_black_24dp"/>
             <TextView
+                android:textColor="#000000"
                 android:id="@+id/dish_rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="4.0"
-                android:layout_marginLeft="4dp"
-                android:layout_marginStart="4dp"/>
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/taka"
-                android:layout_marginLeft="40dp"
-                android:layout_marginStart="40dp"/>
-            <TextView
-                android:id="@+id/dish_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="160 BDT"
+                android:text=""
                 android:layout_marginLeft="4dp"
                 android:layout_marginStart="4dp"/>
 
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/taka"/>
+            <TextView
+                android:textColor="#000000"
+                android:id="@+id/dish_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:layout_marginLeft="4dp"
+                android:layout_marginStart="4dp"/>
+        </LinearLayout>
+        <TextView
+            style="@style/TextClickableBlack"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:id="@+id/rest_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:textColor="#000000"
+            android:id="@+id/rest_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:layout_marginTop="4dp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <ImageButton

@@ -166,7 +166,7 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
                     case "ADDED TO WISHLIST":
                         // TODO: this should be done if and only if the updates are successful
                         addToWishlistButton.setText("ADD TO WISHLIST");
-                        wishlistRef.update("wishlist", FieldValue.arrayRemove(dishLink));
+                        wishlistRef.update("a", FieldValue.arrayRemove(dishLink));
                         inWishlistRef.update("a", FieldValue.arrayRemove(currentUserUid));
                         dishVitalRef.update("num_wishlist", FieldValue.increment(-1));
                         break;

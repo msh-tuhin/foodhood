@@ -27,6 +27,7 @@ public class Wishlist extends AppCompatActivity {
 
     Toolbar toolbar;
     RecyclerView wishlistRV;
+    public WishlistAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,7 @@ public class Wishlist extends AppCompatActivity {
 
         String currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        final WishlistAdapter adapter = new WishlistAdapter();
+        adapter = new WishlistAdapter();
 
         FirebaseFirestore.getInstance().collection("wishlist")
                 .document(currentUserUid).get()
@@ -93,7 +94,7 @@ public class Wishlist extends AppCompatActivity {
             // if i set the onClickListener on removeImageView here
             // then i don't have to send the reference to this adapter
             // to SelfWishlistHolder
-            ((SelfWishlistItemHolder)holder).bindTo(this, wishlist.get(position));
+            ((SelfWishlistItemHolder)holder).bindTo(Wishlist.this, wishlist.get(position));
         }
 
         @Override
