@@ -1,5 +1,6 @@
 package myviewholders;
 
+import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
 
@@ -37,6 +38,7 @@ import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
+import myapp.utils.PictureBinder;
 import myapp.utils.ResourceIds;
 
 public class PostCommentHolder extends HalfPostHolder
@@ -47,6 +49,7 @@ public class PostCommentHolder extends HalfPostHolder
     CircleImageView commenterImage;
     TextView commenterName;
     TextView theComment;
+    TextView linkToReplies;
     TextView noOfLikesOnComment;
     TextView noOfRepliesToComment;
     ImageView likeComment;
@@ -70,6 +73,7 @@ public class PostCommentHolder extends HalfPostHolder
         commenterImage = v.findViewById(R.id.commenter_image);
         commenterName = v.findViewById(R.id.commenter_name);
         theComment = v.findViewById(R.id.the_comment);
+        linkToReplies = v.findViewById(R.id.replies_link);
         noOfLikesOnComment = v.findViewById(R.id.number_of_likes);
         noOfRepliesToComment = v.findViewById(R.id.number_of_replies);
         likeComment = v.findViewById(R.id.like_comment);
@@ -191,12 +195,27 @@ public class PostCommentHolder extends HalfPostHolder
 
     @Override
     public void bindCommentByAvatar() {
-
+        db.collection("person_vital")
+                .document(mLinkCommentBy)
+                .get()
+                .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot personVitalSnapshot) {
+                        PictureBinder.bindProfilePicture(commenterImage, personVitalSnapshot);
+                    }
+                });
     }
 
     @Override
     public void setCommentByAvatarOnClickListener() {
-
+        commenterImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, PersonDetail.class);
+                intent.putExtra("personLink", mLinkCommentBy);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -244,7 +263,21 @@ public class PostCommentHolder extends HalfPostHolder
 
     @Override
     public void setRepliesLinkOnClickListener() {
+        linkToReplies.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("comment_detail", "from home post comment");
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(
+                        EntryPoints.CLICKED_COMMENT_BODY_FROM_HOME_POST);
+                commentIntentExtra.setCommentLink(mCommentLink);
+                commentIntentExtra.setPostLink(mPostLink);
 
+                Intent intent = new Intent(mContext, CommentDetail.class);
+                intent.putExtra("comment_extra", commentIntentExtra);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override

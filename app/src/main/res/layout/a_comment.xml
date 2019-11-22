@@ -17,9 +17,7 @@
         android:id="@+id/commenter_image"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:src="@drawable/popeye"
-        app:civ_border_color="#FF0000"
-        app:civ_border_width="1dp" />
+        android:src="@drawable/ltgray"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -52,12 +50,11 @@
         <!--android:maxLines="2"-->
 
         <TextView
-            android:textSize="16sp"
+            style="@style/TextClickableSimpleBlue"
             android:id="@+id/replies_link"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Replies"
-            android:textColor="#0000ff"
             android:layout_marginTop="8dp"/>
 
         <LinearLayout

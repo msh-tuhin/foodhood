@@ -1,5 +1,6 @@
 package myviewholders;
 
+import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
 
@@ -46,6 +47,7 @@ import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
+import myapp.utils.PictureBinder;
 import myapp.utils.ResourceIds;
 
 public class PostReplyHolder extends HalfPostHolder
@@ -55,6 +57,7 @@ public class PostReplyHolder extends HalfPostHolder
     CircleImageView commenterImage;
     TextView commenterName;
     TextView theComment;
+    TextView linkToReplies;
     TextView noOfLikesOnComment;
     TextView noOfRepliesToComment;
     ImageView likeComment;
@@ -96,6 +99,7 @@ public class PostReplyHolder extends HalfPostHolder
         commenterImage = v.findViewById(R.id.commenter_image);
         commenterName = v.findViewById(R.id.commenter_name);
         theComment = v.findViewById(R.id.the_comment);
+        linkToReplies = v.findViewById(R.id.replies_link);
         noOfLikesOnComment = v.findViewById(R.id.number_of_likes);
         noOfRepliesToComment = v.findViewById(R.id.number_of_replies);
         likeComment = v.findViewById(R.id.like_comment);
@@ -298,12 +302,27 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void bindCommentByAvatar() {
-
+        db.collection("person_vital")
+                .document(mLinkCommentBy)
+                .get()
+                .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot personVitalSnapshot) {
+                        PictureBinder.bindProfilePicture(commenterImage, personVitalSnapshot);
+                    }
+                });
     }
 
     @Override
     public void setCommentByAvatarOnClickListener() {
-
+        commenterImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, PersonDetail.class);
+                intent.putExtra("personLink", mLinkCommentBy);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -351,7 +370,21 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void setRepliesLinkOnClickListener() {
+        linkToReplies.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("comment_detail", "from home post reply");
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(
+                        EntryPoints.CLICKED_COMMENT_BODY_FROM_HOME_POST);
+                commentIntentExtra.setCommentLink(mCommentLink);
+                commentIntentExtra.setPostLink(mPostLink);
 
+                Intent intent = new Intent(mContext, CommentDetail.class);
+                intent.putExtra("comment_extra", commentIntentExtra);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -526,12 +559,27 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void bindReplyByAvatar() {
-
+        db.collection("person_vital")
+                .document(mLinkReplyBy)
+                .get()
+                .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot personVitalSnapshot) {
+                        PictureBinder.bindProfilePicture(replierImage, personVitalSnapshot);
+                    }
+                });
     }
 
     @Override
     public void setReplyByAvatarOnClickListener() {
-
+        replierImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, PersonDetail.class);
+                intent.putExtra("personLink", mLinkReplyBy);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -585,7 +633,7 @@ public class PostReplyHolder extends HalfPostHolder
                     Log.i("clicked", "replying to from home post+reply");
                     intent = new Intent(mContext, PersonDetail.class);
                     intent.putExtra("personLink", link);
-//            mContext.startActivity(intent);
+                    // mContext.startActivity(intent);
                 }
             }
         });
@@ -801,7 +849,7 @@ public class PostReplyHolder extends HalfPostHolder
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(text);
         int start = text.indexOf(name);
         int end = start + name.length();
-        spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        // spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.BLUE),
                 start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableStringBuilder;

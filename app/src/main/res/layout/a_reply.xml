@@ -11,9 +11,7 @@
         android:id="@+id/replier_image"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:src="@drawable/popeye"
-        app:civ_border_color="#FF0000"
-        app:civ_border_width="1dp" />
+        android:src="@drawable/ltgray"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,10 +34,10 @@
             android:layout_height="wrap_content"
             android:text="time"/>
 
+        <!--android:background="@drawable/txtbtn_bg"-->
+        <!--android:focusable="true"-->
+        <!--android:clickable="true"-->
         <TextView
-            android:background="@drawable/txtbtn_bg"
-            android:focusable="true"
-            android:clickable="true"
             android:id="@+id/replying_to"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -75,7 +73,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="3"
-                android:textSize="18sp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
                 />
@@ -94,7 +91,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="4"
-                android:textSize="18sp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
                 />
