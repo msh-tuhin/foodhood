@@ -58,6 +58,7 @@ public class PostReplyHolder extends HalfPostHolder
     LinearLayout commentLayout;
     CircleImageView commenterImage;
     TextView commenterName;
+    TextView commentTimeTV;
     TextView theComment;
     TextView linkToReplies;
     TextView noOfLikesOnComment;
@@ -100,6 +101,7 @@ public class PostReplyHolder extends HalfPostHolder
         commentLayout = v.findViewById(R.id.small_comment_layout);
         commenterImage = v.findViewById(R.id.commenter_image);
         commenterName = v.findViewById(R.id.commenter_name);
+        commentTimeTV = v.findViewById(R.id.time);
         theComment = v.findViewById(R.id.the_comment);
         linkToReplies = v.findViewById(R.id.replies_link);
         noOfLikesOnComment = v.findViewById(R.id.number_of_likes);
@@ -348,7 +350,10 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void bindCommentTime() {
-
+        Timestamp ts = mCommentSnapshot.getTimestamp("ts");
+        if(ts==null) return;
+        String dateOrTimeString = DateTimeExtractor.getDateOrTimeString(ts);
+        commentTimeTV.setText(dateOrTimeString);
     }
 
     @Override
@@ -629,20 +634,20 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void setReplyingToLinkOnClickListener() {
-        replyingToTV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Map<String, Object> replyTo = (Map<String, Object>) mReplySnapshot.get("replyTo");
-                if(replyTo != null){
-                    String link = (String) replyTo.get("l");
-                    Intent intent;
-                    Log.i("clicked", "replying to from home post+reply");
-                    intent = new Intent(mContext, PersonDetail.class);
-                    intent.putExtra("personLink", link);
-                    // mContext.startActivity(intent);
-                }
-            }
-        });
+//        replyingToTV.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Map<String, Object> replyTo = (Map<String, Object>) mReplySnapshot.get("replyTo");
+//                if(replyTo != null){
+//                    String link = (String) replyTo.get("l");
+//                    Intent intent;
+//                    Log.i("clicked", "replying to from home post+reply");
+//                    intent = new Intent(mContext, PersonDetail.class);
+//                    intent.putExtra("personLink", link);
+//                    // mContext.startActivity(intent);
+//                }
+//            }
+//        });
     }
 
     @Override

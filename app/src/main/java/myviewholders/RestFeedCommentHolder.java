@@ -1,5 +1,6 @@
 package myviewholders;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -16,6 +17,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -33,8 +35,10 @@ import androidx.core.content.ContextCompat;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
+import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
+import myapp.utils.PictureBinder;
 import myapp.utils.ResourceIds;
 
 public class RestFeedCommentHolder extends RestFeedHolder
@@ -189,12 +193,27 @@ public class RestFeedCommentHolder extends RestFeedHolder
 
     @Override
     public void bindCommentByAvatar() {
-
+        db.collection("person_vital")
+                .document(mLinkCommentBy)
+                .get()
+                .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot personVitalSnapshot) {
+                        PictureBinder.bindProfilePicture(commenterImage, personVitalSnapshot);
+                    }
+                });
     }
 
     @Override
     public void setCommentByAvatarOnClickListener() {
-
+        commenterImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, PersonDetail.class);
+                intent.putExtra("personLink", mLinkCommentBy);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -217,7 +236,10 @@ public class RestFeedCommentHolder extends RestFeedHolder
 
     @Override
     public void bindCommentTime() {
-
+        Timestamp ts = mCommentSnapshot.getTimestamp("ts");
+        if(ts==null) return;
+        String dateOrTimeString = DateTimeExtractor.getDateOrTimeString(ts);
+        commentTimeTV.setText(dateOrTimeString);
     }
 
     @Override
@@ -242,7 +264,21 @@ public class RestFeedCommentHolder extends RestFeedHolder
 
     @Override
     public void setRepliesLinkOnClickListener() {
+        repliesLinkTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("comment_detail", "from home RF comment");
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(
+                        EntryPoints.CLICKED_COMMENT_BODY_FROM_HOME_RF);
+                commentIntentExtra.setCommentLink(mCommentLink);
+                commentIntentExtra.setPostLink(mRestFeedLink);
 
+                Intent intent = new Intent(mContext, CommentDetail.class);
+                intent.putExtra("comment_extra", commentIntentExtra);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override

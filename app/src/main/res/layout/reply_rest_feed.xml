@@ -34,8 +34,8 @@
         app:layout_constraintTop_toBottomOf="@+id/rest_feed_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginLeft="56dp"
-        android:layout_marginStart="56dp"/>
+        android:layout_marginLeft="64dp"
+        android:layout_marginStart="64dp"/>
 
     <include
         layout="@layout/comment_reply"
@@ -45,6 +45,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="56dp"
-        android:layout_marginLeft="56dp"/>
+        android:layout_marginStart="48dp"
+        android:layout_marginLeft="48dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

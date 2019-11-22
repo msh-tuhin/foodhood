@@ -1,5 +1,6 @@
 package myviewholders;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -23,6 +24,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -40,8 +42,10 @@ import androidx.core.content.ContextCompat;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
+import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
+import myapp.utils.PictureBinder;
 import myapp.utils.ResourceIds;
 
 public class RestFeedReplyHolder extends RestFeedHolder
@@ -298,12 +302,27 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void bindCommentByAvatar() {
-
+        db.collection("person_vital")
+                .document(mLinkCommentBy)
+                .get()
+                .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot personVitalSnapshot) {
+                        PictureBinder.bindProfilePicture(commenterImage, personVitalSnapshot);
+                    }
+                });
     }
 
     @Override
     public void setCommentByAvatarOnClickListener() {
-
+        commenterImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, PersonDetail.class);
+                intent.putExtra("personLink", mLinkCommentBy);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -334,7 +353,10 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void bindCommentTime() {
-
+        Timestamp ts = mCommentSnapshot.getTimestamp("ts");
+        if(ts==null) return;
+        String dateOrTimeString = DateTimeExtractor.getDateOrTimeString(ts);
+        commentTimeTV.setText(dateOrTimeString);
     }
 
     @Override
@@ -359,7 +381,22 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void setRepliesLinkOnClickListener() {
+        repliesLinkTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("comment_detail", "from home RF reply");
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(
+                        EntryPoints.CLICKED_COMMENT_BODY_FROM_HOME_RF);
+                commentIntentExtra.setPostLink(mRestFeedLink);
+                commentIntentExtra.setCommentLink(mCommentLink);
+                commentIntentExtra.setReplyLink(mReplyLink);
 
+                Intent intent = new Intent(mContext, CommentDetail.class);
+                intent.putExtra("comment_extra", commentIntentExtra);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -538,12 +575,27 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void bindReplyByAvatar() {
-
+        db.collection("person_vital")
+                .document(mLinkReplyBy)
+                .get()
+                .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot personVitalSnapshot) {
+                        PictureBinder.bindProfilePicture(replierImage, personVitalSnapshot);
+                    }
+                });
     }
 
     @Override
     public void setReplyByAvatarOnClickListener() {
-
+        replierImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, PersonDetail.class);
+                intent.putExtra("personLink", mLinkReplyBy);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -566,7 +618,10 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void bindReplyTime() {
-
+        Timestamp ts = mReplySnapshot.getTimestamp("ts");
+        if(ts==null) return;
+        String dateOrTimeString = DateTimeExtractor.getDateOrTimeString(ts);
+        replyTime.setText(dateOrTimeString);
     }
 
     @Override
@@ -587,27 +642,27 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void setReplyingToLinkOnClickListener() {
-        replyingToTV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Map<String, Object> replyTo = (Map<String, Object>) mReplySnapshot.get("replyTo");
-                if(replyTo != null){
-                    String link = (String) replyTo.get("l");
-                    Long type = (Long) replyTo.get("t");
-                    Intent intent;
-                    if(type == AccountTypes.PERSON){
-                        Log.i("clicked", "replying to(person) from home rf+reply");
-                        intent = new Intent(mContext, PersonDetail.class);
-                        intent.putExtra("personLink", link);
-                    }else{
-                        Log.i("clicked", "replying to(restaurant) from home rf+reply");
-                        intent = new Intent(mContext, RestDetail.class);
-                        intent.putExtra("restaurantLink", link);
-                    }
-//            mContext.startActivity(intent);
-                }
-            }
-        });
+//        replyingToTV.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Map<String, Object> replyTo = (Map<String, Object>) mReplySnapshot.get("replyTo");
+//                if(replyTo != null){
+//                    String link = (String) replyTo.get("l");
+//                    Long type = (Long) replyTo.get("t");
+//                    Intent intent;
+//                    if(type == AccountTypes.PERSON){
+//                        Log.i("clicked", "replying to(person) from home rf+reply");
+//                        intent = new Intent(mContext, PersonDetail.class);
+//                        intent.putExtra("personLink", link);
+//                    }else{
+//                        Log.i("clicked", "replying to(restaurant) from home rf+reply");
+//                        intent = new Intent(mContext, RestDetail.class);
+//                        intent.putExtra("restaurantLink", link);
+//                    }
+////            mContext.startActivity(intent);
+//                }
+//            }
+//        });
     }
 
     @Override
@@ -818,7 +873,7 @@ public class RestFeedReplyHolder extends RestFeedHolder
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(text);
         int start = text.indexOf(name);
         int end = start + name.length();
-        spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        // spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.BLUE),
                 start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableStringBuilder;

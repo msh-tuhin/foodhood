@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -36,6 +37,7 @@ import androidx.core.content.ContextCompat;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
+import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
 import myapp.utils.PictureBinder;
@@ -48,6 +50,7 @@ public class PostCommentHolder extends HalfPostHolder
     TextView postCommentHeader;
     CircleImageView commenterImage;
     TextView commenterName;
+    TextView commentTimeTV;
     TextView theComment;
     TextView linkToReplies;
     TextView noOfLikesOnComment;
@@ -72,6 +75,7 @@ public class PostCommentHolder extends HalfPostHolder
         postCommentHeader = v.findViewById(R.id.post_comment_header);
         commenterImage = v.findViewById(R.id.commenter_image);
         commenterName = v.findViewById(R.id.commenter_name);
+        commentTimeTV = v.findViewById(R.id.time);
         theComment = v.findViewById(R.id.the_comment);
         linkToReplies = v.findViewById(R.id.replies_link);
         noOfLikesOnComment = v.findViewById(R.id.number_of_likes);
@@ -238,7 +242,10 @@ public class PostCommentHolder extends HalfPostHolder
 
     @Override
     public void bindCommentTime() {
-
+        Timestamp ts = mCommentSnapshot.getTimestamp("ts");
+        if(ts==null) return;
+        String dateOrTimeString = DateTimeExtractor.getDateOrTimeString(ts);
+        commentTimeTV.setText(dateOrTimeString);
     }
 
     @Override
