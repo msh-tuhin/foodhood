@@ -1,5 +1,6 @@
 package myviewholders;
 
+import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -8,7 +9,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
+import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
+import myapp.utils.PictureBinder;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,7 +26,9 @@ import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.RestDetail;
 import com.example.tuhin.myapplication.WriteComment;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -191,12 +196,30 @@ public class RestFeedHolder extends BaseHomeFeedHolder
 
     @Override
     public void bindAvatar() {
-
+        Map<String, String> restaurant = (Map<String, String>) mRestFeedSnapshot.get("w");
+        if(restaurant==null) return;
+        String restaurantLink = restaurant.get("l");
+        if(restaurantLink==null || restaurantLink.equals("")) return;
+        db.collection("rest_vital").document(restaurantLink)
+                .get()
+                .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot restVitalSnapshot) {
+                        PictureBinder.bindCoverPicture(avatar, restVitalSnapshot);
+                    }
+                });
     }
 
     @Override
     public void setAvatarOnClickListener() {
-
+        avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, RestDetail.class);
+                intent.putExtra("restaurantLink", mRestaurantLink);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -218,7 +241,10 @@ public class RestFeedHolder extends BaseHomeFeedHolder
 
     @Override
     public void bindPostTime() {
-
+        Timestamp ts = mRestFeedSnapshot.getTimestamp("ts");
+        if(ts==null) return;
+        String dateOrTimeString = DateTimeExtractor.getDateOrTimeString(ts);
+        postTimeTV.setText(dateOrTimeString);
     }
 
     @Override
