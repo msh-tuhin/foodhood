@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -45,6 +46,7 @@ import androidx.core.content.ContextCompat;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
+import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
 import myapp.utils.PictureBinder;
@@ -110,6 +112,7 @@ public class PostReplyHolder extends HalfPostHolder
         replierImage = v.findViewById(R.id.replier_image);
         replierName = v.findViewById(R.id.replier_name);
         replyingToTV = v.findViewById(R.id.replying_to);
+        replyTime = v.findViewById(R.id.time_reply);
         theReply = v.findViewById(R.id.the_reply);
         likeReply = v.findViewById(R.id.like_reply);
         replyTOReply = v.findViewById(R.id.reply_to_reply);
@@ -602,7 +605,10 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void bindReplyTime() {
-
+        Timestamp ts = mReplySnapshot.getTimestamp("ts");
+        if(ts==null) return;
+        String dateOrTimeString = DateTimeExtractor.getDateOrTimeString(ts);
+        replyTime.setText(dateOrTimeString);
     }
 
     @Override

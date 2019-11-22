@@ -1,5 +1,6 @@
 package myviewholders;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -18,6 +19,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -44,8 +46,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import models.CommentModel;
 import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
+import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
+import myapp.utils.PictureBinder;
 import myapp.utils.ResourceIds;
 
 public class FullPostCommentHolder extends RecyclerView.ViewHolder
@@ -63,6 +67,7 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
     private LinearLayout commentLayout;
     private CircleImageView commenterImage;
     private TextView commenterNameTextView, theCommentTextView, repliesLinkTextView;
+    private TextView commentTimeTV;
     private ImageView likeComment, replyToComment;
     private TextView numberOfLikesTextView, numberOfRepliesTextView;
     FirebaseFirestore db;
@@ -74,6 +79,7 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
         commenterImage = v.findViewById(R.id.commenter_image);
         commenterNameTextView = v.findViewById(R.id.commenter_name);
         theCommentTextView = v.findViewById(R.id.the_comment);
+        commentTimeTV = v.findViewById(R.id.time);
         repliesLinkTextView = v.findViewById(R.id.replies_link);
         likeComment = v.findViewById(R.id.like_comment);
         replyToComment = v.findViewById(R.id.reply_to_comment);
@@ -154,12 +160,27 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindCommentByAvatar() {
-
+        db.collection("person_vital")
+                .document(mLinkCommentBy)
+                .get()
+                .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot personVitalSnapshot) {
+                        PictureBinder.bindProfilePicture(commenterImage, personVitalSnapshot);
+                    }
+                });
     }
 
     @Override
     public void setCommentByAvatarOnClickListener() {
-
+        commenterImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, PersonDetail.class);
+                intent.putExtra("personLink", mLinkCommentBy);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -182,7 +203,10 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindCommentTime() {
-
+        Timestamp ts = mCommentSnapshot.getTimestamp("ts");
+        if(ts==null) return;
+        String dateOrTimeString = DateTimeExtractor.getDateOrTimeString(ts);
+        commentTimeTV.setText(dateOrTimeString);
     }
 
     @Override
@@ -207,7 +231,22 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
 
     @Override
     public void setRepliesLinkOnClickListener() {
+        repliesLinkTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("comment_detail", "from full post comment body click");
 
+                CommentIntentExtra commentIntentExtra = new CommentIntentExtra();
+                commentIntentExtra.setEntryPoint(
+                        EntryPoints.CLICKED_COMMENT_BODY_FROM_FULL_POST);
+                commentIntentExtra.setPostLink(mPostLink);
+                commentIntentExtra.setCommentLink(mCommentLink);
+
+                Intent intent = new Intent(mContext, CommentDetail.class);
+                intent.putExtra("comment_extra", commentIntentExtra);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override

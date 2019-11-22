@@ -1,5 +1,6 @@
 package myviewholders;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +25,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -42,8 +44,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
+import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
+import myapp.utils.PictureBinder;
 import myapp.utils.ResourceIds;
 
 public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
@@ -63,6 +67,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
 
     private CircleImageView imageReplyBy;
     private TextView nameReplyByTV;
+    private TextView replyTimeTV;
     private TextView replyTV;
     private TextView replyingToTV;
     private ImageView likeReply;
@@ -79,6 +84,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         mView = v;
         imageReplyBy = v.findViewById(R.id.replier_image);
         nameReplyByTV = v.findViewById(R.id.replier_name);
+        replyTimeTV = v.findViewById(R.id.time_reply);
         replyTV = v.findViewById(R.id.the_reply);
         replyingToTV = v.findViewById(R.id.replying_to);
         likeReply = v.findViewById(R.id.like_reply);
@@ -178,12 +184,48 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
 
     @Override
     public void bindReplyByAvatar() {
+        if(isReplierAPerson()){
+            db.collection("person_vital")
+                    .document(mReplierLink)
+                    .get()
+                    .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot personVitalSnapshot) {
+                            PictureBinder.bindProfilePicture(imageReplyBy, personVitalSnapshot);
+                        }
+                    });
+        }else{
+            db.collection("rest_vital")
+                    .document(mReplierLink)
+                    .get()
+                    .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot restVitalSnapshot) {
+                            PictureBinder.bindCoverPicture(imageReplyBy, restVitalSnapshot);
+                        }
+                    });
+        }
 
     }
 
     @Override
     public void setReplyByAvatarOnClickListener() {
-
+        imageReplyBy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                if(isReplierAPerson()){
+                    Log.i("clicked", "replier(person) avatar from CD reply");
+                    intent = new Intent(mContext, PersonDetail.class);
+                    intent.putExtra("personLink", mReplierLink);
+                } else{
+                    Log.i("clicked", "replier(restaurant) avatar from CD reply");
+                    intent = new Intent(mContext, RestDetail.class);
+                    intent.putExtra("restaurantLink", mReplierLink);
+                }
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -213,7 +255,10 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
 
     @Override
     public void bindReplyTime() {
-
+        Timestamp ts = mReplySnapshot.getTimestamp("ts");
+        if(ts==null) return;
+        String dateOrTimeString = DateTimeExtractor.getDateOrTimeString(ts);
+        replyTimeTV.setText(dateOrTimeString);
     }
 
     @Override
@@ -482,7 +527,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(text);
         int start = text.indexOf(name);
         int end = start + name.length();
-        spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        // spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.BLUE),
                 start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableStringBuilder;

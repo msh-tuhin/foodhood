@@ -1,5 +1,6 @@
 package myviewholders;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -39,8 +40,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import models.CommentModel;
 import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
+import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
+import myapp.utils.PictureBinder;
 import myapp.utils.ResourceIds;
 
 public class CommentDetailHolder extends RecyclerView.ViewHolder
@@ -60,6 +63,7 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
     private TextView postLinkTextView;
     private CircleImageView commenterImage;
     private TextView commenterNameTextView;
+    private TextView commentTimeTV;
     private TextView theCommentTextView;
     private ImageView likeComment;
     private ImageView replyToComment;
@@ -74,6 +78,7 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
         postLinkTextView = v.findViewById(R.id.post_link);
         commenterImage = v.findViewById(R.id.commenter_image);
         commenterNameTextView = v.findViewById(R.id.commenter_name);
+        commentTimeTV = v.findViewById(R.id.time);
         theCommentTextView = v.findViewById(R.id.the_comment);
         likeComment = v.findViewById(R.id.like_comment);
         replyToComment = v.findViewById(R.id.reply_to_comment);
@@ -171,12 +176,48 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindCommentByAvatar() {
+        if(isCommenterAPerson()){
+            db.collection("person_vital")
+                    .document(mCommenterLink)
+                    .get()
+                    .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot personVitalSnapshot) {
+                            PictureBinder.bindProfilePicture(commenterImage, personVitalSnapshot);
+                        }
+                    });
+        }else{
+            db.collection("rest_vital")
+                    .document(mCommenterLink)
+                    .get()
+                    .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot restVitalSnapshot) {
+                            PictureBinder.bindCoverPicture(commenterImage, restVitalSnapshot);
+                        }
+                    });
+        }
 
     }
 
     @Override
     public void setCommentByAvatarOnClickListener() {
-
+        commenterImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                if(isCommenterAPerson()){
+                    Log.i("clicked", "commenter(person) avatar from CD");
+                    intent = new Intent(mContext, PersonDetail.class);
+                    intent.putExtra("personLink", mCommenterLink);
+                } else{
+                    Log.i("clicked", "commenter(restaurant) avatar from CD");
+                    intent = new Intent(mContext, RestDetail.class);
+                    intent.putExtra("restaurantLink", mCommenterLink);
+                }
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -206,7 +247,10 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindCommentTime() {
-
+        Timestamp ts = mCommentSnapshot.getTimestamp("ts");
+        if(ts==null) return;
+        String dateOrTimeString = DateTimeExtractor.getDateOrTimeString(ts);
+        commentTimeTV.setText(dateOrTimeString);
     }
 
     @Override
