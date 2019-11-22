@@ -41,7 +41,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/baseline_room_black_24dp"/>
+                android:src="@drawable/baseline_restaurant_black_24dp"/>
             <TextView
                 style="@style/TextClickableSimple"
                 android:id="@+id/restaurant_name"
@@ -80,7 +80,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/baseline_room_black_24dp"/>
+                android:src="@drawable/baseline_fastfood_black_24dp"/>
             <TextView
                 style="@style/TextClickableSimple"
                 android:id="@+id/dishes"

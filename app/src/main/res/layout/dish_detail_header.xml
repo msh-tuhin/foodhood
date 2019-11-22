@@ -26,7 +26,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="match_parent"
-            android:src="@drawable/baseline_room_black_24dp"
+            android:src="@drawable/baseline_restaurant_black_24dp"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"/>
 
