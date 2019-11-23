@@ -106,17 +106,17 @@ public class AdapterCreator {
                                 .inflate(R.layout.post_half, viewGroup, false);
                         viewHolder = new HalfPostHolder(view);
                         break;
-                    case 2:
-                        // a restaurant posts
-                        view = LayoutInflater.from(viewGroup.getContext())
-                                .inflate(R.layout.rest_feed, viewGroup, false);
-                        viewHolder = new RestFeedHolder(view);
-                        break;
                     case 1:
                         // a person gets tagged in a post
                         view = LayoutInflater.from(viewGroup.getContext())
                                 .inflate(R.layout.like_tag_post, viewGroup, false);
                         viewHolder = new PostTagHolder(view);
+                        break;
+                    case 2:
+                        // a restaurant posts
+                        view = LayoutInflater.from(viewGroup.getContext())
+                                .inflate(R.layout.rest_feed, viewGroup, false);
+                        viewHolder = new RestFeedHolder(view);
                         break;
                     case 3:
                         // a person likes a post
@@ -217,7 +217,7 @@ public class AdapterCreator {
         Log.i("current_user", currentUserLink);
         Query bQuery = db.collection("own_activities")
                 .document(currentUserLink)
-                .collection("act").orderBy("ts");
+                .collection("act").orderBy("ts", Query.Direction.DESCENDING);
         PagedList.Config config = new PagedList.Config.Builder()
                 .setEnablePlaceholders(false)
                 .setPrefetchDistance(10)

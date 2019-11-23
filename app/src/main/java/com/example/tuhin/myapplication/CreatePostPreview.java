@@ -196,6 +196,7 @@ public class CreatePostPreview extends AppCompatActivity {
                 postModel.setComments(new ArrayList<String>());
                 postModel.setCommentsBy(new ArrayList<String>());
                 postModel.setLikes(new ArrayList<String>());
+                postModel.setTimestamp(new Timestamp(new Date()));
 
                 Map<String, String> taggedPeople = new HashMap<>();
                 for(SelectedPerson person : addedPeopleList){

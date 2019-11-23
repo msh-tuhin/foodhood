@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import myapp.utils.AdapterCreator;
+import myapp.utils.PostTypes;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class RestHomeFeedFragment extends Fragment {
@@ -58,8 +60,9 @@ public class RestHomeFeedFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.i("FAB", "clicked");
-                // Intent intent = new Intent(getActivity(), CreatePost.class);
-                // startActivity(intent);
+                Intent intent = new Intent(getActivity(), CreatePost.class);
+                intent.putExtra("post_type", PostTypes.REST_FEED);
+                startActivity(intent);
             }
         });
     }
@@ -75,4 +78,5 @@ public class RestHomeFeedFragment extends Fragment {
         super.onStop();
         adapter.stopListening();
     }
+
 }

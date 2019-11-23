@@ -31,6 +31,7 @@ import java.util.ArrayList;
 
 import id.zelory.compressor.Compressor;
 import myapp.utils.ImagesAdapter;
+import myapp.utils.PostTypes;
 import myapp.utils.RealPathUtil;
 
 
@@ -48,6 +49,7 @@ public class CreatePostSelectImages extends AppCompatActivity {
     ViewPager viewPager;
     Button cancel, next;
 
+    int postType;
     Bundle post;
     Uri uri;
     ArrayList<Uri> imageUris = new ArrayList<>();
@@ -59,6 +61,7 @@ public class CreatePostSelectImages extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_post_select_images);
 
+        postType = getIntent().getIntExtra("post_type", PostTypes.POST);
         post = getIntent().getExtras();
 
         // checking if data received correctly
@@ -89,6 +92,10 @@ public class CreatePostSelectImages extends AppCompatActivity {
         }else{
             // permission granted
             // TODO maybe nothing
+        }
+
+        if(postType==PostTypes.REST_FEED){
+            next.setText("Post");
         }
 
         addImagesButton.setOnClickListener(new View.OnClickListener() {
@@ -168,7 +175,12 @@ public class CreatePostSelectImages extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 post.putStringArrayList("imageSringUris", stringUris);
-                Intent intent = new Intent(CreatePostSelectImages.this, CreatePostSelectPlace.class);
+                Intent intent;
+                if(postType==PostTypes.POST){
+                    intent = new Intent(CreatePostSelectImages.this, CreatePostSelectPlace.class);
+                }else{
+                    intent = new Intent(CreatePostSelectImages.this, CreateRestFeedPreview.class);
+                }
                 intent.putExtras(post);
                 startActivity(intent);
             }

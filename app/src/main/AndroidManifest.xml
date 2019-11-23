@@ -93,7 +93,8 @@
             <!-- android:value=".EditRestProfile" /> -->
         </activity>
         <activity android:name=".FullPostForRestaurant" />
-        <activity android:name=".AllRestaurants"></activity>
+        <activity android:name=".AllRestaurants" />
+        <activity android:name=".CreateRestFeedPreview"></activity>
     </application>
 
 </manifest>

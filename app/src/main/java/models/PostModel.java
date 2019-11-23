@@ -1,5 +1,6 @@
 package models;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 import com.google.firebase.firestore.PropertyName;
 
@@ -42,6 +43,9 @@ public class PostModel {
 
     @PropertyName("i")
     private List<String> images;
+
+    @PropertyName("ts")
+    private Timestamp timestamp;
 
     public PostModel(){
 
@@ -155,5 +159,15 @@ public class PostModel {
     @PropertyName("i")
     public void setImages(List<String> images) {
         this.images = images;
+    }
+
+    @PropertyName("ts")
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    @PropertyName("ts")
+    public void setTimestamp(Timestamp ts) {
+        this.timestamp = ts;
     }
 }

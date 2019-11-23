@@ -6,6 +6,9 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+import myapp.utils.AccountTypes;
+import myapp.utils.PostTypes;
+
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -23,6 +26,8 @@ public class CreatePost extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_post);
+
+        final int postType = getIntent().getIntExtra("post_type", PostTypes.POST);
 
         toolbar = findViewById(R.id.toolbar);
         next = findViewById(R.id.next);
@@ -47,6 +52,7 @@ public class CreatePost extends AppCompatActivity {
                 Bundle post = new Bundle();
                 post.putString("caption", caption);
                 Intent intent = new Intent(CreatePost.this, CreatePostSelectImages.class);
+                intent.putExtra("post_type", postType);
                 intent.putExtras(post);
                 startActivity(intent);
             }
