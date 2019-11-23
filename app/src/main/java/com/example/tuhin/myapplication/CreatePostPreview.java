@@ -40,6 +40,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -126,7 +127,17 @@ public class CreatePostPreview extends AppCompatActivity {
         }else{
             adapter = new ImagesAdapter(this);
             for(String uriString : imagesUri){
-                adapter.imageUris.add(Uri.parse(uriString));
+                //adapter.imageUris.add(Uri.parse(uriString));
+                try{
+                    // String path = Uri.parse(uriString).getPath();
+                    // File compressedFile = new Compressor(this).compressToFile(new File(path));
+                    URI uri = URI.create(uriString);
+                    File compressedFile = new Compressor(this).compressToFile(new File(uri));
+                    Uri compressedFileUri = Uri.fromFile(compressedFile);
+                    adapter.imageUris.add(compressedFileUri);
+                }catch (IOException e){
+                    Log.e("error", e.getMessage());
+                }
             }
             viewPager.setAdapter(adapter);
         }
@@ -211,11 +222,13 @@ public class CreatePostPreview extends AppCompatActivity {
                             .child("post-images/" + Uri.parse(stringUri).getLastPathSegment());
                     references.add(reference);
                     Log.i("reference", reference.toString());
-                    String path = Uri.parse(stringUri).getPath();
-                    Log.i("path", path);
+                    //String path = Uri.parse(stringUri).getPath();
+                    //Log.i("path", path);
+                    URI uri = URI.create(stringUri);
                     try{
                         // throws IOException
-                        File compressedFile = new Compressor(this).compressToFile(new File(path));
+                        // File compressedFile = new Compressor(this).compressToFile(new File(path));
+                        File compressedFile = new Compressor(this).compressToFile(new File(uri));
                         Uri compressedFileUri = Uri.fromFile(compressedFile);
                         UploadTask uploadTask = reference.putFile(compressedFileUri);
 //                        UploadTask uploadTask = reference.putFile(Uri.parse(stringUri));

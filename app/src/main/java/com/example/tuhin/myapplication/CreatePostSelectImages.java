@@ -23,9 +23,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import id.zelory.compressor.Compressor;
 import myapp.utils.ImagesAdapter;
 import myapp.utils.RealPathUtil;
 
@@ -191,8 +195,17 @@ public class CreatePostSelectImages extends AppCompatActivity {
                         String path = getPathFromContentUri(contentUri);
                         uri = Uri.fromFile(new File(path));
                         Log.i("Uri", uri.toString());
-                        adapter.imageUris.add(uri);
-                        stringUris.add(uri.toString());
+                        try{
+                            File compressedFile = new Compressor(this).compressToFile(new File(path));
+                            Uri compressedFileUri = Uri.fromFile(compressedFile);
+                            Log.i("compressed_uri", compressedFileUri.toString());
+                            adapter.imageUris.add(compressedFileUri);
+                            stringUris.add(uri.toString());
+                        }catch (IOException e){
+                            Log.e("error", e.getMessage());
+                            Toast.makeText(CreatePostSelectImages.this,
+                                    "Had a problem while trying to compress image", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }else {
                     Log.i("image-source", "data");
@@ -201,8 +214,17 @@ public class CreatePostSelectImages extends AppCompatActivity {
                     String path = getPathFromContentUri(contentUri);
                     uri = Uri.fromFile(new File(path));
                     Log.i("Uri", uri.toString());
-                    adapter.imageUris.add(uri);
-                    stringUris.add(uri.toString());
+                    try{
+                        File compressedFile = new Compressor(this).compressToFile(new File(path));
+                        Uri compressedFileUri = Uri.fromFile(compressedFile);
+                        Log.i("compressed_uri", compressedFileUri.toString());
+                        adapter.imageUris.add(compressedFileUri);
+                        stringUris.add(uri.toString());
+                    }catch (IOException e){
+                        Log.e("error", e.getMessage());
+                        Toast.makeText(CreatePostSelectImages.this,
+                                "Had a problem while trying to compress image", Toast.LENGTH_SHORT).show();
+                    }
                     // limiting image selection to 3 images
 //                    if(adapter.imageUris.size()==3){
 //                        addImagesButton.setClickable(false);

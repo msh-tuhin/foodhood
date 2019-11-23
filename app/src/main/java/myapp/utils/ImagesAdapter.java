@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.tuhin.myapplication.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -32,7 +33,11 @@ public class ImagesAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull final ViewGroup container, final int position) {
         final ViewGroup layout = (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.slider_image, container, false);
         ImageView imageView = layout.findViewById(R.id.imageView);
-        imageView.setImageURI(imageUris.get(position));
+        // imageView.setImageURI(imageUris.get(position));
+        Picasso.get().load(imageUris.get(position))
+                .placeholder(R.drawable.ltgray)
+                .error((R.drawable.ltgray))
+                .into(imageView);
         container.addView(layout);
         return layout;
     }
