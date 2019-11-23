@@ -104,11 +104,18 @@
         android:layout_marginTop="16dp"
         android:text="@string/post_caption" />
 
+    <TextView
+        android:id="@+id/image_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"/>
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/post_images_viewPager"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_marginTop="16dp"
         android:visibility="gone">
     </androidx.viewpager.widget.ViewPager>
 

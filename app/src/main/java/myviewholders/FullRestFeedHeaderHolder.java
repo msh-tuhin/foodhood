@@ -65,6 +65,7 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
     TextView restaurantNameTV;
     TextView postTimeTV;
     TextView captionTV;
+    TextView viewPagerCurrentPositionTV;
     ViewPager postImagesViewPager;
     ImageView like;
     TextView noOfLikesTV;
@@ -78,6 +79,7 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
         restaurantNameTV = v.findViewById(R.id.restaurant_name);
         postTimeTV = v.findViewById(R.id.post_time);
         captionTV = v.findViewById(R.id.caption);
+        viewPagerCurrentPositionTV = v.findViewById(R.id.image_position);
         postImagesViewPager = v.findViewById(R.id.post_images_viewPager);
         like = v.findViewById(R.id.like);
         noOfLikesTV = v.findViewById(R.id.no_likes);
@@ -273,8 +275,27 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
         ArrayList<String> imageUris = (ArrayList) mRestFeedSnapshot.get("i");
         if(imageUris==null || imageUris.size() == 0) return;
         postImagesViewPager.setVisibility(View.VISIBLE);
-        PostImagesAdapter adapter = new PostImagesAdapter(mContext, imageUris);
+        final PostImagesAdapter adapter = new PostImagesAdapter(mContext, imageUris);
         postImagesViewPager.setAdapter(adapter);
+        viewPagerCurrentPositionTV.setText("1" + "/" + Integer.toString(adapter.imageUris.size()));
+        viewPagerCurrentPositionTV.setVisibility(View.VISIBLE);
+        postImagesViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                viewPagerCurrentPositionTV.setText(Integer.toString(position+1)+"/" +
+                        Integer.toString(adapter.imageUris.size()));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     @Override
