@@ -104,12 +104,12 @@
         android:layout_marginTop="16dp"
         android:text="@string/post_caption" />
 
-    <ImageView
-        android:id="@+id/post_images"
-        app:srcCompat="@drawable/key_lime_pie"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/post_images_viewPager"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_marginTop="16dp"
-        android:scaleType="fitXY"/>
+        android:visibility="gone">
+    </androidx.viewpager.widget.ViewPager>
 
 </LinearLayout>

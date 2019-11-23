@@ -34,6 +34,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,12 +42,14 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
 import myapp.utils.PictureBinder;
 import myapp.utils.PostBuilder;
+import myapp.utils.PostImagesAdapter;
 import myapp.utils.SourceAllDishes;
 
 public class FullPostHeaderHolder extends RecyclerView.ViewHolder
@@ -69,7 +72,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
     public TextView restaurantName;
     public TextView taggedPeople;
     public TextView dishes;
-    public ImageView postImages;
+    public ViewPager postImagesViewPager;
     // com_n_like.xml
     public TextView noOfLikesTV;
     public TextView noOfCommentsTV;
@@ -88,7 +91,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         dishes = v.findViewById(R.id.dishes);
         postTime = v.findViewById(R.id.post_time);
         postCaption = v.findViewById(R.id.post_caption);
-        postImages = v.findViewById(R.id.post_images);
+        postImagesViewPager = v.findViewById(R.id.post_images_viewPager);
         noOfLikesTV = v.findViewById(R.id.no_likes);
         noOfCommentsTV = v.findViewById(R.id.no_comments);
         like = v.findViewById(R.id.like);
@@ -335,7 +338,11 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindImages() {
-
+        ArrayList<String> imageUris = (ArrayList) mPostSnapShot.get("i");
+        if(imageUris==null || imageUris.size() == 0) return;
+        postImagesViewPager.setVisibility(View.VISIBLE);
+        PostImagesAdapter adapter = new PostImagesAdapter(mContext, imageUris);
+        postImagesViewPager.setAdapter(adapter);
     }
 
     @Override
