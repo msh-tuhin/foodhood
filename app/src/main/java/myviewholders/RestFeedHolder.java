@@ -20,6 +20,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.ActualActivity;
@@ -59,7 +60,7 @@ public class RestFeedHolder extends BaseHomeFeedHolder
     private String mCaption;
     private boolean mForPerson;
 
-    ConstraintLayout restFeedLayout;
+    LinearLayout restFeedLayout;
     CircleImageView avatar;
     TextView restaurantNameTV;
     TextView postTimeTV;
