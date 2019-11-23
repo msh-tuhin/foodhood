@@ -44,6 +44,7 @@ public class CreatePostSelectImages extends AppCompatActivity {
     ImageButton addImagesButton, captureImage, chooseFrom, deleteImage;
     ConstraintLayout imageSourceChooser;
     TextView noImages;
+    TextView limitationCountTV;
     ViewPager viewPager;
     Button cancel, next;
 
@@ -71,6 +72,7 @@ public class CreatePostSelectImages extends AppCompatActivity {
         captureImage = findViewById(R.id.camera);
         chooseFrom = findViewById(R.id.gallery);
         noImages = findViewById(R.id.no_images);
+        limitationCountTV = findViewById(R.id.limitation_count);
         viewPager = findViewById(R.id.viewPager);
         deleteImage = findViewById(R.id.deleteImage);
         cancel = findViewById(R.id.cancel);
@@ -139,6 +141,7 @@ public class CreatePostSelectImages extends AppCompatActivity {
                 viewPager.setAdapter(adapter);
                 viewPager.setCurrentItem(viewpagerNewPosition);
                 addImagesButton.setClickable(true);
+                limitationCountTV.setText(Integer.toString(adapter.imageUris.size())+"/3");
                 if(adapter.imageUris.size() == 0){
                     viewPager.setVisibility(View.GONE);
                     deleteImage.setVisibility(View.GONE);
@@ -201,6 +204,11 @@ public class CreatePostSelectImages extends AppCompatActivity {
                             Log.i("compressed_uri", compressedFileUri.toString());
                             adapter.imageUris.add(compressedFileUri);
                             stringUris.add(uri.toString());
+                            limitationCountTV.setText(Integer.toString(adapter.imageUris.size())+"/3");
+                            if(adapter.imageUris.size()==3){
+                               addImagesButton.setClickable(false);
+                               break;
+                            }
                         }catch (IOException e){
                             Log.e("error", e.getMessage());
                             Toast.makeText(CreatePostSelectImages.this,
@@ -220,6 +228,10 @@ public class CreatePostSelectImages extends AppCompatActivity {
                         Log.i("compressed_uri", compressedFileUri.toString());
                         adapter.imageUris.add(compressedFileUri);
                         stringUris.add(uri.toString());
+                        limitationCountTV.setText(Integer.toString(adapter.imageUris.size())+"/3");
+                        if(adapter.imageUris.size()==3){
+                            addImagesButton.setClickable(false);
+                        }
                     }catch (IOException e){
                         Log.e("error", e.getMessage());
                         Toast.makeText(CreatePostSelectImages.this,
