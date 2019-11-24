@@ -156,6 +156,7 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
                 uploadUri = null;
                 coverPhotoIV.setImageURI(null);
                 deleteImage.setClickable(false);
+                deleteImage.setVisibility(View.INVISIBLE);
                 imageSourceChooser.setVisibility(View.VISIBLE);
                 saveButton.setEnabled(false);
             }
@@ -211,6 +212,7 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
 
                     imageSourceChooser.setVisibility(View.INVISIBLE);
                     deleteImage.setClickable(true);
+                    deleteImage.setVisibility(View.VISIBLE);
                     saveButton.setEnabled(true);
                 }catch (IOException e){
 
@@ -349,7 +351,7 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
         }
 
         if(coverPhotoLink == null || coverPhotoLink.equals("")){
-            deleteImage.setVisibility(View.VISIBLE);
+            deleteImage.setVisibility(View.INVISIBLE);
             imageSourceChooser.setVisibility(View.VISIBLE);
         }else{
             Picasso.get().load(coverPhotoLink)

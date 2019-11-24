@@ -32,7 +32,7 @@ public class RestaurantHome extends AppCompatActivity {
             R.drawable.outline_home_black_24dp,
             R.drawable.outline_rate_review_black_24dp,
             R.drawable.baseline_notifications_none_black_24dp,
-            R.drawable.outline_insert_invitation_black_24dp,
+            R.drawable.baseline_fastfood_black_24dp,
             R.drawable.outline_menu_black_24dp
     };
 
@@ -100,7 +100,7 @@ public class RestaurantHome extends AppCompatActivity {
                 case 2:
                     return new AllNotificationsFragment();
                 case 3:
-                    return new BlankFragment();
+                    return new RestaurantSelfDishesFragment();
                 default:
                     return new RestMoreOptionsFragment();
 
