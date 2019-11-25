@@ -23,8 +23,10 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -73,6 +75,8 @@ public class EditPersonProfileForm extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     Toolbar toolbar;
+    ScrollView formLayout;
+    LinearLayout progressLayout;
     ImageView enableBioEdit;
     TextInputEditText bioEditText;
     ImageView enablePhoneEdit;
@@ -106,6 +110,8 @@ public class EditPersonProfileForm extends AppCompatActivity {
         // not sure about this
         // actionBar.setDisplayShowHomeEnabled(true);
 
+        formLayout = findViewById(R.id.form_layout);
+        progressLayout = findViewById(R.id.progress_layout);
         enableBioEdit = findViewById(R.id.enable_bio_edit);
         bioEditText = findViewById(R.id.bio);
         phoneLayout = findViewById(R.id.phone_layout);
@@ -235,6 +241,7 @@ public class EditPersonProfileForm extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                saveButton.setEnabled(false);
                 Map<String, Object>  personVital = new HashMap<>();
                 if(saveButtonController.shouldBioBeSaved){
                     personVital.put("bio", mBio);
@@ -259,7 +266,8 @@ public class EditPersonProfileForm extends AppCompatActivity {
                     oldDateString = mDateString;
                 }
 
-                saveButtonController.refresh();
+                formLayout.setVisibility(View.INVISIBLE);
+                progressLayout.setVisibility(View.VISIBLE);
 
                 db.collection("person_vital")
                         .document(mPersonLink)
@@ -268,12 +276,19 @@ public class EditPersonProfileForm extends AppCompatActivity {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 Log.i("profile_update", "successful");
+                                // saveButtonController.refresh();
+                                EditPersonProfileForm.this.finish();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Log.i("profile_update", "failed");
+                                saveButton.setEnabled(true);
+                                formLayout.setVisibility(View.VISIBLE);
+                                progressLayout.setVisibility(View.INVISIBLE);
+                                Toast.makeText(EditPersonProfileForm.this, "Update failed!", Toast.LENGTH_LONG)
+                                        .show();
                             }
                         });
 

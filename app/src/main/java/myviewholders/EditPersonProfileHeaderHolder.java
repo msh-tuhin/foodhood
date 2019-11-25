@@ -1,11 +1,13 @@
 package myviewholders;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -62,6 +64,7 @@ public class EditPersonProfileHeaderHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindTo(final Context context, final String personLink){
+        Log.i("binding", "EditPersonProfileHeaderHolder");
         mContext = context;
         mPersonLink = personLink;
         setEditProfileButtonOnClickListener();
@@ -99,6 +102,7 @@ public class EditPersonProfileHeaderHolder extends RecyclerView.ViewHolder {
         editProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((EditPersonProfile)mContext).shouldBindProfileInfo = true;
                 launchEditPersonProfileForm();
             }
         });

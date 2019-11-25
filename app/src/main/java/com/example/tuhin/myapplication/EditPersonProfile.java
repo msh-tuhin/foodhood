@@ -43,6 +43,7 @@ public class EditPersonProfile extends AppCompatActivity {
     Animation scaleAnimation;
     float prev = 1f;
     private boolean shouldBindPictures = false;
+    public boolean shouldBindProfileInfo = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +123,10 @@ public class EditPersonProfile extends AppCompatActivity {
             shouldBindPictures = false;
         }
         adapter.startListening();
-        adapter.notifyItemChanged(0);
+        if(shouldBindProfileInfo){
+            adapter.notifyItemChanged(0);
+            shouldBindProfileInfo = false;
+        }
     }
 
     @Override
