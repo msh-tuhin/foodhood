@@ -14,6 +14,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,6 +46,8 @@ public class EditRestProfileForm extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     Toolbar toolbar;
+    ScrollView formLayout;
+    LinearLayout progressLayout;
     ImageView enableAddressEdit;
     ImageView enablePhoneEdit;
     ImageView enableWebsiteEdit;
@@ -63,6 +68,8 @@ public class EditRestProfileForm extends AppCompatActivity {
         mRestaurantLink = mAuth.getCurrentUser().getUid();
 
         toolbar = findViewById(R.id.toolbar);
+        formLayout = findViewById(R.id.form_layout);
+        progressLayout = findViewById(R.id.progress_layout);
         enableAddressEdit = findViewById(R.id.enable_address_edit);
         enablePhoneEdit = findViewById(R.id.enable_phone_edit);
         enableWebsiteEdit = findViewById(R.id.enable_website_edit);
@@ -188,6 +195,7 @@ public class EditRestProfileForm extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                saveButton.setEnabled(false);
                 Map<String, Object> restaurantVital = new HashMap<>();
                 if(saveButtonController.shouldAddressBeSaved){
                     restaurantVital.put("a", mAddress);
@@ -202,7 +210,8 @@ public class EditRestProfileForm extends AppCompatActivity {
                     oldWebsite = mWebsite;
                 }
 
-                saveButtonController.refresh();
+                formLayout.setVisibility(View.INVISIBLE);
+                progressLayout.setVisibility(View.VISIBLE);
 
                 db.collection("rest_vital")
                         .document(mRestaurantLink)
@@ -211,12 +220,19 @@ public class EditRestProfileForm extends AppCompatActivity {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 Log.i("profile_update", "successful");
+                                // saveButtonController.refresh();
+                                EditRestProfileForm.this.finish();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Log.i("profile_update", "failed");
+                                saveButton.setEnabled(true);
+                                formLayout.setVisibility(View.VISIBLE);
+                                progressLayout.setVisibility(View.INVISIBLE);
+                                Toast.makeText(EditRestProfileForm.this, "Update failed!", Toast.LENGTH_LONG)
+                                        .show();
                             }
                         });
 

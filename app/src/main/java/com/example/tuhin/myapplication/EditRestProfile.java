@@ -20,6 +20,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
+import java.text.DecimalFormat;
+
 public class EditRestProfile extends AppCompatActivity {
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -157,15 +159,22 @@ public class EditRestProfile extends AppCompatActivity {
     }
 
     private void bindRating(DocumentSnapshot restVitalSnapshot){
-        Double numberOfPeople = restVitalSnapshot.getDouble("npr");
+        Double noOfRatings = restVitalSnapshot.getDouble("npr");
+        if(noOfRatings==null){
+            ratingTV.setText("N/A");
+            return;
+        }
         Double totalRating = restVitalSnapshot.getDouble("tr");
-        if(numberOfPeople == null){
+        if(totalRating==null){
+            ratingTV.setText("N/A");
             return;
         }
-        if(totalRating == null){
-            return;
+        Double rating = noOfRatings==0 ? 0:totalRating/noOfRatings;
+        if(rating == 0){
+            ratingTV.setText("N/A");
+        }else{
+            DecimalFormat formatter = new DecimalFormat("#.0");
+            ratingTV.setText(formatter.format(rating));
         }
-        Double rating = totalRating/numberOfPeople;
-        ratingTV.setText(Double.toString(rating));
     }
 }
