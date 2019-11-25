@@ -272,6 +272,7 @@ public class EditDishForm extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i("saving", "clicked");
+                saveButton.setEnabled(false);
                 if(mSource==EditDishFormSource.NEW_DISH){
                     Log.i("saving", "new_dish");
                     if(shoulCoverPhotoBeSaved()){
@@ -300,7 +301,6 @@ public class EditDishForm extends AppCompatActivity {
 //                descriptionEditText.setEnabled(false);
                 formLayout.setVisibility(View.INVISIBLE);
                 progressLayout.setVisibility(View.VISIBLE);
-                saveButton.setEnabled(false);
 //                oldName = mName;
 //                oldPrice = mPrice;
 //                oldDescription = mDescription;

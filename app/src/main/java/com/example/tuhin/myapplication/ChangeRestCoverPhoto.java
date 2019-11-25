@@ -28,9 +28,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -64,6 +66,10 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
     String photoPath;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private boolean imageChanged = false;
+    private boolean imagePrevious = false;
+    private boolean imageCurrent = false;
+    private String oldCoverPhotoLink = "";
 
     Toolbar toolbar;
     ImageButton captureImage;
@@ -158,16 +164,22 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
                 deleteImage.setClickable(false);
                 deleteImage.setVisibility(View.INVISIBLE);
                 imageSourceChooser.setVisibility(View.VISIBLE);
-                saveButton.setEnabled(false);
+                imageChanged = true;
+                imageCurrent = false;
+                enableOrDisableSaveButton();
             }
         });
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadPhotoAndAddUrlToDB(uploadUri);
+                saveButton.setEnabled(false);
+                if(imagePrevious && !imageCurrent){
+                    deletePhotoAndUpdateDB();
+                }else{
+                    uploadPhotoAndAddUrlToDB(uploadUri);
+                }
                 frameLayoutImage.setVisibility(View.INVISIBLE);
-                saveButton.setVisibility(View.INVISIBLE);
                 progressBar.setVisibility(View.VISIBLE);
                 progressTV.setVisibility(View.VISIBLE);
             }
@@ -213,7 +225,9 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
                     imageSourceChooser.setVisibility(View.INVISIBLE);
                     deleteImage.setClickable(true);
                     deleteImage.setVisibility(View.VISIBLE);
-                    saveButton.setEnabled(true);
+                    imageChanged = true;
+                    imageCurrent = true;
+                    enableOrDisableSaveButton();
                 }catch (IOException e){
 
                     // TODO handle the unsuccessful image compression
@@ -280,42 +294,106 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
                     if(!task.isSuccessful()){
                         throw task.getException();
                     }
-                    frameLayoutImage.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.INVISIBLE);
-                    progressTV.setVisibility(View.INVISIBLE);
-                    saveButton.setEnabled(false);
-                    saveButton.setVisibility(View.VISIBLE);
                     return storageReference.getDownloadUrl();
                 }
             }).addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
+                    if(imagePrevious && imageCurrent){
+                        FirebaseStorage.getInstance().getReferenceFromUrl(oldCoverPhotoLink)
+                                .delete()
+                                .addOnCompleteListener(ChangeRestCoverPhoto.this, new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful()){
+                                            Log.i("image-delete", "successful");
+                                        }else{
+                                            Log.i("image-delete", "failed");
+                                        }
+                                    }
+                                });
+                    }
                     updateVital(uri);
                     if(mChangeable.equals("person_profile_pic") ||
                             mChangeable.equals("restaurant_cover_pic")){
                         updatePhotoUri(uri);
                     }
                 }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    progressTV.setVisibility(View.INVISIBLE);
+                    frameLayoutImage.setVisibility(View.VISIBLE);
+                    Toast.makeText(ChangeRestCoverPhoto.this, "Couldn't upload image!",
+                            Toast.LENGTH_LONG).show();
+                    enableOrDisableSaveButton();
+                }
             });
         } else {
             Log.i("upload_uri", "null");
+            progressBar.setVisibility(View.INVISIBLE);
+            progressTV.setVisibility(View.INVISIBLE);
+            frameLayoutImage.setVisibility(View.VISIBLE);
+            Toast.makeText(ChangeRestCoverPhoto.this, "Update Failed!",
+                    Toast.LENGTH_LONG).show();
+            enableOrDisableSaveButton();
         }
+    }
+
+    private void deletePhotoAndUpdateDB(){
+        updateVital(null);
+        StorageReference photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(oldCoverPhotoLink);
+        photoRef.delete()
+                .addOnCompleteListener(ChangeRestCoverPhoto.this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.i("image-delete", "successful");
+                        }else{
+                            Log.i("image-delete", "failed");
+                        }
+                    }
+                });
+        updatePhotoUri(null);
     }
 
     private void updateVital(Uri uri){
         Map<String, Object> restOrPersonVital = new HashMap<>();
         if(mChangeable.equals("person_profile_pic")){
-            restOrPersonVital.put("pp", uri.toString());
+            if(uri != null){
+                restOrPersonVital.put("pp", uri.toString());
+            }else{
+                restOrPersonVital.put("pp", "");
+            }
         }else{
-            restOrPersonVital.put("cp", uri.toString());
+            if(uri != null){
+                restOrPersonVital.put("cp", uri.toString());
+            }else{
+                restOrPersonVital.put("cp", "");
+            }
         }
 
         db.collection(mCollectonName)
                 .document(mPersonOrRestaurantLink).update(restOrPersonVital)
-                .addOnFailureListener(new OnFailureListener() {
+                .addOnSuccessListener(ChangeRestCoverPhoto.this, new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        ChangeRestCoverPhoto.this.finish();
+                    }
+                })
+                .addOnFailureListener(ChangeRestCoverPhoto.this, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.e("vital_info_update", e.getMessage());
+//                        progressBar.setVisibility(View.INVISIBLE);
+//                        progressTV.setVisibility(View.INVISIBLE);
+//                        frameLayoutImage.setVisibility(View.VISIBLE);
+//                        Toast.makeText(ChangeRestCoverPhoto.this, "Update Failed!",
+//                                Toast.LENGTH_LONG).show();
+//                        enableOrDisableSaveButton();
+                        ChangeRestCoverPhoto.this.finish();
                     }
                 });
     }
@@ -354,11 +432,24 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
             deleteImage.setVisibility(View.INVISIBLE);
             imageSourceChooser.setVisibility(View.VISIBLE);
         }else{
+            oldCoverPhotoLink = coverPhotoLink;
+            imageCurrent = true;
+            imagePrevious = true;
             Picasso.get().load(coverPhotoLink)
                     .placeholder(R.drawable.gray)
                     .error(R.drawable.gray)
                     .into(coverPhotoIV);
             deleteImage.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void enableOrDisableSaveButton(){
+        if(imageChanged){
+            if(imagePrevious || imageCurrent){
+                saveButton.setEnabled(true);
+            }
+        }else{
+            saveButton.setEnabled(false);
         }
     }
 }
