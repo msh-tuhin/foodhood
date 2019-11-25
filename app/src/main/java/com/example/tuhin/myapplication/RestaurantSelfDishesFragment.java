@@ -33,6 +33,7 @@ public class RestaurantSelfDishesFragment extends Fragment {
 
     RecyclerView rv;
     FloatingActionButton fab;
+    SelfDishesAdapter adapter;
 
     public RestaurantSelfDishesFragment() {
         // Required empty public constructor
@@ -60,26 +61,9 @@ public class RestaurantSelfDishesFragment extends Fragment {
         rv.setLayoutManager(linearLayoutManager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(), linearLayoutManager.getOrientation());
         rv.addItemDecoration(dividerItemDecoration);
-        final SelfDishesAdapter adapter = new SelfDishesAdapter(RestaurantSelfDishesFragment.this.getActivity(),
+        adapter = new SelfDishesAdapter(RestaurantSelfDishesFragment.this.getActivity(),
                 new ArrayList<String>());
         rv.setAdapter(adapter);
-
-        FirebaseFirestore.getInstance().collection("dishes")
-                .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .get()
-                .addOnSuccessListener(RestaurantSelfDishesFragment.this.getActivity(),
-                        new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
-                            ArrayList<String> dishes = (ArrayList) documentSnapshot.get("a");
-                            if(dishes != null){
-                                adapter.dishes.addAll(dishes);
-                                adapter.notifyDataSetChanged();
-                            }
-                        }
-                    }
-                });
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +74,32 @@ public class RestaurantSelfDishesFragment extends Fragment {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        initializeAdapter();
+    }
+
+    private void initializeAdapter(){
+        FirebaseFirestore.getInstance().collection("dishes")
+                .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .get()
+                .addOnSuccessListener(RestaurantSelfDishesFragment.this.getActivity(),
+                        new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                if(documentSnapshot.exists()){
+                                    ArrayList<String> dishes = (ArrayList) documentSnapshot.get("a");
+                                    if(dishes != null){
+                                        adapter.dishes.clear();
+                                        adapter.dishes.addAll(dishes);
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                }
+                            }
+                        });
     }
 
     private class SelfDishesAdapter extends RecyclerView.Adapter<SelfDishesItemHolder>{
