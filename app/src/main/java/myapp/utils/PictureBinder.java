@@ -11,22 +11,30 @@ public class PictureBinder {
     public static void bindProfilePicture(ImageView view, DocumentSnapshot documentSnapshot){
         if(documentSnapshot == null) return;
         String profilePictureLink = documentSnapshot.getString("pp");
-        if(profilePictureLink != null && !profilePictureLink.equals("")){
-            Picasso.get().load(profilePictureLink)
-                    .placeholder(R.drawable.ltgray)
-                    .error(R.drawable.ltgray)
-                    .into(view);
+        if(profilePictureLink != null){
+            if(profilePictureLink.equals("")){
+                view.setImageResource(R.drawable.ltgray);
+            }else{
+                Picasso.get().load(profilePictureLink)
+                        .placeholder(R.drawable.ltgray)
+                        .error(R.drawable.ltgray)
+                        .into(view);
+            }
         }
     }
 
     public static void bindCoverPicture(ImageView view, DocumentSnapshot documentSnapshot){
         if(documentSnapshot == null) return;
         String profilePictureLink = documentSnapshot.getString("cp");
-        if(profilePictureLink != null && !profilePictureLink.equals("")){
-            Picasso.get().load(profilePictureLink)
-                    .placeholder(R.drawable.ltgray)
-                    .error(R.drawable.ltgray)
-                    .into(view);
+        if(profilePictureLink != null){
+            if(profilePictureLink.equals("")){
+                view.setImageResource(R.drawable.ltgray);
+            }else{
+                Picasso.get().load(profilePictureLink)
+                        .placeholder(R.drawable.ltgray)
+                        .error(R.drawable.ltgray)
+                        .into(view);
+            }
         }
     }
 }
