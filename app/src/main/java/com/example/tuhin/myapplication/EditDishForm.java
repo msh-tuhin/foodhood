@@ -92,6 +92,7 @@ public class EditDishForm extends AppCompatActivity {
     private boolean imageChanged = false;
     private Double oldPrice = -1.0;
     private Double mPrice = -1.0;
+    private String oldCoverPhotoLink = "";
     private  SaveButtonController saveButtonController;
 
     @Override
@@ -283,8 +284,12 @@ public class EditDishForm extends AppCompatActivity {
                 }else{
                     Log.i("updating", "dish");
                     if(shoulCoverPhotoBeSaved()){
-                        Log.i("updating", "with_photo");
-                        uploadPhotoAndUpdateDB(uploadUri, false);
+                        if(!imageCurrent && imagePrevious){
+                            deletePhotoAndUpdateDB();
+                        }else{
+                            Log.i("updating", "with_photo");
+                            uploadPhotoAndUpdateDB(uploadUri, false);
+                        }
                     }else{
                         Log.i("updating", "without_photo");
                         updateVital(null);
@@ -445,6 +450,20 @@ public class EditDishForm extends AppCompatActivity {
                     if(creation){
                         createVital(uri);
                     }else {
+                        if(imagePrevious && imageCurrent){
+                            FirebaseStorage.getInstance().getReferenceFromUrl(oldCoverPhotoLink)
+                                    .delete()
+                                    .addOnCompleteListener(EditDishForm.this, new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if(task.isSuccessful()){
+                                                Log.i("image-delete", "successful");
+                                            }else{
+                                                Log.i("image-delete", "failed");
+                                            }
+                                        }
+                                    });
+                        }
                         updateVital(uri);
                     }
                     updatePhotoUri(uri);
@@ -461,7 +480,28 @@ public class EditDishForm extends AppCompatActivity {
             });
         } else {
             Log.i("upload_uri", "null");
+            progressLayout.setVisibility(View.INVISIBLE);
+            formLayout.setVisibility(View.VISIBLE);
+            Toast.makeText(EditDishForm.this, "Update Failed", Toast.LENGTH_LONG).show();
+            saveButtonController.enableOrDisableSaveButton();
         }
+    }
+
+    private void deletePhotoAndUpdateDB(){
+        updateVital(null);
+        StorageReference photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(oldCoverPhotoLink);
+        photoRef.delete()
+                .addOnCompleteListener(EditDishForm.this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Log.i("image-delete", "successful");
+                        }else{
+                            Log.i("image-delete", "failed");
+                        }
+                    }
+                });
+        updatePhotoUri(null);
     }
 
     private void createVital(Uri uri){
@@ -509,8 +549,10 @@ public class EditDishForm extends AppCompatActivity {
         if(saveButtonController.shouldDescriptionBeSaved){
             dishVital.put("d", mDescription);
         }
-        if(saveButtonController.shouldCoverPhotoBeSaved && uri!=null){
+        if(uri!=null){
             dishVital.put("cp", uri.toString());
+        }else{
+            dishVital.put("cp", "");
         }
         final DocumentReference ref = db.collection("dish_vital").document(mDishlink);
         ref.update(dishVital)
@@ -574,6 +616,7 @@ public class EditDishForm extends AppCompatActivity {
         if(coverPhotoLink==null || coverPhotoLink.equals("")){
             return;
         }
+        oldCoverPhotoLink = coverPhotoLink;
         imagePrevious = true;
         imageCurrent = true;
         imageSourceChooser.setVisibility(View.INVISIBLE);
