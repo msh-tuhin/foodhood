@@ -25,7 +25,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 
@@ -34,6 +37,7 @@ public class RestaurantSelfDishesFragment extends Fragment {
     RecyclerView rv;
     FloatingActionButton fab;
     SelfDishesAdapter adapter;
+    ListenerRegistration registration;
 
     public RestaurantSelfDishesFragment() {
         // Required empty public constructor
@@ -80,7 +84,14 @@ public class RestaurantSelfDishesFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        initializeAdapter();
+        // initializeAdapter();
+        registerListener();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        registration.remove();
     }
 
     private void initializeAdapter(){
@@ -101,6 +112,29 @@ public class RestaurantSelfDishesFragment extends Fragment {
                                 }
                             }
                         });
+    }
+
+    private void registerListener(){
+        registration = FirebaseFirestore.getInstance().collection("dishes")
+                .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@javax.annotation.Nullable DocumentSnapshot documentSnapshot, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                        Log.i("event-listener", "called");
+                        if(e!=null){
+                            Log.e("error", e.getMessage());
+                            return;
+                        }
+                        if(documentSnapshot!=null && documentSnapshot.exists()){
+                            ArrayList<String> dishes = (ArrayList) documentSnapshot.get("a");
+                            if(dishes != null){
+                                adapter.dishes.clear();
+                                adapter.dishes.addAll(dishes);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
+                });
     }
 
     private class SelfDishesAdapter extends RecyclerView.Adapter<SelfDishesItemHolder>{
