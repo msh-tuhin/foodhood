@@ -64,6 +64,7 @@ public class RestaurantSelfDishesFragment extends Fragment {
         adapter = new SelfDishesAdapter(RestaurantSelfDishesFragment.this.getActivity(),
                 new ArrayList<String>());
         rv.setAdapter(adapter);
+        // initializeAdapter();
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

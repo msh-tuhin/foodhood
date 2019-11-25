@@ -4,10 +4,11 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import myapp.utils.AccountTypes;
+import myapp.utils.PictureBinder;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -17,8 +18,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firestore.v1.StructuredQuery;
-import com.squareup.picasso.Picasso;
+import com.google.firebase.firestore.ListenerRegistration;
 
 public class EditRestProfile extends AppCompatActivity {
 
@@ -64,23 +64,7 @@ public class EditRestProfile extends AppCompatActivity {
         // not sure about this
         // actionBar.setDisplayShowHomeEnabled(true);
 
-        db.collection("rest_vital")
-        .document(mAuth.getCurrentUser().getUid())
-        .get()
-        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot restVitalSnapshot) {
-                if(restVitalSnapshot.exists()){
-                    bindCoverPhoto(restVitalSnapshot);
-                    bindName(restVitalSnapshot);
-                    bindAddress(restVitalSnapshot);
-                    bindPhone(restVitalSnapshot);
-                    bindRating(restVitalSnapshot);
-                    bindEmail(restVitalSnapshot);
-                    bindWebsite(restVitalSnapshot);
-                }
-            }
-        });
+        //bindData();
 
         coverPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,15 +84,34 @@ public class EditRestProfile extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindData();
+    }
+
+    private void bindData(){
+        db.collection("rest_vital")
+                .document(mAuth.getCurrentUser().getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot restVitalSnapshot) {
+                        if(restVitalSnapshot.exists()){
+                            bindCoverPhoto(restVitalSnapshot);
+                            bindName(restVitalSnapshot);
+                            bindAddress(restVitalSnapshot);
+                            bindPhone(restVitalSnapshot);
+                            bindRating(restVitalSnapshot);
+                            bindEmail(restVitalSnapshot);
+                            bindWebsite(restVitalSnapshot);
+                        }
+                    }
+                });
+    }
+
     private void bindCoverPhoto(DocumentSnapshot restVitalSnapshot){
-        if(restVitalSnapshot == null) return;
-        String coverPhotoLink = restVitalSnapshot.getString("cp");
-        if(coverPhotoLink != null && !coverPhotoLink.equals("")){
-            Picasso.get().load(coverPhotoLink)
-                    .placeholder(R.drawable.gray)
-                    .error(R.drawable.gray)
-                    .into(coverPhoto);
-        }
+        PictureBinder.bindCoverPicture(coverPhoto, restVitalSnapshot);
     }
 
     private void bindName(DocumentSnapshot restVitalSnapshot){
