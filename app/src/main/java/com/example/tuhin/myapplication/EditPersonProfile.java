@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.AccountTypes;
 import myapp.utils.AdapterCreator;
+import myapp.utils.PictureBinder;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -41,6 +42,8 @@ public class EditPersonProfile extends AppCompatActivity {
     CircleImageView personAvatar;
     Animation scaleAnimation;
     float prev = 1f;
+    private boolean shouldBindPictures = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,16 +65,7 @@ public class EditPersonProfile extends AppCompatActivity {
         personAvatar = findViewById(R.id.person_avatar);
         rv = findViewById(R.id.rv);
 
-        db.collection("person_vital")
-                .document(mAuth.getCurrentUser().getUid())
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot personVitslSnapshot) {
-                        bindProfilePicture(personVitslSnapshot);
-                        bindCoverPhoto(personVitslSnapshot);
-                    }
-                });
+        bindPictures();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rv.setLayoutManager(linearLayoutManager);
@@ -96,6 +90,7 @@ public class EditPersonProfile extends AppCompatActivity {
         coverPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                shouldBindPictures = true;
                 Intent intent = new Intent(EditPersonProfile.this, ChangeRestCoverPhoto.class);
                 intent.putExtra("changeable", "person_cover_pic");
                 startActivity(intent);
@@ -105,6 +100,7 @@ public class EditPersonProfile extends AppCompatActivity {
         personAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                shouldBindPictures = true;
                 Intent intent = new Intent(EditPersonProfile.this, ChangeRestCoverPhoto.class);
                 intent.putExtra("changeable", "person_profile_pic");
                 startActivity(intent);
@@ -121,13 +117,32 @@ public class EditPersonProfile extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        if(shouldBindPictures){
+            bindPictures();
+            shouldBindPictures = false;
+        }
         adapter.startListening();
+        adapter.notifyItemChanged(0);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         adapter.stopListening();
+    }
+
+    private void bindPictures(){
+        Log.i("binding", "pictures");
+        db.collection("person_vital")
+                .document(mAuth.getCurrentUser().getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot personVitslSnapshot) {
+                        bindProfilePicture(personVitslSnapshot);
+                        bindCoverPhoto(personVitslSnapshot);
+                    }
+                });
     }
 
     private void animatePersonAvatar(AppBarLayout appBarLayout, int verticalOffset){
@@ -154,25 +169,11 @@ public class EditPersonProfile extends AppCompatActivity {
         }
     }
 
-    private void bindProfilePicture(DocumentSnapshot personVitslSnapshot){
-        if(personVitslSnapshot == null) return;
-        String profilePictureLink = personVitslSnapshot.getString("pp");
-        if(profilePictureLink != null && !profilePictureLink.equals("")){
-            Picasso.get().load(profilePictureLink)
-                    .placeholder(R.drawable.ltgray)
-                    .error(R.drawable.ltgray)
-                    .into(personAvatar);
-        }
+    private void bindProfilePicture(DocumentSnapshot personVitalSnapshot){
+        PictureBinder.bindProfilePicture(personAvatar, personVitalSnapshot);
     }
 
-    private void bindCoverPhoto(DocumentSnapshot personVitslSnapshot){
-        if(personVitslSnapshot == null) return;
-        String coverPhotoLink = personVitslSnapshot.getString("cp");
-        if(coverPhotoLink != null && !coverPhotoLink.equals("")){
-            Picasso.get().load(coverPhotoLink)
-                    .placeholder(R.drawable.gray)
-                    .error(R.drawable.gray)
-                    .into(coverPhoto);
-        }
+    private void bindCoverPhoto(DocumentSnapshot personVitalSnapshot){
+        PictureBinder.bindCoverPicture(coverPhoto, personVitalSnapshot);
     }
 }

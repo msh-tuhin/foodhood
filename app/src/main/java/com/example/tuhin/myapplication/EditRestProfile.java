@@ -24,6 +24,7 @@ public class EditRestProfile extends AppCompatActivity {
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private boolean shouldBindData = false;
 
     Toolbar toolbar;
     ImageView coverPhoto;
@@ -64,11 +65,12 @@ public class EditRestProfile extends AppCompatActivity {
         // not sure about this
         // actionBar.setDisplayShowHomeEnabled(true);
 
-        //bindData();
+        bindData();
 
         coverPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                shouldBindData = true;
                 Intent intent = new Intent(EditRestProfile.this, ChangeRestCoverPhoto.class);
                 intent.putExtra("changeable", "restaurant_cover_pic");
                 startActivity(intent);
@@ -78,6 +80,7 @@ public class EditRestProfile extends AppCompatActivity {
         editProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                shouldBindData = true;
                 Intent intent = new Intent(EditRestProfile.this, EditRestProfileForm.class);
                 startActivity(intent);
             }
@@ -87,10 +90,14 @@ public class EditRestProfile extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        bindData();
+        if(shouldBindData){
+            bindData();
+            shouldBindData = false;
+        }
     }
 
     private void bindData(){
+        Log.i("binding", "data");
         db.collection("rest_vital")
                 .document(mAuth.getCurrentUser().getUid())
                 .get()
