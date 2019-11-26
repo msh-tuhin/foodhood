@@ -56,6 +56,7 @@ public class AllRestaurantItemHolder extends RecyclerView.ViewHolder {
     public void bindTo(final Context context,
                        final String restaurantLink,
                        Task<DocumentSnapshot> taskWithCurrentUserFollowingRestaurants){
+        refreshHolder();
         mCurrentUserUid = mAuth.getCurrentUser().getUid();
         db.collection("rest_vital").document(restaurantLink)
                 .get()
@@ -213,5 +214,14 @@ public class AllRestaurantItemHolder extends RecyclerView.ViewHolder {
                 context.getString(R.string.account_type),
                 Context.MODE_PRIVATE);
         return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
+    }
+
+    private void refreshHolder(){
+        Log.i("refreshing", "allrestaurantitemholder");
+        avatar.setImageResource(R.drawable.ltgray);
+        nameTV.setText("");
+        ratingTV.setText("");
+        addressTV.setText("");
+        followButton.setVisibility(View.GONE);
     }
 }

@@ -92,6 +92,7 @@ public class RestFeedHolder extends BaseHomeFeedHolder
     public void bindTo(final Context context, final DocumentSnapshot activity) {
         // TODO attach a lifecycleobserver to the context and handle lifecycle event
 
+        refreshHolder();
         setmContext(context);
         setmRestFeedLink(activity.getString("wh"));
         setmForPerson();
@@ -522,5 +523,18 @@ public class RestFeedHolder extends BaseHomeFeedHolder
         String str = noOfLikesTV.getText().toString();
         int numOfLikes = Integer.valueOf(str);
         noOfLikesTV.setText(Integer.toString(numOfLikes+1));
+    }
+
+    public void refreshHolder(){
+        Log.i("refreshing", "restfeedholder");
+        avatar.setImageResource(R.drawable.ltgray);
+        restaurantNameTV.setText("");
+        postTimeTV.setText("");
+        captionTV.setText("");
+        viewPagerCurrentPositionTV.setVisibility(View.GONE);
+        postImagesViewPager.setAdapter(null);
+        postImagesViewPager.setVisibility(View.GONE);
+        noOfLikesTV.setText("0");
+        noOfCommentsTV.setText("0");
     }
 }

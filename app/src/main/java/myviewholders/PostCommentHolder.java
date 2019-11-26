@@ -88,7 +88,6 @@ public class PostCommentHolder extends HalfPostHolder
     @Override
     public void bindTo(Context context, DocumentSnapshot activity) {
         super.bindTo(context, activity);
-
         setpublicGlobalFields(context, activity);
         bindValuesIndependentOfCommentDownload();
         setOnClickListenersIndependentOfCommentDownload();
@@ -480,5 +479,18 @@ public class PostCommentHolder extends HalfPostHolder
         String str = noOfLikesOnComment.getText().toString();
         int numOfLikes = Integer.valueOf(str);
         noOfLikesOnComment.setText(Integer.toString(numOfLikes+1));
+    }
+
+    @Override
+    public void refreshHolder() {
+        Log.i("refreshing", "postcommentholder");
+        super.refreshHolder();
+        postCommentHeader.setText("");
+        commenterImage.setImageResource(R.drawable.ltgray);
+        commenterName.setText("");
+        commentTimeTV.setText("");
+        theComment.setText("");
+        noOfLikesOnComment.setText("");
+        noOfRepliesToComment.setText("");
     }
 }

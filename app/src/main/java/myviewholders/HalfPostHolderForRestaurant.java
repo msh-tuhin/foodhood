@@ -20,6 +20,7 @@ public class HalfPostHolderForRestaurant extends HalfPostHolder{
     // might receive a PostModel object if in HalfPostHolder postsnapshot is
     // converted to a PostModel object for binding purposes
     public void bindTo(Context context, DocumentSnapshot postSnapshot){
+        refreshHolder();
         mContext = context;
         mPostLink = postSnapshot.getId();
         mPostBuilder = new PostBuilder(context, postSnapshot);

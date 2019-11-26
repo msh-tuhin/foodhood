@@ -36,6 +36,7 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindTo(final NotificationModel notificationModel, final Context context){
+        refreshHolder();
 
         final int type = notificationModel.getT();
 
@@ -302,5 +303,9 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
         int end = start + name.length();
         spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableStringBuilder;
+    }
+
+    private void refreshHolder(){
+        notificationTextView.setText("");
     }
 }

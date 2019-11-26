@@ -63,6 +63,7 @@ public class AllDishesItemHolder extends RecyclerView.ViewHolder {
     public void bindTo(final Context context,
                        final String dishLink,
                        Task<DocumentSnapshot> taskWithCurrentUserWishlist){
+        refreshHolder();
         db.collection("dish_vital")
                 .document(dishLink).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -240,5 +241,15 @@ public class AllDishesItemHolder extends RecyclerView.ViewHolder {
                 context.getString(R.string.account_type),
                 Context.MODE_PRIVATE);
         return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
+    }
+
+    private void refreshHolder(){
+        Log.i("refreshing", "alldishesitemholder");
+        dishAvatar.setImageResource(R.drawable.ltgray);
+        dishNameTV.setText("");
+        dishRatingTV.setText("");
+        dishPriceTV.setText("");
+        restaurantNameTV.setText("");
+        addToWishlistIB.setVisibility(View.GONE);
     }
 }

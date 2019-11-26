@@ -98,6 +98,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindTo(final Context context, final String personLink){
+        refreshHolder();
         mCurrentUserUid = mAuth.getCurrentUser().getUid();
         mContext = context;
         if(personLink==null || personLink.equals("")) return;
@@ -456,5 +457,9 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
                 mContext.getString(R.string.account_type),
                 Context.MODE_PRIVATE);
         return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
+    }
+
+    private void refreshHolder(){
+        nameTV.setText("");
     }
 }

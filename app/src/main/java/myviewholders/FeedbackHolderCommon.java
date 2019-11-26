@@ -52,6 +52,7 @@ public class FeedbackHolderCommon extends RecyclerView.ViewHolder {
     }
 
     public void bindTo(Context context, String feedbackLink){
+        refreshHolder();
         mContext = context;
         db.collection("feedbacks").document(feedbackLink)
         .get()
@@ -83,6 +84,7 @@ public class FeedbackHolderCommon extends RecyclerView.ViewHolder {
 
     private void bindTime(DocumentSnapshot feedbackSnapshot){
         Timestamp timestamp = feedbackSnapshot.getTimestamp("ts");
+        if(timestamp==null) return;
         timeTV.setText(DateTimeExtractor.getDateTimeString(timestamp));
     }
 
@@ -103,6 +105,7 @@ public class FeedbackHolderCommon extends RecyclerView.ViewHolder {
 
     private void bindName(DocumentSnapshot personVitalSnapshot){
         String name = personVitalSnapshot.getString("n");
+        if(name==null) return;
         personNameTV.setText(name);
     }
 
@@ -119,12 +122,24 @@ public class FeedbackHolderCommon extends RecyclerView.ViewHolder {
 
     private void bindRating(DocumentSnapshot feedbackSnapshot){
         Double rating = feedbackSnapshot.getDouble("r");
+        if(rating==null) return;
         ratingTV.setText(Double.toString(rating));
     }
 
     private void bindReview(DocumentSnapshot feedbackSnapshot){
         String review = feedbackSnapshot.getString("re");
-        if(review==null) return;
+        if(review==null || review.equals("")) return;
         reviewTV.setText(review);
+        reviewTV.setVisibility(View.VISIBLE);
+    }
+
+    private void refreshHolder(){
+        Log.i("refreshing", "feedbackholdercommon");
+        avatar.setImageResource(R.drawable.ltgray);
+        personNameTV.setText("");
+        timeTV.setText("");
+        ratingTV.setText("");
+        reviewTV.setText("");
+        reviewTV.setVisibility(View.GONE);
     }
 }

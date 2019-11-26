@@ -39,6 +39,7 @@ public class RestaurantDishHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindTo(final Context context, final String dishLink){
+        refreshHolder();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("dish_vital").document(dishLink)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -115,5 +116,13 @@ public class RestaurantDishHolder extends RecyclerView.ViewHolder {
         Double price = dishVitalSnapshot.getDouble("p");
         if(price==null) return;
         dishPriceTV.setText(Double.toString(price)+" BDT");
+    }
+
+    private void refreshHolder(){
+        Log.i("refreshing", "restaurantdishholder");
+        dishImage.setImageResource(R.drawable.ltgray);
+        dishNameTV.setText("");
+        dishRatingTV.setText("");
+        dishPriceTV.setText("");
     }
 }

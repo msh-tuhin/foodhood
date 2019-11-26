@@ -71,6 +71,7 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindTo(final Context context, final String dishLink){
+        refreshHolder();
         if(dishLink==null || dishLink.equals("")) return;
 
         mContext = context;
@@ -269,5 +270,9 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
                 }
             }
         });
+    }
+
+    private void refreshHolder(){
+        nameTV.setText("");
     }
 }

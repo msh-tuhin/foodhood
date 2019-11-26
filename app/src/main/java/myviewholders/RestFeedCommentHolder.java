@@ -477,4 +477,17 @@ public class RestFeedCommentHolder extends RestFeedHolder
         int numOfLikes = Integer.valueOf(str);
         noOfLikesInComment.setText(Integer.toString(numOfLikes+1));
     }
+
+    @Override
+    public void refreshHolder() {
+        Log.i("refreshing", "restfeedcommentholder");
+        super.refreshHolder();
+        commentHeaderTV.setText("");
+        commenterImage.setImageResource(R.drawable.ltgray);
+        commenterNameTV.setText("");
+        commentTimeTV.setText("");
+        commentTV.setText("");
+        noOfLikesInComment.setText("");
+        noOfRepliesToComment.setText("");
+    }
 }

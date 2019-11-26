@@ -65,6 +65,7 @@ public class EditPersonProfileHeaderHolder extends RecyclerView.ViewHolder {
 
     public void bindTo(final Context context, final String personLink){
         Log.i("binding", "EditPersonProfileHeaderHolder");
+        refreshHolder();
         mContext = context;
         mPersonLink = personLink;
         setEditProfileButtonOnClickListener();
@@ -110,14 +111,14 @@ public class EditPersonProfileHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindName(DocumentSnapshot personVitalSnapshot){
         String personName = personVitalSnapshot.getString("n");
-        if(personName != null){
+        if(personName != null && !personName.equals("")){
             nameTV.setText(personName);
         }
     }
 
     private void bindBio(DocumentSnapshot personVitalSnapshot){
         String bio = personVitalSnapshot.getString("bio");
-        if(bio != null){
+        if(bio != null && !bio.equals("")){
             bioTV.setText(bio);
         }
     }
@@ -310,5 +311,9 @@ public class EditPersonProfileHeaderHolder extends RecyclerView.ViewHolder {
                 }
             }
         });
+    }
+
+    private void refreshHolder(){
+        Log.i("refreshing", "EditPersonProfileHeaderHolder");
     }
 }

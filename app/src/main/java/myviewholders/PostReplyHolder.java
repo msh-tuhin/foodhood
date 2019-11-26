@@ -865,4 +865,25 @@ public class PostReplyHolder extends HalfPostHolder
                 start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableStringBuilder;
     }
+
+    @Override
+    public void refreshHolder() {
+        Log.i("refreshing", "postreplyholder");
+        super.refreshHolder();
+        postReplyHeader.setText("");
+        commenterImage.setImageResource(R.drawable.ltgray);
+        commenterName.setText("");
+        commentTimeTV.setText("");
+        theComment.setText("");
+        noOfLikesOnComment.setText("");
+        noOfRepliesToComment.setText("");
+
+        replierImage.setImageResource(R.drawable.ltgray);
+        replierName.setText("");
+        replyTime.setText("");
+        replyingToTV.setText("");
+        theReply.setText("");
+        numOfLikesInReply.setText("");
+        numOfRepliesToReply.setText("");
+    }
 }

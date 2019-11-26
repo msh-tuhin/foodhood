@@ -61,7 +61,7 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
     public void bindTo(final Context context,
                        final String dishLink,
                        Task<DocumentSnapshot> taskWithCurrentUserWishlist){
-        addToWishlistButton.setVisibility(View.GONE);
+        refreshHolder();
         // set name and rating
         FirebaseFirestore.getInstance().collection("dish_vital")
                 .document(dishLink).get()
@@ -245,5 +245,14 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
                 context.getString(R.string.account_type),
                 Context.MODE_PRIVATE);
         return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
+    }
+
+    private void refreshHolder(){
+        dishAvatar.setImageResource(R.drawable.ltgray);
+        dishNameTV.setText("");
+        dishRatingTV.setText("");
+        dishPriceTV.setText("");
+        addToWishlistButton.setVisibility(View.GONE);
+        addToWishlistIB.setVisibility(View.GONE);
     }
 }

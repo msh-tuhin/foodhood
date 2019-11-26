@@ -1,6 +1,7 @@
 package myviewholders;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -32,5 +33,12 @@ public class PostTagHolder extends HalfPostHolder {
     @Override
     public void bindHeader() {
         postTagHeader.setText(mNameTagged + " was tagged");
+    }
+
+    @Override
+    public void refreshHolder() {
+        Log.i("refreshing", "posttagholder");
+        super.refreshHolder();
+        postTagHeader.setText("");
     }
 }

@@ -94,7 +94,7 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
 
     public void bindTo(Context context, String postLink, String commentLink) {
         Log.i("bindTo", this.getClass().toString());
-
+        refreshHolder();
         mContext = context;
         mPostLink = postLink;
         mCommentLink = commentLink;
@@ -462,5 +462,15 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
         String str = numberOfLikesTextView.getText().toString();
         int numOfLikes = Integer.valueOf(str);
         numberOfLikesTextView.setText(Integer.toString(numOfLikes+1));
+    }
+
+    private void refreshHolder(){
+        Log.i("refreshing", "fullpostcommentholder");
+        commenterImage.setImageResource(R.drawable.ltgray);
+        commenterNameTextView.setText("");
+        commentTimeTV.setText("");
+        theCommentTextView.setText("");
+        numberOfLikesTextView.setText("0");
+        numberOfRepliesTextView.setText("0");
     }
 }

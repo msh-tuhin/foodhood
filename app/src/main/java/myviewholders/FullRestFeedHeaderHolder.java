@@ -92,6 +92,7 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
     public void bindTo(Context context,
                        Task<DocumentSnapshot> taskRestFeed,
                        String restFeedLink){
+        refreshHolder();
         Log.i("bindTo", this.getClass().toString());
 
         setmContext(context);
@@ -519,4 +520,16 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
         noOfLikesTV.setText(Integer.toString(numOfLikes+1));
     }
 
+    private void refreshHolder(){
+        Log.i("refreshing", "restfeedholder");
+        avatar.setImageResource(R.drawable.ltgray);
+        restaurantNameTV.setText("");
+        postTimeTV.setText("");
+        captionTV.setText("");
+        viewPagerCurrentPositionTV.setVisibility(View.GONE);
+        postImagesViewPager.setAdapter(null);
+        postImagesViewPager.setVisibility(View.GONE);
+        noOfLikesTV.setText("0");
+        noOfCommentsTV.setText("0");
+    }
 }

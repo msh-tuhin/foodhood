@@ -49,6 +49,7 @@ public class WishlistItemHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindTo(final Context context, final String dishLink){
+        refreshHolder();
         db.collection("dish_vital").document(dishLink)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -174,5 +175,14 @@ public class WishlistItemHolder extends RecyclerView.ViewHolder {
                         }
                     }
                 });
+    }
+
+    private void refreshHolder(){
+        dishImage.setImageResource(R.drawable.ltgray);
+        dishNameTV.setText("");
+        dishRatingTV.setText("");
+        dishPriceTV.setText("");
+        restaurantNameTV.setText("");
+        restaurantAddressTV.setText("");
     }
 }

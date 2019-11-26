@@ -2,6 +2,8 @@ package myviewholders;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -30,5 +32,12 @@ public class RestFeedLikeHolder extends RestFeedHolder {
     @Override
     public void bindHeader() {
         restFeedLikeHeader.setText(mNameLikedBy + " liked this");
+    }
+
+    @Override
+    public void refreshHolder() {
+        Log.i("refreshing", "restfeedlikeholder");
+        super.refreshHolder();
+        restFeedLikeHeader.setText("");
     }
 }

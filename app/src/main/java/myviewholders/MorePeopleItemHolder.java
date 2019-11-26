@@ -49,6 +49,7 @@ public class MorePeopleItemHolder extends RecyclerView.ViewHolder {
     public void bindTo(final Context context,
                        final String personLink,
                        Task<DocumentSnapshot> taskWithCurrentUserFollowings){
+        refreshHolder();
         mCurrentUserUid = mAuth.getCurrentUser().getUid();
         followButton.setVisibility(View.INVISIBLE);
         db.collection("person_vital")
@@ -173,5 +174,11 @@ public class MorePeopleItemHolder extends RecyclerView.ViewHolder {
                 context.getString(R.string.account_type),
                 Context.MODE_PRIVATE);
         return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
+    }
+
+    private void refreshHolder(){
+        Log.i("refresing", "MorePeopleItemHolder");
+        avatar.setImageResource(R.drawable.ltgray);
+        nameTV.setText("");
     }
 }

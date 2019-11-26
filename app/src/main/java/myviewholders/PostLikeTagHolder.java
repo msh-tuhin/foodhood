@@ -2,6 +2,8 @@ package myviewholders;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -31,5 +33,12 @@ public class PostLikeTagHolder extends HalfPostHolder{
     @Override
     public void bindHeader() {
         postLikeTagHeader.setText(mNameLikedBy + " liked this");
+    }
+
+    @Override
+    public void refreshHolder() {
+        Log.i("refreshing", "postliketagholder");
+        super.refreshHolder();
+        postLikeTagHeader.setText("");
     }
 }

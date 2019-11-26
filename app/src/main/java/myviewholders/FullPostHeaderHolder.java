@@ -110,6 +110,8 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
                        String postLink){
         Log.i("bindTo", this.getClass().toString());
 
+        refreshHolder();
+
         setmContext(context);
         setmTaskPost(taskPost);
         setmPostLink(postLink);
@@ -669,5 +671,20 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         String str = noOfLikesTV.getText().toString();
         int numOfLikes = Integer.valueOf(str);
         noOfLikesTV.setText(Integer.toString(numOfLikes+1));
+    }
+
+    private void refreshHolder(){
+        profileImage.setImageResource(R.drawable.ltgray);
+        namePostedBy.setText("");
+        postTime.setText("");
+        postCaption.setText("");
+        restaurantName.setText("");
+        taggedPeople.setText("");
+        dishes.setText("");
+        viewPagerCurrentPositionTV.setVisibility(View.GONE);
+        postImagesViewPager.setAdapter(null);
+        postImagesViewPager.setVisibility(View.GONE);
+        noOfLikesTV.setText("0");
+        noOfCommentsTV.setText("0");
     }
 }

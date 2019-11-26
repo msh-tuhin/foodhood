@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -39,6 +40,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
+import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
 import myapp.utils.ResourceIds;
@@ -60,6 +62,7 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
     private LinearLayout commentLayout;
     private CircleImageView commenterImage;
     private TextView commenterNameTextView, theCommentTextView, repliesLinkTextView;
+    private TextView commentTimeTV;
     private ImageView likeComment, replyToComment;
     private TextView numberOfLikesTextView, numberOfRepliesTextView;
     FirebaseFirestore db;
@@ -70,6 +73,7 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
         commentLayout = v.findViewById(R.id.small_comment_layout);
         commenterImage = v.findViewById(R.id.commenter_image);
         commenterNameTextView = v.findViewById(R.id.commenter_name);
+        commentTimeTV = v.findViewById(R.id.time);
         theCommentTextView = v.findViewById(R.id.the_comment);
         repliesLinkTextView = v.findViewById(R.id.replies_link);
         likeComment = v.findViewById(R.id.like_comment);
@@ -83,7 +87,7 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
                        final String restFeedLink,
                        final String commentLink) {
         Log.i("bindTo", this.getClass().toString());
-
+        refreshHolder();
         mContext = context;
         mRestFeedLink = restFeedLink;
         mCommentLink = commentLink;
@@ -199,7 +203,10 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindCommentTime() {
-
+        Timestamp ts = mCommentSnapshot.getTimestamp("ts");
+        if(ts==null) return;
+        String dateOrTimeString = DateTimeExtractor.getDateOrTimeString(ts);
+        commentTimeTV.setText(dateOrTimeString);
     }
 
     @Override
@@ -452,5 +459,15 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
             return commenterType == AccountTypes.PERSON;
         }
         return true;
+    }
+
+    private void refreshHolder(){
+        Log.i("refreshing", "fullrestfeedcommentholder");
+        commenterImage.setImageResource(R.drawable.ltgray);
+        commenterNameTextView.setText("");
+        commentTimeTV.setText("");
+        theCommentTextView.setText("");
+        numberOfLikesTextView.setText("0");
+        numberOfRepliesTextView.setText("0");
     }
 }

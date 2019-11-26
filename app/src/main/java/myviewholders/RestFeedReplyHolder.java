@@ -886,4 +886,25 @@ public class RestFeedReplyHolder extends RestFeedHolder
         }
         return true;
     }
+
+    @Override
+    public void refreshHolder() {
+        Log.i("refreshing", "restfeedreplyholder");
+        super.refreshHolder();
+        replyHeaderTV.setText("");
+        commenterImage.setImageResource(R.drawable.ltgray);
+        commenterNameTV.setText("");
+        commentTimeTV.setText("");
+        commentTV.setText("");
+        noOfLikesInComment.setText("");
+        noOfRepliesToComment.setText("");
+
+        replierImage.setImageResource(R.drawable.ltgray);
+        replierNameTV.setText("");
+        replyTime.setText("");
+        replyingToTV.setText("");
+        replyTV.setText("");
+        numOfLikesInReply.setText("");
+        numOfRepliesToReply.setText("");
+    }
 }

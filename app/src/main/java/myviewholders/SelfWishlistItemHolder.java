@@ -55,6 +55,7 @@ public class SelfWishlistItemHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindTo(final Context context, final String dishLink){
+        refreshHolder();
         db.collection("dish_vital")
                 .document(dishLink).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -199,6 +200,15 @@ public class SelfWishlistItemHolder extends RecyclerView.ViewHolder {
                         }
                     }
                 });
+    }
+
+    private void refreshHolder(){
+        avatar.setImageResource(R.drawable.ltgray);
+        dishNameTV.setText("");
+        restNameTV.setText("");
+        restAddressTV.setText("");
+        dishRatingTV.setText("");
+        dishPriceTV.setText("");
     }
 
 }

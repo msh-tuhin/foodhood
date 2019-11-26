@@ -104,6 +104,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     public void bindTo(Context context, DocumentSnapshot activity) {
         // TODO attach a lifecycleobserver to the context and handle lifecycle event
+        refreshHolder();
         setmContext(context);
         setmPostLink(activity.getString("wh"));
         setmPostReference(activity.getString("wh"));
@@ -505,6 +506,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
                             Log.i("UPDATE", "SUCCESSFUL");
+                            Log.i("UPDATE", "SUCCESSFUL");
                         }else{
                             Exception e = task.getException();
                             Log.i("UPDATE", e.getMessage());
@@ -563,5 +565,21 @@ public class HalfPostHolder extends BaseHomeFeedHolder
         String str = noOfLikesTV.getText().toString();
         int numOfLikes = Integer.valueOf(str);
         noOfLikesTV.setText(Integer.toString(numOfLikes+1));
+    }
+
+    public void refreshHolder(){
+        Log.i("refreshing", "halfpostholder");
+        profileImage.setImageResource(R.drawable.ltgray);
+        namePostedBy.setText("");
+        postTime.setText("");
+        postCaption.setText("");
+        restaurantName.setText("");
+        taggedPeople.setText("");
+        dishes.setText("");
+        viewPagerCurrentPositionTV.setVisibility(View.GONE);
+        postImagesViewPager.setAdapter(null);
+        postImagesViewPager.setVisibility(View.GONE);
+        noOfLikesTV.setText("0");
+        noOfCommentsTV.setText("0");
     }
 }

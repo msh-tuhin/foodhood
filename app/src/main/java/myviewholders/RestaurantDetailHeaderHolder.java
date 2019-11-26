@@ -89,6 +89,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
     }
 
     public void bindTo(final Context context, final String restaurantLink){
+        refreshHolder();
         if(restaurantLink==null || restaurantLink.equals("")) return;
 
         mContext = context;
@@ -382,5 +383,9 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
         int end = start + spannable.length();
         spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableStringBuilder;
+    }
+
+    private void refreshHolder(){
+        restaurantNameTV.setText("");
     }
 }

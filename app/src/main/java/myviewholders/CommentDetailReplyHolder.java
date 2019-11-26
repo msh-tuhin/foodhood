@@ -104,7 +104,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
                        String commentLink,
                        String replyLink) {
         Log.i("bindTo", this.getClass().toString());
-
+        refreshHolder();
         mContext = context;
         mEntryPoint = entryPoint;
         mPostLink = postLink;
@@ -545,5 +545,16 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.BLUE),
                 start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableStringBuilder;
+    }
+
+    private void refreshHolder(){
+        Log.i("refreshing", "commentdetailreplyholder");
+        imageReplyBy.setImageResource(R.drawable.ltgray);
+        nameReplyByTV.setText("");
+        replyTimeTV.setText("");
+        replyTV.setText("");
+        replyingToTV.setText("");
+        numberOfLikesTV.setText("0");
+        numberOfRepliesTV.setText("0");
     }
 }
