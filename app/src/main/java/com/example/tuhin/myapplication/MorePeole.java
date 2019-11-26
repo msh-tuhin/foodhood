@@ -33,14 +33,20 @@ public class MorePeole extends AppCompatActivity {
     private PersonsAdapter adapter;
     RecyclerView rv;
     Toolbar toolbar;
+
+    private ArrayList<String> links;
+    private int source;
+    private String personLink;
+    private String postLink;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_more_peole);
 
-        ArrayList<String> links = getIntent().getStringArrayListExtra("personsList");
-        int source = getIntent().getIntExtra("source", SourceMorePeople.UNKNOWN);
-        String personLink = getIntent().getStringExtra("personLink");
+        links = getIntent().getStringArrayListExtra("personsList");
+        source = getIntent().getIntExtra("source", SourceMorePeople.UNKNOWN);
+        personLink = getIntent().getStringExtra("personLink");
+        postLink = getIntent().getStringExtra("postLink");
 
         rv = findViewById(R.id.rv);
         toolbar = findViewById(R.id.toolbar);
@@ -55,6 +61,14 @@ public class MorePeole extends AppCompatActivity {
             case SourceMorePeople.FOLLOWERS:
                 collectionName = "followers";
                 title = "Followers";
+                break;
+            case SourceMorePeople.LIKERS_POST:
+                collectionName = "posts";
+                title = "Liked By";
+                break;
+            case SourceMorePeople.LIKERS_RF:
+                collectionName = "rest_feed";
+                title = "Liked By";
                 break;
         }
         toolbar.setTitle(title);
@@ -71,7 +85,7 @@ public class MorePeole extends AppCompatActivity {
         rv.addItemDecoration(dividerItemDecoration);
         adapter = new PersonsAdapter(new ArrayList<String>());
         rv.setAdapter(adapter);
-        populateAdapter(links, collectionName, personLink);
+        populateAdapter(collectionName);
     }
 
     @Override
@@ -80,31 +94,57 @@ public class MorePeole extends AppCompatActivity {
         return true;
     }
 
-    private void populateAdapter(ArrayList<String> personsList,
-                                 String collectionName,
-                                 String personLink){
-        if(personsList != null){
-            adapter.persons.addAll(personsList);
+    private void populateAdapter(String collectionName){
+        if(links != null){
+            adapter.persons.addAll(links);
             adapter.notifyDataSetChanged();
         }else{
-            if(personLink==null) return;
-            db.collection(collectionName)
-                    .document(personLink)
-                    .get()
-                    .addOnSuccessListener(MorePeole.this, new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            if(documentSnapshot.exists()){
-                                try{
-                                    ArrayList<String> links = (ArrayList)documentSnapshot.get("a");
-                                    adapter.persons.addAll(links);
-                                    adapter.notifyDataSetChanged();
-                                }catch (NullPointerException e){
-                                    Log.e("error", e.getMessage());
+            if(source==SourceMorePeople.LIKERS_POST || source==SourceMorePeople.LIKERS_RF){
+                if(postLink==null) return;
+                db.collection(collectionName)
+                        .document(postLink)
+                        .get()
+                        .addOnSuccessListener(MorePeole.this, new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                if(documentSnapshot.exists()) {
+                                    try {
+                                        ArrayList<String> likes = (ArrayList<String>) documentSnapshot.get("l");
+                                        adapter.persons.addAll(likes);
+                                        adapter.notifyDataSetChanged();
+                                    } catch (NullPointerException e) {
+                                        Log.e("error", e.getMessage());
+                                    } catch (Exception e){
+                                        Log.e("error", e.getMessage());
+
+                                    }
                                 }
                             }
-                        }
-                    });
+                        });
+            }
+            else{
+                if(personLink==null) return;
+                db.collection(collectionName)
+                        .document(personLink)
+                        .get()
+                        .addOnSuccessListener(MorePeole.this, new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                if(documentSnapshot.exists()){
+                                    try{
+                                        ArrayList<String> links = (ArrayList)documentSnapshot.get("a");
+                                        adapter.persons.addAll(links);
+                                        adapter.notifyDataSetChanged();
+                                    }catch (NullPointerException e){
+                                        Log.e("error", e.getMessage());
+                                    }catch (Exception e){
+                                        Log.e("error", e.getMessage());
+
+                                    }
+                                }
+                            }
+                        });
+            }
         }
     }
 

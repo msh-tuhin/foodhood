@@ -51,6 +51,7 @@ import myapp.utils.PictureBinder;
 import myapp.utils.PostBuilder;
 import myapp.utils.PostImagesAdapter;
 import myapp.utils.SourceAllDishes;
+import myapp.utils.SourceMorePeople;
 
 public class HalfPostHolder extends BaseHomeFeedHolder
         implements PostHolderInterface{
@@ -430,7 +431,18 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     @Override
     public void setNoOfLikeOnClickListener() {
-
+        noOfLikesTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("clicked", "no of likes");
+                ArrayList<String> likes = (ArrayList<String>) mPostSnapShot.get("l");
+                Intent intent = new Intent(mContext, MorePeole.class);
+                intent.putExtra("source", SourceMorePeople.LIKERS_POST);
+                intent.putExtra("postLink", mPostLink);
+                intent.putStringArrayListExtra("personsList", likes);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override

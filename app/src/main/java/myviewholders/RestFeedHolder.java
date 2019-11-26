@@ -14,6 +14,7 @@ import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
 import myapp.utils.PictureBinder;
 import myapp.utils.PostImagesAdapter;
+import myapp.utils.SourceMorePeople;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 
 import com.example.tuhin.myapplication.ActualActivity;
 import com.example.tuhin.myapplication.FullRestFeed;
+import com.example.tuhin.myapplication.MorePeole;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.RestDetail;
 import com.example.tuhin.myapplication.WriteComment;
@@ -441,7 +443,18 @@ public class RestFeedHolder extends BaseHomeFeedHolder
 
     @Override
     public void setNoOfLikeOnClickListener() {
-
+        noOfLikesTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("clicked", "no of likes");
+                ArrayList<String> likes = (ArrayList<String>) mRestFeedSnapshot.get("l");
+                Intent intent = new Intent(mContext, MorePeole.class);
+                intent.putExtra("source", SourceMorePeople.LIKERS_RF);
+                intent.putExtra("postLink", mRestFeedLink);
+                intent.putStringArrayListExtra("personsList", likes);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
