@@ -67,7 +67,7 @@ public class MorePeopleItemHolder extends RecyclerView.ViewHolder {
     }
 
     private void bindAvatar(DocumentSnapshot personVitalSnapshot){
-        PictureBinder.bindCoverPicture(avatar, personVitalSnapshot);
+        PictureBinder.bindProfilePicture(avatar, personVitalSnapshot);
     }
 
     private void setAvatarOnClickListener(final Context context, final String personLink){
