@@ -69,7 +69,11 @@
                 android:src="@drawable/outline_favorite_border_black_24dp"/>
 
             <TextView
+                android:paddingRight="8dp"
+                android:paddingEnd="8dp"
                 android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                style="@style/TextClickableBlack"
                 android:id="@+id/number_of_likes_in_reply"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -89,7 +93,12 @@
                 android:layout_marginTop="0dp"/>
 
             <TextView
+                android:paddingRight="8dp"
+                android:paddingEnd="8dp"
                 android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:textColor="#000000"
+                android:textSize="16sp"
                 android:id="@+id/number_of_replies_to_reply"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

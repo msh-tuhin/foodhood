@@ -6,9 +6,10 @@
     android:layout_height="wrap_content">
 
     <ImageView
+        android:padding="8dp"
         android:id="@+id/like"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/outline_favorite_border_black_24dp"
@@ -17,6 +18,12 @@
 
 
     <TextView
+        android:paddingRight="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        style="@style/TextClickableBlack"
+        android:textSize="16sp"
         android:id="@+id/no_likes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,9 +34,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
+        android:padding="8dp"
         android:id="@+id/comment"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginStart="64dp"
         android:layout_marginLeft="64dp"
         app:layout_constraintStart_toEndOf="@+id/no_likes"
@@ -37,6 +45,12 @@
         app:srcCompat="@drawable/outline_comment_black_24dp" />
 
     <TextView
+        android:paddingRight="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:textSize="16sp"
+        android:textColor="#000000"
         android:id="@+id/no_comments"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -44,7 +58,5 @@
         android:layout_marginLeft="8dp"
         android:text="14"
         app:layout_constraintStart_toEndOf="@+id/comment"
-        app:layout_constraintTop_toTopOf="parent"
-        android:clickable="true"
-        android:focusable="true"/>
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

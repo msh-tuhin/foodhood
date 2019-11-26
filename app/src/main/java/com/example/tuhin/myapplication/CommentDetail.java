@@ -229,7 +229,7 @@ public class CommentDetail extends AppCompatActivity{
                     break;
                 default:
                     view = LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.a_reply, viewGroup, false);
+                            .inflate(R.layout.reply_big, viewGroup, false);
                     viewHolder = new CommentDetailReplyHolder(view);
                     break;
 
