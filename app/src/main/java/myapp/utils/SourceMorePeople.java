@@ -6,4 +6,5 @@ public class SourceMorePeople {
     public static final int FOLLOWERS = 2;
     public static final int LIKERS_POST = 3;
     public static final int LIKERS_RF = 4;
+    public static final int LIKERS_COMMENT_REPLY = 5;
 }

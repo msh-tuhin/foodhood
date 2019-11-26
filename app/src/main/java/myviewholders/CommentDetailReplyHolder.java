@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.CommentDetail;
+import com.example.tuhin.myapplication.MorePeole;
 import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.R;
 import com.example.tuhin.myapplication.RestDetail;
@@ -34,6 +35,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,7 @@ import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
 import myapp.utils.PictureBinder;
 import myapp.utils.ResourceIds;
+import myapp.utils.SourceMorePeople;
 
 public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         implements ReplyInterface{
@@ -396,7 +399,18 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
 
     @Override
     public void setNoOfLikeInReplyOnClickListener() {
-
+        numberOfLikesTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("clicked", "no of likes");
+                ArrayList<String> likes = (ArrayList<String>) mReplySnapshot.get("l");
+                Intent intent = new Intent(mContext, MorePeole.class);
+                intent.putExtra("source", SourceMorePeople.LIKERS_COMMENT_REPLY);
+                intent.putExtra("commentLOrReplyLink", mReplyLink);
+                intent.putStringArrayListExtra("personsList", likes);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override

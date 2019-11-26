@@ -38,6 +38,9 @@ public class MorePeole extends AppCompatActivity {
     private int source;
     private String personLink;
     private String postLink;
+    private String commentLOrReplyLink;
+    String documentLink = "";
+    String fieldName = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +50,7 @@ public class MorePeole extends AppCompatActivity {
         source = getIntent().getIntExtra("source", SourceMorePeople.UNKNOWN);
         personLink = getIntent().getStringExtra("personLink");
         postLink = getIntent().getStringExtra("postLink");
+        commentLOrReplyLink = getIntent().getStringExtra("commentLOrReplyLink");
 
         rv = findViewById(R.id.rv);
         toolbar = findViewById(R.id.toolbar);
@@ -57,18 +61,32 @@ public class MorePeole extends AppCompatActivity {
             case SourceMorePeople.FOLLOWINGS:
                 title = "Follows";
                 collectionName = "followings";
+                documentLink = personLink;
+                fieldName = "a";
                 break;
             case SourceMorePeople.FOLLOWERS:
                 collectionName = "followers";
                 title = "Followers";
+                documentLink = personLink;
+                fieldName = "a";
                 break;
             case SourceMorePeople.LIKERS_POST:
                 collectionName = "posts";
                 title = "Liked By";
+                documentLink = postLink;
+                fieldName = "l";
                 break;
             case SourceMorePeople.LIKERS_RF:
                 collectionName = "rest_feed";
                 title = "Liked By";
+                documentLink = postLink;
+                fieldName = "l";
+                break;
+            case SourceMorePeople.LIKERS_COMMENT_REPLY:
+                collectionName = "comments";
+                title = "Liked By";
+                documentLink = commentLOrReplyLink;
+                fieldName = "l";
                 break;
         }
         toolbar.setTitle(title);
@@ -99,52 +117,27 @@ public class MorePeole extends AppCompatActivity {
             adapter.persons.addAll(links);
             adapter.notifyDataSetChanged();
         }else{
-            if(source==SourceMorePeople.LIKERS_POST || source==SourceMorePeople.LIKERS_RF){
-                if(postLink==null) return;
-                db.collection(collectionName)
-                        .document(postLink)
-                        .get()
-                        .addOnSuccessListener(MorePeole.this, new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                if(documentSnapshot.exists()) {
-                                    try {
-                                        ArrayList<String> likes = (ArrayList<String>) documentSnapshot.get("l");
-                                        adapter.persons.addAll(likes);
-                                        adapter.notifyDataSetChanged();
-                                    } catch (NullPointerException e) {
-                                        Log.e("error", e.getMessage());
-                                    } catch (Exception e){
-                                        Log.e("error", e.getMessage());
+            if(documentLink.equals("") || fieldName.equals("")) return;
+            db.collection(collectionName)
+                    .document(documentLink)
+                    .get()
+                    .addOnSuccessListener(MorePeole.this, new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if(documentSnapshot.exists()) {
+                                try {
+                                    ArrayList<String> likes = (ArrayList<String>) documentSnapshot.get(fieldName);
+                                    adapter.persons.addAll(likes);
+                                    adapter.notifyDataSetChanged();
+                                } catch (NullPointerException e) {
+                                    Log.e("error", e.getMessage());
+                                } catch (Exception e){
+                                    Log.e("error", e.getMessage());
 
-                                    }
                                 }
                             }
-                        });
-            }
-            else{
-                if(personLink==null) return;
-                db.collection(collectionName)
-                        .document(personLink)
-                        .get()
-                        .addOnSuccessListener(MorePeole.this, new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                if(documentSnapshot.exists()){
-                                    try{
-                                        ArrayList<String> links = (ArrayList)documentSnapshot.get("a");
-                                        adapter.persons.addAll(links);
-                                        adapter.notifyDataSetChanged();
-                                    }catch (NullPointerException e){
-                                        Log.e("error", e.getMessage());
-                                    }catch (Exception e){
-                                        Log.e("error", e.getMessage());
-
-                                    }
-                                }
-                            }
-                        });
-            }
+                        }
+                    });
         }
     }
 

@@ -264,7 +264,7 @@ public class FullPost extends AppCompatActivity {
                     break;
                 default:
                     view = LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.a_comment, viewGroup, false);
+                            .inflate(R.layout.comment_fp, viewGroup, false);
                     viewHolder = new FullPostCommentHolder(view);
                     break;
 
