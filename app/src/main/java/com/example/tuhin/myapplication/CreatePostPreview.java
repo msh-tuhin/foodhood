@@ -252,7 +252,7 @@ public class CreatePostPreview extends AppCompatActivity {
 //                        UploadTask uploadTask = reference.putFile(Uri.parse(stringUri));
                         uploadTasks.add(uploadTask);
 
-                        uploadTask.addOnProgressListener(CreatePostPreview.this, new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                                 Log.i("upload", "running");
@@ -355,7 +355,7 @@ public class CreatePostPreview extends AppCompatActivity {
 //                        return null;
 //                    }
 //                })
-                        .addOnFailureListener(new OnFailureListener() {
+                        .addOnFailureListener(CreatePostPreview.this, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.i("image-upload", "failed");

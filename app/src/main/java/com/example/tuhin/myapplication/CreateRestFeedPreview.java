@@ -3,7 +3,9 @@ package com.example.tuhin.myapplication;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import id.zelory.compressor.Compressor;
+import myapp.utils.SourceHomePage;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -92,7 +94,7 @@ public class CreateRestFeedPreview extends AppCompatActivity {
 //                        UploadTask uploadTask = reference.putFile(Uri.parse(stringUri));
                 uploadTasks.add(uploadTask);
 
-                uploadTask.addOnProgressListener(CreateRestFeedPreview.this, new OnProgressListener<UploadTask.TaskSnapshot>() {
+                uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                         Log.i("upload", "running");
@@ -132,34 +134,46 @@ public class CreateRestFeedPreview extends AppCompatActivity {
                         // alternative
                         return Tasks.whenAllSuccess(uriTasks);
                     }
-                }).addOnSuccessListener(new OnSuccessListener<List<Uri>>() {
-            @Override
-            public void onSuccess(List<Uri> downloadUris) {
-                List<String> stringDownloadUris = new ArrayList<>();
-                for(Uri downloadUri : downloadUris){
-                    Log.i("download-uri", downloadUri.toString());
-                    stringDownloadUris.add(downloadUri.toString());
-                }
-                restFeedMap.put("i", stringDownloadUris);
-                final DocumentReference newRestFeedRef = db.collection("rest_feed").document();
-                newRestFeedRef.set(restFeedMap)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.i("rest-feed-creation", "successful");
-                                addNewRestFeedActivity(newRestFeedRef.getId());
-                                CreateRestFeedPreview.this.finish();
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.i("rest-feed-creation", "failed");
-                                CreateRestFeedPreview.this.finish();
-                            }
-                        });
-            }
-        });
+                })
+                .addOnSuccessListener(new OnSuccessListener<List<Uri>>() {
+                    @Override
+                    public void onSuccess(List<Uri> downloadUris) {
+                        List<String> stringDownloadUris = new ArrayList<>();
+                        for(Uri downloadUri : downloadUris){
+                            Log.i("download-uri", downloadUri.toString());
+                            stringDownloadUris.add(downloadUri.toString());
+                        }
+                        restFeedMap.put("i", stringDownloadUris);
+                        final DocumentReference newRestFeedRef = db.collection("rest_feed").document();
+                        newRestFeedRef.set(restFeedMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.i("rest-feed-creation", "successful");
+                                        addNewRestFeedActivity(newRestFeedRef.getId());
+                                    }
+                                })
+                                .addOnFailureListener(CreateRestFeedPreview.this, new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.i("rest-feed-creation", "failed");
+                                        Intent intent = new Intent(CreateRestFeedPreview.this, RestaurantHome.class);
+                                        intent.putExtra("source", SourceHomePage.POST_CREATION_FAILED);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        startActivity(intent);
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(CreateRestFeedPreview.this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Intent intent = new Intent(CreateRestFeedPreview.this, RestaurantHome.class);
+                        intent.putExtra("source", SourceHomePage.POST_CREATION_FAILED);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
+                });
     }
 
     private void addNewRestFeedActivity(String restFeedLink){
@@ -174,10 +188,23 @@ public class CreateRestFeedPreview extends AppCompatActivity {
         newActivity.put("wh", restFeedLink);
 
         FirebaseFirestore.getInstance().collection("activities").add(newActivity)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                .addOnSuccessListener(CreateRestFeedPreview.this, new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.i("new_activity", documentReference.getId());
+                        Intent intent = new Intent(CreateRestFeedPreview.this, RestaurantHome.class);
+                        intent.putExtra("source", SourceHomePage.POST_CREATION_SUCCESSFUL);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
+                })
+                .addOnFailureListener(CreateRestFeedPreview.this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Intent intent = new Intent(CreateRestFeedPreview.this, RestaurantHome.class);
+                        intent.putExtra("source", SourceHomePage.POST_CREATION_FAILED);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
                     }
                 });
     }
