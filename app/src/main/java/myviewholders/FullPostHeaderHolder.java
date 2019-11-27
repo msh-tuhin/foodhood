@@ -66,6 +66,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
     public DocumentSnapshot mPostSnapShot;
     public Task<DocumentSnapshot> mTaskPost;
 
+    public LinearLayout personLayout;
     public CircleImageView profileImage;
     public TextView namePostedBy;
     public TextView postTime;
@@ -86,6 +87,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
 
     public FullPostHeaderHolder(View v){
         super(v);
+        personLayout = v.findViewById(R.id.person_layout);
         profileImage = v.findViewById(R.id.profile_image);
         namePostedBy = v.findViewById(R.id.name);
         restaurantName = v.findViewById(R.id.restaurant_name);
@@ -297,7 +299,13 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindTaggedPeople() {
-        taggedPeople.setText(mPostBuilder.getPeopleText());
+        String tpText = mPostBuilder.getPeopleText();
+        if(tpText==null || tpText.equals("")){
+            return;
+        }
+        Log.i("tagged_people", tpText);
+        taggedPeople.setText(tpText);
+        personLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -333,7 +341,10 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindCaption() {
-        postCaption.setText(mPostBuilder.getCaption());
+        String caption = mPostBuilder.getCaption();
+        if(caption==null || caption.equals("")) return;
+        postCaption.setText(caption);
+        postCaption.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -725,8 +736,10 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         namePostedBy.setText("");
         postTime.setText("");
         postCaption.setText("");
+        postCaption.setVisibility(View.GONE);
         restaurantName.setText("");
         taggedPeople.setText("");
+        personLayout.setVisibility(View.GONE);
         dishes.setText("");
         viewPagerCurrentPositionTV.setVisibility(View.GONE);
         postImagesViewPager.setAdapter(null);

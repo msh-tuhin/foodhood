@@ -66,6 +66,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
     public DocumentSnapshot mPostSnapShot;
 
     public LinearLayout parentLayout;
+    public LinearLayout personLayout;
     public CircleImageView profileImage;
     public TextView namePostedBy;
     public TextView postTime;
@@ -86,6 +87,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
     public HalfPostHolder(@NonNull View v) {
         super(v);
         parentLayout = v.findViewById(R.id.parent_layout);
+        personLayout = v.findViewById(R.id.person_layout);
         profileImage = v.findViewById(R.id.profile_image);
         namePostedBy = v.findViewById(R.id.name);
         restaurantName = v.findViewById(R.id.restaurant_name);
@@ -283,7 +285,12 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     @Override
     public void bindTaggedPeople() {
-        taggedPeople.setText(mPostBuilder.getPeopleText());
+        String tpText = mPostBuilder.getPeopleText();
+        if(tpText==null || tpText.equals("")){
+            return;
+        }
+        taggedPeople.setText(tpText);
+        personLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -319,7 +326,10 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     @Override
     public void bindCaption() {
-        postCaption.setText(mPostBuilder.getCaption());
+        String caption = mPostBuilder.getCaption();
+        if(caption==null || caption.equals("")) return;
+        postCaption.setText(caption);
+        postCaption.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -599,8 +609,10 @@ public class HalfPostHolder extends BaseHomeFeedHolder
         namePostedBy.setText("");
         postTime.setText("");
         postCaption.setText("");
+        postCaption.setVisibility(View.GONE);
         restaurantName.setText("");
         taggedPeople.setText("");
+        personLayout.setVisibility(View.GONE);
         dishes.setText("");
         viewPagerCurrentPositionTV.setVisibility(View.GONE);
         postImagesViewPager.setAdapter(null);
