@@ -2,6 +2,7 @@ package com.example.tuhin.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -66,6 +67,11 @@ public class FullPostForRestaurant extends AppCompatActivity {
         toolbar.setTitle("Post");
         setSupportActionBar(toolbar);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        // not sure about this
+        // actionBar.setDisplayShowHomeEnabled(true);
+
         setmCommentIntentExtra();
         setmEntryPoint();
         setmCommentLink();
@@ -83,6 +89,12 @@ public class FullPostForRestaurant extends AppCompatActivity {
         populateAdapter();
 
         setStackFromEnd();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override
