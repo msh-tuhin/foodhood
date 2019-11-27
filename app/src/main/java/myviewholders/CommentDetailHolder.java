@@ -98,7 +98,7 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
                        String commentLink) {
 
         Log.i("bindTo", this.getClass().toString());
-
+        refreshHolder();
         mContext = context;
         mEntryPoint = entryPoint;
         mPostLink = postLink;
@@ -534,5 +534,13 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
             return commenterType == AccountTypes.PERSON;
         }
         return true;
+    }
+
+    private void refreshHolder(){
+        commenterNameTextView.setText("");
+        commentTimeTV.setText("");
+        theCommentTextView.setText("");
+        numberOfLikesTextView.setText("");
+        numberOfRepliesTextView.setText("");
     }
 }

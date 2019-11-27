@@ -580,6 +580,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
 
     public void addRestaurantFeedback(DocumentSnapshot post){
         String restaurantFeedback = post.getString("rf");
+        if(restaurantFeedback==null || restaurantFeedback.equals("")) return;
         final Map<String, String> restaurant = (Map<String, String>) post.get("r");
         db.collection("feedbacks").document(restaurantFeedback)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -588,7 +589,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
                 if(task.isSuccessful()){
                     DocumentSnapshot feedback = task.getResult();
                     if(feedback.exists()){
-                        View view = getViewForRestaurantFeedback(feedback, restaurant.get("n"));
+                        View view = getViewForRestaurantFeedback(feedback, restaurant);
                         restaurantFeedbackLayout.findViewById(R.id.not_found).setVisibility(View.GONE);
                         restaurantFeedbackLayout.addView(view);
 
@@ -599,11 +600,16 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
     }
 
     public View getViewForRestaurantFeedback(DocumentSnapshot restaurantFeedbackSnapshot,
-                                              String restaurantName){
-        float rating = restaurantFeedbackSnapshot.getDouble("r").floatValue();
+                                             Map<String, String> restaurant){
+        // maybe restaurantFeedbackSnapshot is never null
+        String restLink = restaurant==null ? null : restaurant.get("l");
+        String restName = restaurant==null ? null : restaurant.get("n");
+        Double ratingDouble = restaurantFeedbackSnapshot.getDouble("r");
+        float rating = ratingDouble==null ? 0.0f:ratingDouble.floatValue();
         View view = LayoutInflater.from(mContext).inflate(R.layout.feedback_full_post, null);
         String review = restaurantFeedbackSnapshot.getString("re");
-        bindFeedbackView(view, restaurantName, rating, review);
+        bindRestaurantFeedbackImage((ImageView)view.findViewById(R.id.dish_avatar), restLink);
+        bindFeedbackNameRatingReview(view, restName, rating, review);
         view.setVisibility(View.VISIBLE);
         return view;
     }
@@ -647,18 +653,59 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
 
     public void bindDishFeedbackView(View view, DocumentSnapshot dishFeedbackSnapshot,
                                        Map<String, String> dishes) {
-        float rating = dishFeedbackSnapshot.getDouble("r").floatValue();
+        Double ratingDouble = dishFeedbackSnapshot.getDouble("r");
+        float rating = ratingDouble==null ? 0.0f:ratingDouble.floatValue();
         String dishLink = dishFeedbackSnapshot.getString("wh");
         String review = dishFeedbackSnapshot.getString("re");
-        bindFeedbackView(view, dishes.get(dishLink), rating, review);
+        bindDishFeedbackImage((ImageView)view.findViewById(R.id.dish_avatar), dishLink);
+        bindFeedbackNameRatingReview(view, dishes.get(dishLink), rating, review);
     }
 
-    public void bindFeedbackView(View view, String name,
-                                  float rating, String review){
-        ((TextView)view.findViewById(R.id.dish_name)).setText(name);
-        ((TextView)view.findViewById(R.id.review)).setText(review);
+    private void bindFeedbackNameRatingReview(View view, String name,
+                                              float rating, String review){
+        if(name!=null){
+            ((TextView)view.findViewById(R.id.dish_name)).setText(name);
+        }else{
+            ((TextView)view.findViewById(R.id.dish_name)).setText("");
+        }
+        if(review!=null && !review.equals("")){
+            ((TextView)view.findViewById(R.id.review)).setText(review);
+            // view.findViewById(R.id.review).setVisibility(View.VISIBLE);
+            // view.findViewById(R.id.review_header).setVisibility(View.VISIBLE);
+        }else{
+            ((TextView)view.findViewById(R.id.review)).setText("N/A");
+        }
+        // rating is never null
         ((RatingBar)view.findViewById(R.id.dish_ratingBar)).setRating(rating);
         ((RatingBar)view.findViewById(R.id.dish_ratingBar)).setIsIndicator(true);
+    }
+
+    private void bindDishFeedbackImage(final ImageView view, String dishLink){
+        if(dishLink==null || dishLink.equals("")) return;
+        db.collection("dish_vital").document(dishLink)
+                .get()
+                .addOnSuccessListener((Activity) mContext, new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            PictureBinder.bindCoverPicture(view, documentSnapshot);
+                        }
+                    }
+                });
+    }
+
+    private void bindRestaurantFeedbackImage(final ImageView view, String restaurantLink){
+        if(restaurantLink==null || restaurantLink.equals("")) return;
+        db.collection("rest_vital").document(restaurantLink)
+                .get()
+                .addOnSuccessListener((Activity) mContext, new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            PictureBinder.bindCoverPicture(view, documentSnapshot);
+                        }
+                    }
+                });
     }
 
     public void decreaseNumOfLikes(){

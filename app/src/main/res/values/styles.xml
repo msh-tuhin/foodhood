@@ -6,6 +6,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="colorPrimary">#bdbdbd</item>-->
+        <!--<item name="colorPrimaryDark">#8d8d8d</item>-->
+        <!--<item name="colorAccent">#fafafa</item>-->
     </style>
 
     <style name="TextClickable" parent="TextAppearance.AppCompat">

@@ -59,6 +59,7 @@ public class AdapterCreator {
 
             @Override
             protected void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position, @NonNull final ActivityResponse model) {
+                ((BaseHomeFeedHolder)holder).refreshHolder();
                 Log.i("recyclerview", "onBindViewHolder");
                 Log.i("currentlistsize", Integer.toString(this.getCurrentList().size()));
                 // because holder is used in inner method
@@ -233,6 +234,7 @@ public class AdapterCreator {
             protected void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder,
                                             final int position,
                                             @NonNull final ActivityResponse model) {
+                ((BaseHomeFeedHolder)holder).refreshHolder();
                 Log.i("recyclerview", "onBindViewHolder");
                 Log.i("currentlistsize", Integer.toString(this.getCurrentList().size()));
                 Log.i("holder", holder.getClass().toString());
@@ -309,6 +311,7 @@ public class AdapterCreator {
                     return;
                 }
                 // because holder is used in inner method
+                ((BaseHomeFeedHolder)holder).refreshHolder();
                 final RecyclerView.ViewHolder holder1 = holder;
                 Log.i("holder1", holder1.getClass().toString());
                 Log.i("TUHIN-DEBUG", model.getLink());
@@ -477,6 +480,8 @@ public class AdapterCreator {
                     ((EditPersonProfileHeaderHolder) holder).bindTo(context, personLink);
                     return;
                 }
+
+                ((BaseHomeFeedHolder)holder).refreshHolder();
                 // because holder is used in inner method
                 final RecyclerView.ViewHolder holder1 = holder;
                 Log.i("holder1", holder1.getClass().toString());

@@ -27,4 +27,8 @@ public class BaseHomeFeedHolder extends RecyclerView.ViewHolder {
         Log.i("entering", "binder"+this.getClass().toString());
     }
 
+    public void refreshHolder(){
+        Log.i("refreshing", "BaseHomeFeedHolder");
+    }
+
 }

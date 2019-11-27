@@ -164,6 +164,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
     }
 
     public void bindValuesIndependent(){
+        bindParentLayout();
         bindGoToFull();
         bindCommentIcon();
     }
@@ -183,6 +184,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
     }
 
     public void setOnClickListenersIndependent(){
+        setParentLayoutOnClickListener();
         setGoToFullOnClickListener();
         setLikeIconOnClickListener();
         setCommentIconOnClickListener();
@@ -322,7 +324,15 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     @Override
     public void setCaptionOnClickListener() {
-
+        postCaption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, FullPost.class);
+                intent.putExtra("entry_point", EntryPoints.CLICKED_GO_TO_FULL_POST);
+                intent.putExtra("postLink", mPostLink);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -480,6 +490,22 @@ public class HalfPostHolder extends BaseHomeFeedHolder
     @Override
     public void setNoOfCommentOnClickListener() {
 
+    }
+
+    public void bindParentLayout(){
+
+    }
+
+    public void setParentLayoutOnClickListener(){
+//        parentLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(mContext, FullPost.class);
+//                intent.putExtra("entry_point", EntryPoints.CLICKED_GO_TO_FULL_POST);
+//                intent.putExtra("postLink", mPostLink);
+//                mContext.startActivity(intent);
+//            }
+//        });
     }
 
     private void addLikeToPost(){

@@ -17,7 +17,7 @@
             android:id="@+id/dish_avatar"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/key_lime_pie" />
+            android:src="@drawable/ltgray" />
 
         <TextView
             android:id="@+id/dish_name"
@@ -39,15 +39,15 @@
         android:layout_marginTop="16dp"
         android:text="Rating"
         android:textColor="#000000"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:visibility="gone"/>
 
     <RatingBar
         android:id="@+id/dish_ratingBar"
-        style="?android:attr/ratingBarStyleIndicator"
+        style="?android:attr/ratingBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        />
+        android:layout_marginTop="8dp"/>
 
     <TextView
         android:id="@+id/review_header"
@@ -56,7 +56,7 @@
         android:layout_marginTop="16dp"
         android:text="Review"
         android:textColor="#000000"
-        android:textSize="16sp" />
+        android:textSize="16sp"/>
 
     <TextView
         android:id="@+id/review"
@@ -64,6 +64,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="This is the review"
-        android:textColor="#000000" />
+        android:textColor="#000000"/>
 
 </LinearLayout>

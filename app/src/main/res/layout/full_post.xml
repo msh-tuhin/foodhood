@@ -5,6 +5,37 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <include
+        layout="@layout/post_q_fp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="?android:attr/listDivider" />
+
+    <TextView
+        android:id="@+id/go_to_full"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Feedbacks"
+        style="@style/SmallHeadings"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/listDivider" />
     <!--this linearlayout is redundant
         used for providing padding
         could be deleted later and margins
@@ -13,24 +44,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
         android:paddingLeft="16dp"
         android:paddingStart="16dp"
         android:paddingRight="16dp"
-        android:paddingEnd="16dp">
-        <include
-            layout="@layout/post_q_fp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/go_to_full"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Feedbacks"
-            style="@style/SmallHeadings"
-            android:layout_marginTop="16dp"/>
+        android:paddingEnd="16dp"
+        android:layout_marginTop="16dp">
 
         <!--<LinearLayout-->
         <!--android:id="@+id/rest_feedback_layout"-->
