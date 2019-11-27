@@ -153,7 +153,7 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
             ratingLayout.setVisibility(View.VISIBLE);
             return;
         }
-        Double rating = noOfRatings==0 ? 0:totalRating/noOfRatings;
+        Double rating = noOfRatings<=0 ? 0:totalRating/noOfRatings;
         if(rating == 0){
             ratingTV.setText("N/A");
         }else{

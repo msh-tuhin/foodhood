@@ -151,7 +151,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindBio(DocumentSnapshot personVitalSnapshot){
         String bio = personVitalSnapshot.getString("bio");
-        if(bio != null){
+        if(bio != null && !bio.equals("")){
             bioTV.setText(bio);
             bioTV.setVisibility(View.VISIBLE);
         }
@@ -159,7 +159,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindPhone(DocumentSnapshot personVitalSnapshot){
         String personPhone = personVitalSnapshot.getString("p");
-        if(personPhone != null){
+        if(personPhone != null && !personPhone.equals("")){
             phoneTV.setText(personPhone);
             phoneLayout.setVisibility(View.VISIBLE);
         }
@@ -168,7 +168,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
     private void bindBirthdate(DocumentSnapshot personVitalSnapshot){
         Timestamp personBirthdateTS = personVitalSnapshot.getTimestamp("b");
         String birthdate = DateTimeExtractor.getDateString(personBirthdateTS);
-        if(birthdate != null){
+        if(birthdate != null && !birthdate.equals("")){
             String fullText = "Born on: " + birthdate;
             SpannableStringBuilder ssb = getSpannedText(fullText, "Born on: ");
             birthdateTV.setText(ssb);
@@ -178,7 +178,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindCurrentTown(DocumentSnapshot personVitalSnapshot){
         String personCurrentTown = personVitalSnapshot.getString("ct");
-        if(personCurrentTown != null){
+        if(personCurrentTown != null && !personCurrentTown.equals("")){
             currentLocationTV.setText(personCurrentTown);
             currentLocationLayout.setVisibility(View.VISIBLE);
         }
@@ -186,7 +186,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindHomeTown(DocumentSnapshot personVitalSnapshot){
         String personHomeTown = personVitalSnapshot.getString("ht");
-        if(personHomeTown != null){
+        if(personHomeTown != null && !personHomeTown.equals("")){
             hometownTV.setText(personHomeTown);
             hometownLayout.setVisibility(View.VISIBLE);
         }
@@ -194,7 +194,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindFollowings(DocumentSnapshot personVitalSnapshot){
         Long numFollwing = personVitalSnapshot.getLong("nf");
-        if(numFollwing==null || numFollwing==0L) return;
+        if(numFollwing==null || numFollwing<=0L) return;
         String numString = Long.toString(numFollwing);
         String fullText = "Follows " + numString + " people";
         SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
@@ -239,7 +239,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindFollowers(DocumentSnapshot personVitalSnapshot){
         Long numFollower = personVitalSnapshot.getLong("nfb");
-        if(numFollower==null || numFollower==0L) return;
+        if(numFollower==null || numFollower<=0L) return;
         String numString = Long.toString(numFollower);
         String fullText = "Followed by " + numString + " people";
         SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
@@ -249,7 +249,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindFollowingRestaurants(DocumentSnapshot personVitalSnapshot){
         Long numFollwedRestaurant = personVitalSnapshot.getLong("nfr");
-        if(numFollwedRestaurant==null || numFollwedRestaurant==0L) return;
+        if(numFollwedRestaurant==null || numFollwedRestaurant<=0L) return;
         String numString = Long.toString(numFollwedRestaurant);
         String fullText = "Follows " + numString + " restaurants";
         SpannableStringBuilder spannedText = getSpannedText(fullText, numString);

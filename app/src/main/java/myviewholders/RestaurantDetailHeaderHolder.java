@@ -171,7 +171,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
             ratingLayout.setVisibility(View.VISIBLE);
             return;
         }
-        Double rating = noOfRatings==0 ? 0:totalRating/noOfRatings;
+        Double rating = noOfRatings<=0 ? 0:totalRating/noOfRatings;
         if(rating == 0){
             restaurantRatingTV.setText("N/A");
         }else{
@@ -183,7 +183,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
 
     private void bindFollowers(DocumentSnapshot restVitalSnapshot){
         Long numFollowers = restVitalSnapshot.getLong("nfb");
-        if(numFollowers==null || numFollowers==0L) return;
+        if(numFollowers==null || numFollowers<=0L) return;
         String numString = Long.toString(numFollowers);
         String fullText = "Followed by " + numString + " people";
         SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
