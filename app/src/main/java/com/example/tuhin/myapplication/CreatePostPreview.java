@@ -1,8 +1,11 @@
 package com.example.tuhin.myapplication;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.Continuation;
@@ -25,6 +29,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -56,6 +61,7 @@ import models.SelectedPerson;
 import models.FeedbackModel;
 import myapp.utils.FeedbackTypes;
 import myapp.utils.ImagesAdapter;
+import myapp.utils.SourceHomePage;
 
 // receives explicit intent with bundle extra
 // the keys =>
@@ -69,6 +75,10 @@ public class CreatePostPreview extends AppCompatActivity {
 
     Bundle post;
     Toolbar toolbar;
+
+    AppBarLayout appBarLayout;
+    ScrollView postPreviewLayout;
+    LinearLayout progressLayout;
     TextView captionTextView, dishOrRestaurantNameTextView, reviewTextView;
     TextView captionHeaderTextView, imagesHeaderTextView, peopleHeaderTextView;
     RatingBar ratingBar;
@@ -98,6 +108,9 @@ public class CreatePostPreview extends AppCompatActivity {
         dishFeedbacks = (ArrayList<DishFeedback>) post.getSerializable("dishFeedbacks");
 
         toolbar = findViewById(R.id.toolbar);
+        appBarLayout = findViewById(R.id.appBarLayout);
+        postPreviewLayout = findViewById(R.id.post_preview_layout);
+        progressLayout = findViewById(R.id.progress_layout);
         captionTextView = findViewById(R.id.caption);
         captionHeaderTextView = findViewById(R.id.caption_header);
         imagesHeaderTextView = findViewById(R.id.images_header);
@@ -180,6 +193,10 @@ public class CreatePostPreview extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.done:
                 Log.i("Menu", "working");
+
+                appBarLayout.setVisibility(View.INVISIBLE);
+                postPreviewLayout.setVisibility(View.INVISIBLE);
+                progressLayout.setVisibility(View.VISIBLE);
 
                 final FirebaseFirestore db = FirebaseFirestore.getInstance();
                 FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -316,6 +333,10 @@ public class CreatePostPreview extends AppCompatActivity {
                                     addNewPostActivity(postReference.getId());
                                 }else{
                                     Log.i("post-creation", "failed");
+                                    Intent intent = new Intent(CreatePostPreview.this, home.class);
+                                    intent.putExtra("source", SourceHomePage.POST_CREATION_FAILED);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
                                 }
                             }
                         });
@@ -339,6 +360,10 @@ public class CreatePostPreview extends AppCompatActivity {
                     public void onFailure(@NonNull Exception e) {
                         Log.i("image-upload", "failed");
                         // TODO maybe delete the StorageReferences
+                        Intent intent = new Intent(CreatePostPreview.this, home.class);
+                        intent.putExtra("source", SourceHomePage.POST_CREATION_FAILED);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
                     }
                 });
 
@@ -395,11 +420,25 @@ public class CreatePostPreview extends AppCompatActivity {
         newActivity.put("wh", postLink);
 
         FirebaseFirestore.getInstance().collection("activities").add(newActivity)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                .addOnSuccessListener(CreatePostPreview.this, new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Log.i("new_activity", documentReference.getId());
+                        Intent intent = new Intent(CreatePostPreview.this, home.class);
+                        intent.putExtra("source", SourceHomePage.POST_CREATION_SUCCESSFUL);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
+                })
+                .addOnFailureListener(CreatePostPreview.this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Intent intent = new Intent(CreatePostPreview.this, home.class);
+                        intent.putExtra("source", SourceHomePage.POST_CREATION_FAILED);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
                     }
                 });
     }
+
 }

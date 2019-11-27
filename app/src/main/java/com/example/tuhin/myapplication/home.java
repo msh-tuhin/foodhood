@@ -9,14 +9,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
+import myapp.utils.SourceHomePage;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -25,6 +28,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 public class home extends AppCompatActivity {
+
+    private int source;
 
     Toolbar toolbar;
     ViewPager viewPager;
@@ -42,6 +47,8 @@ public class home extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        source = getIntent().getIntExtra("source", SourceHomePage.UNKNOWN);
 
         setCurrentUserNameLocal();
         toolbar = findViewById(R.id.toolbar);
@@ -62,6 +69,7 @@ public class home extends AppCompatActivity {
             tabLayout.getTabAt(i).setIcon(drawables_unselected[i]);
         }
 
+        showMyDialog(source);
     }
 
     @Override
@@ -155,6 +163,21 @@ public class home extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void showMyDialog(int source){
+        if(source==SourceHomePage.UNKNOWN) return;
+        String message = source==SourceHomePage.POST_CREATION_SUCCESSFUL ?
+                "Review added successfully": "Adding review failed";
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setMessage(message);
+        dialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        dialogBuilder.create().show();
     }
 
 }
