@@ -2,6 +2,7 @@ package com.example.tuhin.myapplication;
 
 import android.content.Intent;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.appcompat.app.AppCompatActivity;
@@ -65,6 +66,11 @@ public class CreatePostDishSelectReview extends AppCompatActivity {
 
         toolbar.setTitle("Select A Dish");
         setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        // not sure about this
+        // actionBar.setDisplayShowHomeEnabled(true);
 
         String restaurantLink = getIntent().getStringExtra("restaurantLink");
         searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, ALGOLIA_INDEX_NAME);
@@ -145,6 +151,12 @@ public class CreatePostDishSelectReview extends AppCompatActivity {
         });
 
 
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override

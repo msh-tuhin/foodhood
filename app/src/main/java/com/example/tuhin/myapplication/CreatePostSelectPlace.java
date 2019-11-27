@@ -1,6 +1,8 @@
 package com.example.tuhin.myapplication;
 
 import android.content.Intent;
+
+import androidx.appcompat.app.ActionBar;
 import androidx.databinding.DataBindingUtil;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -92,6 +94,11 @@ public class CreatePostSelectPlace extends AppCompatActivity {
         toolbar.setTitle("Create Post");
         setSupportActionBar(toolbar);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        // not sure about this
+        // actionBar.setDisplayShowHomeEnabled(true);
+
         searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, ALGOLIA_INDEX_NAME);
         instantSearch = new InstantSearch(this, searcher);
 //        instantSearch.setSearchOnEmptyString(false);
@@ -172,6 +179,12 @@ public class CreatePostSelectPlace extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override

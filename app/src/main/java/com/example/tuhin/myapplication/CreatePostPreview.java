@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
@@ -126,6 +127,11 @@ public class CreatePostPreview extends AppCompatActivity {
         toolbar.setTitle("Post Preview");
         setSupportActionBar(toolbar);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        // not sure about this
+        // actionBar.setDisplayShowHomeEnabled(true);
+
 //        captionTextView.setText(caption);
         if(caption.isEmpty()){
             mainLinearLayout.removeView(captionHeaderTextView);
@@ -180,6 +186,12 @@ public class CreatePostPreview extends AppCompatActivity {
             }
         }
 
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override

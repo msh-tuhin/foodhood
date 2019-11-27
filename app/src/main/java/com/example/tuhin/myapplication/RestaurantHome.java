@@ -146,7 +146,7 @@ public class RestaurantHome extends AppCompatActivity {
     private void showMyDialog(int source){
         if(source==SourceHomePage.UNKNOWN) return;
         String message = source==SourceHomePage.POST_CREATION_SUCCESSFUL ?
-                "Review added successfully": "Adding review failed";
+                "Post added successfully": "Adding post failed";
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder.setMessage(message);
         dialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {

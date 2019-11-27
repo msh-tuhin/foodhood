@@ -11,6 +11,7 @@ import android.os.Build;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -81,8 +82,17 @@ public class CreatePostSelectImages extends AppCompatActivity {
         cancel = findViewById(R.id.cancel);
         next = findViewById(R.id.next);
 
+        if(postType==PostTypes.REST_FEED){
+            //next.setEnabled(false);
+        }
+
         toolbar.setTitle("Create Post");
         setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        // not sure about this
+        // actionBar.setDisplayShowHomeEnabled(true);
 
         // TODO add api version (>=23) check
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
@@ -145,6 +155,7 @@ public class CreatePostSelectImages extends AppCompatActivity {
                 Log.i("Image-Position", Integer.toString(viewPager.getCurrentItem()));
                 adapter.imageUris.remove(indexToBeDeleted);
                 stringUris.remove(indexToBeDeleted);
+                //enableDisableNextButton();
                 viewPager.setAdapter(adapter);
                 viewPager.setCurrentItem(viewpagerNewPosition);
                 addImagesButton.setClickable(true);
@@ -191,6 +202,12 @@ public class CreatePostSelectImages extends AppCompatActivity {
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
         // TODO currently there is no restriction to the number of selected images
@@ -216,6 +233,7 @@ public class CreatePostSelectImages extends AppCompatActivity {
                             Log.i("compressed_uri", compressedFileUri.toString());
                             adapter.imageUris.add(compressedFileUri);
                             stringUris.add(uri.toString());
+                            //enableDisableNextButton();
                             limitationCountTV.setText(Integer.toString(adapter.imageUris.size())+"/3");
                             if(adapter.imageUris.size()==3){
                                addImagesButton.setClickable(false);
@@ -240,6 +258,7 @@ public class CreatePostSelectImages extends AppCompatActivity {
                         Log.i("compressed_uri", compressedFileUri.toString());
                         adapter.imageUris.add(compressedFileUri);
                         stringUris.add(uri.toString());
+                        //enableDisableNextButton();
                         limitationCountTV.setText(Integer.toString(adapter.imageUris.size())+"/3");
                         if(adapter.imageUris.size()==3){
                             addImagesButton.setClickable(false);
@@ -284,5 +303,14 @@ public class CreatePostSelectImages extends AppCompatActivity {
         String path = RealPathUtil.getRealPath(this, contentUri);
         Log.i("PATH", path);
         return path;
+    }
+
+    private void enableDisableNextButton(){
+        if(postType==PostTypes.POST) return;
+        if(stringUris.size()>0){
+            next.setEnabled(true);
+        }else{
+            next.setEnabled(false);
+        }
     }
 }

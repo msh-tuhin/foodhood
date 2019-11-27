@@ -36,15 +36,35 @@
             android:textStyle="normal"
             android:textSize="24sp"/>
 
-        <EditText
-            android:id="@+id/caption"
+        <!--<EditText-->
+            <!--android:id="@+id/caption"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="400dp"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:ems="10"-->
+            <!--android:inputType="textMultiLine"-->
+            <!--android:hint="Say Something"-->
+            <!--android:gravity="start"/>-->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/caption_layout"
             android:layout_width="match_parent"
             android:layout_height="400dp"
-            android:layout_marginTop="16dp"
-            android:ems="10"
-            android:inputType="textMultiLine"
-            android:hint="Say Something"
-            android:gravity="start"/>
+            android:layout_marginTop="8dp"
+            app:errorEnabled="true"
+            app:hintTextAppearance="@style/HintText">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/caption"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Say something"
+                android:text=""
+                android:ems="10"
+                android:inputType="textMultiLine"
+                android:gravity="start"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/next"
