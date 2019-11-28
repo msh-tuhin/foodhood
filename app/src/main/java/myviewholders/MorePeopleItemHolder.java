@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.AccountTypes;
+import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PictureBinder;
 
 import android.app.Activity;
@@ -39,6 +40,8 @@ public class MorePeopleItemHolder extends RecyclerView.ViewHolder {
     TextView nameTV;
     Button followButton;
 
+    private Context mContext;
+
     public MorePeopleItemHolder(@NonNull View v) {
         super(v);
         avatar = v.findViewById(R.id.person_avatar);
@@ -50,6 +53,7 @@ public class MorePeopleItemHolder extends RecyclerView.ViewHolder {
                        final String personLink,
                        Task<DocumentSnapshot> taskWithCurrentUserFollowings){
         refreshHolder();
+        mContext = context;
         mCurrentUserUid = mAuth.getCurrentUser().getUid();
         followButton.setVisibility(View.INVISIBLE);
         db.collection("person_vital")
@@ -149,6 +153,7 @@ public class MorePeopleItemHolder extends RecyclerView.ViewHolder {
                     case "FOLLOW":
                         // TODO: this should be done if and only if the updates are successful
                         followButton.setText("UNFOLLOW");
+                        OrphanUtilityMethods.sendFollowingNotification(mContext, personLink, true);
                         followingRef.update("a", FieldValue.arrayUnion(personLink));
                         followerRef.update("a", FieldValue.arrayUnion(mCurrentUserUid));
                         followerVitalRef.update("nf", FieldValue.increment(1));

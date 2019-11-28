@@ -44,9 +44,13 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import myapp.utils.AccountTypes;
 import myapp.utils.DateTimeExtractor;
+import myapp.utils.NotificationTypes;
+import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PictureBinder;
 import myapp.utils.SourceAllDishes;
 import myapp.utils.SourceMorePeople;
@@ -307,6 +311,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
                     case "FOLLOW":
                         // TODO: this should be done if and only if the updates are successful
                         followButton.setText("UNFOLLOW");
+                        OrphanUtilityMethods.sendFollowingNotification(mContext, personLink, true);
                         followingRef.update("a", FieldValue.arrayUnion(personLink));
                         followerRef.update("a", FieldValue.arrayUnion(mCurrentUserUid));
                         followerVitalRef.update("nf", FieldValue.increment(1));
@@ -458,6 +463,8 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
                 Context.MODE_PRIVATE);
         return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
     }
+
+
 
     private void refreshHolder(){
         nameTV.setText("");

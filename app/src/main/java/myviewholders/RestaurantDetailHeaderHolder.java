@@ -39,6 +39,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import myapp.utils.AccountTypes;
+import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PictureBinder;
 import myapp.utils.SourceMorePeople;
 
@@ -329,6 +330,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                     case "FOLLOW":
                         // TODO: this should be done if and only if the updates are successful
                         followRestaurant.setText("UNFOLLOW");
+                        OrphanUtilityMethods.sendFollowingNotification(mContext, restaurantLink, false);
                         personRestFollowRef.update("a", FieldValue.arrayUnion(restaurantLink));
                         restaurantFollowerRef.update("a", FieldValue.arrayUnion(currentUserUid));
                         restRef.update("nfb", FieldValue.increment(1));

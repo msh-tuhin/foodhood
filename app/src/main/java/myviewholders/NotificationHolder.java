@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.example.tuhin.myapplication.CommentDetail;
 import com.example.tuhin.myapplication.FullPost;
 import com.example.tuhin.myapplication.FullRestFeed;
+import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.R;
 
 import java.util.Map;
@@ -176,6 +177,13 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                 spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), ownerNameStart, ownerNameEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 notificationTextView.setText(spannableStringBuilder);
                 break;
+            case NotificationTypes.NOTIF_FOLLOW:
+                who = notificationModel.getW();
+                name = (String) who.get("n");
+                notificationText = name + " started following you";
+                spannableStringBuilder = getSpannedNotification(notificationText, name);
+                notificationTextView.setText(spannableStringBuilder);
+                break;
         }
 
         notificationLayout.setOnClickListener(new View.OnClickListener() {
@@ -290,6 +298,12 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
 
                         intent = new Intent(context, CommentDetail.class);
                         intent.putExtra(intentExtraName, commentIntentExtra);
+                        context.startActivity(intent);
+                        break;
+                    case NotificationTypes.NOTIF_FOLLOW:
+                        intent = new Intent(context, PersonDetail.class);
+                        String personLink = (String) notificationModel.getW().get("l");
+                        intent.putExtra("personLink", personLink);
                         context.startActivity(intent);
                         break;
                 }

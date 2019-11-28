@@ -31,4 +31,6 @@ public class NotificationTypes {
     // new type; not thought through
     public static final int NOTIF_REPLY_COMMENT_RF_OWNER = 1013;
     public static final int NOTIF_REPLY_REPLY_RF_OWNER = 1014;
+
+    public static final int NOTIF_FOLLOW = 1099;
 }

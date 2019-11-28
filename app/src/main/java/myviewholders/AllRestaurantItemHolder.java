@@ -30,12 +30,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.AccountTypes;
+import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PictureBinder;
 
 public class AllRestaurantItemHolder extends RecyclerView.ViewHolder {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String mCurrentUserUid;
+    private Context mContext;
 
     LinearLayout parentLayout;
     CircleImageView avatar;
@@ -57,6 +59,7 @@ public class AllRestaurantItemHolder extends RecyclerView.ViewHolder {
                        final String restaurantLink,
                        Task<DocumentSnapshot> taskWithCurrentUserFollowingRestaurants){
         refreshHolder();
+        mContext = context;
         mCurrentUserUid = mAuth.getCurrentUser().getUid();
         db.collection("rest_vital").document(restaurantLink)
                 .get()
@@ -189,6 +192,7 @@ public class AllRestaurantItemHolder extends RecyclerView.ViewHolder {
                     case "FOLLOW":
                         // TODO: this should be done if and only if the updates are successful
                         followButton.setText("UNFOLLOW");
+                        OrphanUtilityMethods.sendFollowingNotification(mContext, restaurantLink, false);
                         personRestFollowRef.update("a", FieldValue.arrayUnion(restaurantLink));
                         restaurantFollowerRef.update("a", FieldValue.arrayUnion(mCurrentUserUid));
                         restRef.update("nfb", FieldValue.increment(1));
