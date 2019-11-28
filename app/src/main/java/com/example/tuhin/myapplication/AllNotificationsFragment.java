@@ -12,6 +12,7 @@ import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import models.NotificationModel;
 import myapp.utils.AdapterCreator;
 import myviewholders.NotificationHolder;
@@ -29,6 +30,7 @@ import com.google.firebase.firestore.Query;
 
 public class AllNotificationsFragment extends Fragment {
 
+    SwipeRefreshLayout swipeRefreshLayout;
     RecyclerView rv;
     FirebaseFirestore db;
     FirestorePagingAdapter<NotificationModel, NotificationHolder> adapter;
@@ -57,6 +59,7 @@ public class AllNotificationsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Log.i("LIFECYCLE-TEST", "onviewcreated");
         super.onViewCreated(view, savedInstanceState);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         rv = view.findViewById(R.id.notifications_rv);
 
         linearLayoutManager = new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false);
@@ -68,6 +71,14 @@ public class AllNotificationsFragment extends Fragment {
         adapter = getAdapter(this);
         adapter.notifyDataSetChanged();
         rv.setAdapter(adapter);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                adapter.refresh();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     @Override
