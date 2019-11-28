@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import myapp.utils.SourceMorePeople;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,6 +28,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class MoreOptionsFragment extends Fragment {
+
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private int[] icons = {
             R.drawable.outline_account_circle_black_24dp,
@@ -66,6 +71,12 @@ public class MoreOptionsFragment extends Fragment {
                 switch (position){
                     case 0:
                         intent = new Intent(parentActivity, EditPersonProfile.class);
+                        startActivity(intent);
+                        break;
+                    case 1:
+                        intent = new Intent(parentActivity, MorePeole.class);
+                        intent.putExtra("source", SourceMorePeople.FOLLOWERS);
+                        intent.putExtra("personLink", mAuth.getCurrentUser().getUid());
                         startActivity(intent);
                         break;
                     case 2:

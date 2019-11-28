@@ -63,6 +63,8 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private Context mContext;
     private String mCurrentUserUid;
+    private DocumentSnapshot mPersonVitalSnapshot;
+    private Long mNumCurrentFollowers = 0L;
 
     private LinearLayout wishlistLayout;
     private LinearLayout currentLocationLayout;
@@ -113,6 +115,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
                     DocumentSnapshot personVitalSnapshot = task.getResult();
+                    mPersonVitalSnapshot = personVitalSnapshot;
                     if(personVitalSnapshot.exists()){
                         bindCoverPhoto(context, personVitalSnapshot);
                         bindProfilePicture(context, personVitalSnapshot);
@@ -244,6 +247,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
     private void bindFollowers(DocumentSnapshot personVitalSnapshot){
         Long numFollower = personVitalSnapshot.getLong("nfb");
         if(numFollower==null || numFollower<=0L) return;
+        mNumCurrentFollowers = numFollower;
         String numString = Long.toString(numFollower);
         String fullText = "Followed by " + numString + " people";
         SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
@@ -311,6 +315,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
                     case "FOLLOW":
                         // TODO: this should be done if and only if the updates are successful
                         followButton.setText("UNFOLLOW");
+                        bindChangedNumFollowers(1L);
                         OrphanUtilityMethods.sendFollowingNotification(mContext, personLink, true);
                         followingRef.update("a", FieldValue.arrayUnion(personLink));
                         followerRef.update("a", FieldValue.arrayUnion(mCurrentUserUid));
@@ -320,6 +325,7 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
                     case "UNFOLLOW":
                         // TODO: this should be done if and only if the updates are successful
                         followButton.setText("FOLLOW");
+                        bindChangedNumFollowers(-1L);
                         followingRef.update("a", FieldValue.arrayRemove(personLink));
                         followerRef.update("a", FieldValue.arrayRemove(mCurrentUserUid));
                         followerVitalRef.update("nf", FieldValue.increment(-1));
@@ -464,7 +470,16 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
         return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
     }
 
-
+    private void bindChangedNumFollowers(Long change){
+        if(mNumCurrentFollowers>0 || change==1){
+            mNumCurrentFollowers += change;
+        }
+        String numString = Long.toString(mNumCurrentFollowers);
+        String fullText = "Followed by " + numString + " people";
+        SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
+        numFollowerTV.setText(spannedText);
+        numFollowerTV.setVisibility(View.VISIBLE);
+    }
 
     private void refreshHolder(){
         nameTV.setText("");

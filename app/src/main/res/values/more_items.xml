@@ -2,7 +2,7 @@
 <resources>
     <string-array name="more_items">
         <item>View Profile</item>
-        <item>Friends</item>
+        <item>Followers</item>
         <item>Wishlist</item>
         <item>Advanced Search</item>
         <item>Settings</item>

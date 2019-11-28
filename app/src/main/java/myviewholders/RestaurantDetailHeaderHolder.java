@@ -50,6 +50,8 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
     private final String currentUserUid;
     private Context mContext;
     private String mRestaurantLink;
+    private DocumentSnapshot mRestVitalSnapshot;
+    private Long mNumCurrentFollowers = 0L;
 
     LinearLayout addressLayout;
     LinearLayout phoneLayout;
@@ -102,6 +104,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
                     DocumentSnapshot restaurantVital = task.getResult();
+                    mRestVitalSnapshot = restaurantVital;
                     if(restaurantVital.exists()){
                         setCollapsedTitle(context, restaurantVital);
                         bindCoverPhoto(context, restaurantVital);
@@ -185,6 +188,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
     private void bindFollowers(DocumentSnapshot restVitalSnapshot){
         Long numFollowers = restVitalSnapshot.getLong("nfb");
         if(numFollowers==null || numFollowers<=0L) return;
+        mNumCurrentFollowers = numFollowers;
         String numString = Long.toString(numFollowers);
         String fullText = "Followed by " + numString + " people";
         SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
@@ -330,6 +334,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                     case "FOLLOW":
                         // TODO: this should be done if and only if the updates are successful
                         followRestaurant.setText("UNFOLLOW");
+                        bindChangedNumFollowers(1L);
                         OrphanUtilityMethods.sendFollowingNotification(mContext, restaurantLink, false);
                         personRestFollowRef.update("a", FieldValue.arrayUnion(restaurantLink));
                         restaurantFollowerRef.update("a", FieldValue.arrayUnion(currentUserUid));
@@ -339,6 +344,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                     case "UNFOLLOW":
                         // TODO: this should be done if and only if the updates are successful
                         followRestaurant.setText("FOLLOW");
+                        bindChangedNumFollowers(-1L);
                         personRestFollowRef.update("a", FieldValue.arrayRemove(restaurantLink));
                         restaurantFollowerRef.update("a", FieldValue.arrayRemove(currentUserUid));
                         restRef.update("nfb", FieldValue.increment(-1));
@@ -385,6 +391,17 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
         int end = start + spannable.length();
         spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableStringBuilder;
+    }
+
+    private void bindChangedNumFollowers(Long change){
+        if(mNumCurrentFollowers>0 || change==1){
+            mNumCurrentFollowers += change;
+        }
+        String numString = Long.toString(mNumCurrentFollowers);
+        String fullText = "Followed by " + numString + " people";
+        SpannableStringBuilder spannedText = getSpannedText(fullText, numString);
+        numFollowedByTV.setText(spannedText);
+        numFollowedByTV.setVisibility(View.VISIBLE);
     }
 
     private void refreshHolder(){

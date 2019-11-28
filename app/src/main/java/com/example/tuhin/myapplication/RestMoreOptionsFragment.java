@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import myapp.utils.SourceMorePeople;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,11 +21,15 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class RestMoreOptionsFragment extends Fragment {
+
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private int[] icons = {
             R.drawable.outline_info_black_24dp,
@@ -60,14 +65,16 @@ public class RestMoreOptionsFragment extends Fragment {
                 Intent intent;
                 switch (position){
                     case 0:
+                        Log.i("more_options", "go to info");
                         intent = new Intent(parentActivity, EditRestProfile.class);
                         startActivity(intent);
-                        Log.i("more_options", "go to info");
                         break;
                     case 1:
-                        // intent = new Intent(parentActivity, Wishlist.class);
-                        // startActivity(intent);
                         Log.i("more_options", "go to followers");
+                        intent = new Intent(parentActivity, MorePeole.class);
+                        intent.putExtra("source", SourceMorePeople.FOLLOWERS);
+                        intent.putExtra("personLink", mAuth.getCurrentUser().getUid());
+                        startActivity(intent);
                         break;
                 }
             }

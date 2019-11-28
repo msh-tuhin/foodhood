@@ -51,6 +51,7 @@ public class OrphanUtilityMethods {
         }else{
             // fail-safe in case current name is not set in shared preferences
             // might not be needed(not sure yet)
+            // could also delegate this work to a cloud function
             db.collection(collectionName)
                     .document(currentUserLink)
                     .get()
