@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import myapp.utils.AdapterCreator;
 import myapp.utils.PostTypes;
 
@@ -26,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class RestHomeFeedFragment extends Fragment {
 
+    private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView rv;
     private FloatingActionButton fab;
     private LinearLayoutManager linearLayoutManager;
@@ -45,6 +47,7 @@ public class RestHomeFeedFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         rv = view.findViewById(R.id.home_feed_rv);
         fab = view.findViewById(R.id.fab);
 
@@ -63,6 +66,14 @@ public class RestHomeFeedFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), CreatePost.class);
                 intent.putExtra("post_type", PostTypes.REST_FEED);
                 startActivity(intent);
+            }
+        });
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                adapter.refresh();
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
     }

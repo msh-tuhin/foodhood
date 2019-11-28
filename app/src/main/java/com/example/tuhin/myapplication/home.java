@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 public class home extends AppCompatActivity {
 
@@ -175,6 +176,10 @@ public class home extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
+                Toast.makeText(home.this,
+                        "It might take some time to show your" +
+                        " review in your timeline! Please refresh in a few moments.",
+                        Toast.LENGTH_LONG).show();
             }
         });
         dialogBuilder.create().show();

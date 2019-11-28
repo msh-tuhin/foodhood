@@ -45,7 +45,7 @@ public class AdapterCreator {
         String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Query bQuery = db.collection("friends_activities")
                 .document(currentUserLink)
-                .collection("act").orderBy("ts");
+                .collection("act").orderBy("ts", Query.Direction.DESCENDING);
         PagedList.Config config = new PagedList.Config.Builder()
                 .setEnablePlaceholders(false)
                 .setPrefetchDistance(10)

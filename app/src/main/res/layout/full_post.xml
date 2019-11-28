@@ -17,7 +17,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="1.5dp"
         android:layout_marginTop="16dp"
         android:background="?android:attr/listDivider" />
 
@@ -33,66 +33,44 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="1.5dp"
         android:layout_marginTop="8dp"
         android:background="?android:attr/listDivider" />
-    <!--this linearlayout is redundant
-        used for providing padding
-        could be deleted later and margins
-        can be used for individual views-->
-    <LinearLayout
+
+    <FrameLayout
+        android:id="@+id/rest_feedback_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="16dp"
-        android:paddingStart="16dp"
-        android:paddingRight="16dp"
-        android:paddingEnd="16dp"
-        android:layout_marginTop="16dp">
+        android:layout_height="wrap_content">
 
-        <!--<LinearLayout-->
-        <!--android:id="@+id/rest_feedback_layout"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="vertical">-->
-
-        <!--</LinearLayout>-->
-
-        <FrameLayout
-            android:id="@+id/rest_feedback_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/not_found"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:text="Restaurant feedback is not available"
-                android:layout_marginTop="8dp"
-                />
-
-        </FrameLayout>
-
-        <LinearLayout
-            android:id="@+id/dishes_feedback_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-        </LinearLayout>
-
-        <include layout="@layout/com_n_like"
+        <TextView
+            android:id="@+id/not_found"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"/>
+            android:textSize="20sp"
+            android:text="Restaurant feedback is not available"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/dishes_feedback_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
     </LinearLayout>
+
+    <include layout="@layout/com_n_like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"/>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="1.5dp"
+        android:layout_marginTop="8dp"
         android:background="?android:attr/listDivider" />
 
     <TextView

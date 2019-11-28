@@ -17,12 +17,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import myapp.utils.AdapterCreator;
 
 public class HomeFeedFragment extends Fragment {
 
+    SwipeRefreshLayout swipeRefreshLayout;
     RecyclerView rv;
     LinearLayoutManager linearLayoutManager;
     FirebaseFirestore db;
@@ -53,6 +59,7 @@ public class HomeFeedFragment extends Fragment {
         // adapter ta maybe onCreate e banale valo
 
         super.onViewCreated(view, savedInstanceState);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         rv = view.findViewById(R.id.home_feed_rv);
         // getActivity().getApplicationContext() also works, maybe preferable
         linearLayoutManager = new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false);
@@ -70,6 +77,14 @@ public class HomeFeedFragment extends Fragment {
                 Log.i("FAB", "clicked");
                 Intent intent = new Intent(getActivity(), CreatePost.class);
                 startActivity(intent);
+            }
+        });
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                adapter.refresh();
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
 
