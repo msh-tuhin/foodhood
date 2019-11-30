@@ -95,7 +95,8 @@
         <activity android:name=".FullPostForRestaurant" />
         <activity android:name=".AllRestaurants" />
         <activity android:name=".CreateRestFeedPreview" />
-        <activity android:name=".EditDishForm"></activity>
+        <activity android:name=".EditDishForm" />
+        <activity android:name=".SplashScreen"></activity>
     </application>
 
 </manifest>

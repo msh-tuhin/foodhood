@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,12 +39,17 @@ public class SignUp extends AppCompatActivity {
 
     private String mEntity;
     private boolean forPerson;
-    TextInputLayout nameLayout, emailLayout, passwordLayout, passwordConfirmLayout;
-    TextInputEditText emailEditText, passwordEditText, passwordConfirmEditText, nameEditText;
-    TextView emailErrorMessageTextview;
-    TextView passwordErrorMessageTextview;
-    TextView passwordConfirmErrorMessageTextview;
-    TextView nameErrorMessageTextview;
+
+    LinearLayout formLayout;
+    LinearLayout progressLayout;
+    TextInputLayout nameLayout;
+    TextInputLayout emailLayout;
+    TextInputLayout passwordLayout;
+    TextInputLayout passwordConfirmLayout;
+    TextInputEditText emailEditText;
+    TextInputEditText passwordEditText;
+    TextInputEditText passwordConfirmEditText;
+    TextInputEditText nameEditText;
     Button signUp;
     FirebaseAuth mAuth;
 
@@ -59,6 +65,8 @@ public class SignUp extends AppCompatActivity {
         forPerson = mEntity.equals("person");
         mAuth = FirebaseAuth.getInstance();
 
+        formLayout = findViewById(R.id.form_layout);
+        progressLayout = findViewById(R.id.progress_layout);
         nameLayout = findViewById(R.id.input_layout_name);
         emailLayout = findViewById(R.id.input_layout_email);
         passwordLayout = findViewById(R.id.input_layout_password);
@@ -69,12 +77,6 @@ public class SignUp extends AppCompatActivity {
         passwordEditText = findViewById(R.id.password);
         passwordConfirmEditText = findViewById(R.id.password_confirm);
         signUp = findViewById(R.id.sign_up_button);
-
-        emailErrorMessageTextview = findViewById(R.id.email_error_message);
-        passwordErrorMessageTextview = findViewById(R.id.password_error_message);
-        passwordConfirmErrorMessageTextview = findViewById(R.id.password_confirm_error_message);
-        nameErrorMessageTextview = findViewById(R.id.name_error_message);
-        nameErrorMessageTextview.setVisibility(View.INVISIBLE);
 
         signUpButtonController = new SignUpButtonController(signUp);
 
@@ -87,6 +89,9 @@ public class SignUp extends AppCompatActivity {
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                signUp.setEnabled(false);
+                formLayout.setVisibility(View.INVISIBLE);
+                progressLayout.setVisibility(View.VISIBLE);
                 String nameText = nameEditText.getText().toString();
                 String emailText = emailEditText.getText().toString();
                 String passwordText = passwordEditText.getText().toString();
@@ -143,25 +148,11 @@ public class SignUp extends AppCompatActivity {
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        if(task.isSuccessful()){
-                                            Log.i("email_verification", "sent");
-                                            Intent intent = new Intent(SignUp.this, EmailVerification.class);
-                                            // maybe not needed
-                                            intent.putExtra("name", name);
-                                            intent.putExtra("email", email);
-                                            intent.putExtra("for_person", forPerson);
-                                            startActivity(intent);
-//                                            finish();
-                                        }else{
-                                            // TODO show a dialog with the error message
-                                            // TODO there are some quota limitations
-                                            // TODO handle those
-                                            // TODO add a firestore collection for saving
-                                            // TODO verification email not sent error messages
-                                            // TODO so that they can be checked by an admin later
-                                            Log.i("email_verification", task.getException().getMessage());
-                                            Toast.makeText(SignUp.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                        }
+                                        Intent intent = new Intent(SignUp.this, EmailVerification.class);
+                                        intent.putExtra("email", email);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                        // finish();
                                     }
                                 });
                     }
@@ -169,18 +160,17 @@ public class SignUp extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        progressLayout.setVisibility(View.INVISIBLE);
+                        formLayout.setVisibility(View.VISIBLE);
+                        signUp.setEnabled(true);
                         Exception exception = e;
                         if(exception instanceof FirebaseAuthWeakPasswordException){
-//                            passwordErrorMessageTextview.setText(((FirebaseAuthWeakPasswordException) exception).getReason());
-//                            passwordErrorMessageTextview.setVisibility(View.VISIBLE);
 //                            passwordEditText.setText("");
 //                            passwordConfirmEditText.setText("");
                             passwordLayout.setError(((FirebaseAuthWeakPasswordException) exception).getReason());
                         } else{
                              // FirebaseAuthInvalidCredentialsException
                              // FirebaseAuthUserCollisionException
-//                            emailErrorMessageTextview.setText(exception.getMessage());
-//                            emailErrorMessageTextview.setVisibility(View.VISIBLE);
                             emailLayout.setError(exception.getMessage());
                         }
                     }

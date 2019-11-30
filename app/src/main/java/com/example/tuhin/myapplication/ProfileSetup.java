@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import id.zelory.compressor.Compressor;
 import models.PersonInfo;
+import myapp.utils.SourceHomePage;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
@@ -40,7 +42,7 @@ import java.util.Map;
 // make changes to the database accordingly
 public class ProfileSetup extends AppCompatActivity {
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser currentUser;
     Bundle personDatabundle;
@@ -67,14 +69,15 @@ public class ProfileSetup extends AppCompatActivity {
         if(newUserCurrentTown != null) Log.i("new_user_town", newUserCurrentTown);
         if(photoPath != null) Log.i("new_user_photo_path", photoPath);
 
-        Uri uploadUri = compressImage(photoPath);
-        uploadPhotoAndAddUrlToDB(uploadUri);
-
+        addPersonVital();
         setupProfileCloud();
         // this is done from cloud side too
         // but it takes a bit of time to finish in cloud
         // that's why it is also done here, maybe not really needed
         markProfileCreated();
+
+        Uri uploadUri = compressImage(photoPath);
+        uploadPhotoAndAddUrlToDB(uploadUri);
     }
 
     private void uploadPhotoAndAddUrlToDB(Uri uploadUri){
@@ -110,39 +113,36 @@ public class ProfileSetup extends AppCompatActivity {
                     }
                     return storageReference.getDownloadUrl();
                 }
-            }).continueWithTask(new Continuation<Uri, Task<Void>>() {
+            })
+            .addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
-                public Task<Void> then(@NonNull Task<Uri> task) throws Exception {
-                    Uri uri = task.getResult();
-                    Log.i("download_uri", uri.toString());
+                public void onSuccess(Uri uri) {
+                    addPhotoUriToPersonVital(uri);
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    if(user == null){
-                        throw new Exception("User null");
-                    }
                     Log.i("current_user", user.getEmail());
-                    addPersonVital(uri);
                     UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                             .setPhotoUri(uri)
                             .build();
-                    return user.updateProfile(profileUpdates);
-                }
-            }).addOnSuccessListener(ProfileSetup.this, new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.i("photo_uri", "updated");
+                    user.updateProfile(profileUpdates);
                     Intent intent = new Intent(ProfileSetup.this, home.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                    ProfileSetup.this.finish();
                 }
-            }).addOnFailureListener(new OnFailureListener() {
+            })
+            .addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    // TODO
-                    Log.e("error", e.getMessage());
+                    Intent intent = new Intent(ProfileSetup.this, home.class);
+                    intent.putExtra("source", SourceHomePage.PHOTO_UPLOAD_FAILED);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                 }
             });
         } else {
             Log.i("upload_uri", "null");
+            Intent intent = new Intent(ProfileSetup.this, home.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
     }
 
@@ -160,22 +160,40 @@ public class ProfileSetup extends AppCompatActivity {
         }
     }
 
-    private void addPersonVital(Uri photoUri){
+    private void addPersonVital(){
         String newUserUid = mAuth.getCurrentUser().getUid();
         String newUserName = mAuth.getCurrentUser().getDisplayName();
         String newUserEmail = mAuth.getCurrentUser().getEmail();
         String newUserPhone = personDatabundle.getString("phone");
 
         Map<String, Object> personVital = new HashMap<>();
-        personVital.put("n", newUserName);
-        personVital.put("pp", photoUri.toString());
-        personVital.put("e", newUserEmail);
+        if(newUserName!=null){
+            personVital.put("n", newUserName);
+        }
+        if(newUserEmail!=null){
+            personVital.put("e", newUserEmail);
+        }
         if(newUserPhone != null){
             personVital.put("p", newUserPhone);
         }
         Log.i("new_user", newUserUid);
 
-        db.collection("person_vital").document(newUserUid).set(personVital)
+        db.collection("person_vital").document(newUserUid)
+                .set(personVital, SetOptions.merge())
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("person_vital", e.getMessage());
+                    }
+                });
+    }
+
+    private void addPhotoUriToPersonVital(Uri uri){
+        if(uri==null) return;
+        Map<String, Object> personVital = new HashMap<>();
+        personVital.put("pp", uri.toString());
+        db.collection("person_vital").document(mAuth.getCurrentUser().getUid())
+                .set(personVital, SetOptions.merge())
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -206,7 +224,7 @@ public class ProfileSetup extends AppCompatActivity {
 
     private void markProfileCreated(){
         Map<String, Object> data = new HashMap<>();
-        data.put("a", false);
+        data.put("a", true);
         db.collection("profile_created")
                 .document(mAuth.getCurrentUser().getUid())
                 .set(data)

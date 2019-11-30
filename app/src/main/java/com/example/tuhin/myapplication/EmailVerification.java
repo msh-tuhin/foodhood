@@ -6,11 +6,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,8 +23,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -29,9 +35,9 @@ import java.util.Map;
 
 public class EmailVerification extends AppCompatActivity {
 
-    private Boolean forPerson;
-    private String mName;
     private String mEmail;
+    LinearLayout mainLayout;
+    LinearLayout progressLayout;
     TextView emailVerifiedTextView, resendEmailTextView, emailNotVerifiedTextView;
     EditText emailEditText, passwordEditText;
     Button signInButton;
@@ -45,11 +51,11 @@ public class EmailVerification extends AppCompatActivity {
 
         // maybe name, email not needed from intent
         // could be acquired from the FirebaseUser object
-        mName = getIntent().getStringExtra("name");
         mEmail = getIntent().getStringExtra("email");
-        forPerson = getIntent().getBooleanExtra("for_person", true);
         mAuth = FirebaseAuth.getInstance();
 
+        mainLayout = findViewById(R.id.main_layout);
+        progressLayout = findViewById(R.id.progress_layout);
         emailVerifiedTextView = findViewById(R.id.email_verified_textview);
         emailNotVerifiedTextView = findViewById(R.id.not_verified_text);
         emailNotVerifiedTextView.setVisibility(View.INVISIBLE);
@@ -60,6 +66,28 @@ public class EmailVerification extends AppCompatActivity {
         passwordEditText = findViewById(R.id.password);
         signInButton = findViewById(R.id.sign_in_button);
 
+        mAuth.signOut();
+
+        passwordEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.toString().equals("")){
+                    signInButton.setEnabled(false);
+                }else{
+                    signInButton.setEnabled(true);
+                }
+            }
+        });
         emailVerifiedTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,6 +127,9 @@ public class EmailVerification extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                signInButton.setEnabled(false);
+                mainLayout.setVisibility(View.INVISIBLE);
+                progressLayout.setVisibility(View.VISIBLE);
                 emailNotVerifiedTextView.setVisibility(View.INVISIBLE);
                 String email = emailEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
@@ -108,14 +139,11 @@ public class EmailVerification extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        // TODO maybe signout the user
+    protected void onStart() {
+        super.onStart();
     }
 
     private void signInWithEmailAndPassword(String email, String password){
-        // TODO new user is actually signed in
-        // TODO maybe do something about it
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
@@ -124,24 +152,22 @@ public class EmailVerification extends AppCompatActivity {
                         if(user != null){
                             if(user.isEmailVerified()){
                                 Log.i("sign_in", "Successful");
-                                Intent intent;
-                                if(forPerson){
-                                    intent = new Intent(EmailVerification.this, SetProfilePicture.class);
-                                } else{
-                                    addNameAndEmailToDB(user);
-                                    intent = new Intent(EmailVerification.this, RestaurantHome.class);
-                                }
-                                startActivity(intent);
-                                finish();
+                                launchPersonOrRestProfileSetup(user);
                             }else{
                                 Log.i("sign_in", "Email not verified");
-//                                showDialog();
-                                emailNotVerifiedTextView.setText("Oops! Email is not verified");
+                                progressLayout.setVisibility(View.INVISIBLE);
+                                mainLayout.setVisibility(View.VISIBLE);
+                                signInButton.setEnabled(true);
+                                // showDialog();
+                                emailNotVerifiedTextView.setText("Sorry! Email is not verified!");
                                 emailNotVerifiedTextView.setVisibility(View.VISIBLE);
                             }
                         }else{
                             // maybe this never happens
                             Log.i("sign_in", "User is null");
+                            progressLayout.setVisibility(View.INVISIBLE);
+                            mainLayout.setVisibility(View.VISIBLE);
+                            signInButton.setEnabled(true);
                             emailNotVerifiedTextView.setText("User not found");
                             emailNotVerifiedTextView.setVisibility(View.VISIBLE);
                         }
@@ -150,10 +176,23 @@ public class EmailVerification extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.i("sign_in", e.getMessage());
-//                        errorMessageTextView.setText(e.getMessage());
-                        emailNotVerifiedTextView.setText("Email or Password is wrong.");
-                        emailNotVerifiedTextView.setVisibility(View.VISIBLE);
+                        Log.i("sign_in", "failed");
+                        progressLayout.setVisibility(View.INVISIBLE);
+                        mainLayout.setVisibility(View.VISIBLE);
+                        signInButton.setEnabled(true);
+                        // the error message doesn't show in emailNotVerifiedTextView
+                        // don't know why
+                        if(e instanceof FirebaseAuthInvalidUserException){
+                            Log.i("error", "FirebaseAuthInvalidUserException");
+                            emailNotVerifiedTextView.setText("The email is disabled or doesn't exist!");
+                        }
+                        else if(e instanceof FirebaseAuthInvalidCredentialsException){
+                            Log.i("error", "FirebaseAuthInvalidCredentialsException");
+                            emailNotVerifiedTextView.setText("Email or password is wrong!");
+                        }
+                        else{
+                            emailNotVerifiedTextView.setText("Couldn't sign in!");
+                        }
                     }
                 });
     }
@@ -173,6 +212,30 @@ public class EmailVerification extends AppCompatActivity {
         });
         dialog.setView(view);
         dialog.show();
+    }
+
+    private void launchPersonOrRestProfileSetup(final FirebaseUser user){
+        if(user==null) return;
+        FirebaseFirestore.getInstance()
+                .collection("email_type")
+                .document(user.getEmail())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            Boolean forPerson = documentSnapshot.getBoolean("forPerson");
+                            Intent intent;
+                            if(forPerson){
+                                intent = new Intent(EmailVerification.this, SetProfilePicture.class);
+                            } else{
+                                intent = new Intent(EmailVerification.this, RestAccountSetup.class);
+                            }
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                    }
+                });
     }
 
     private void resendVerificationEmail(){
@@ -201,27 +264,6 @@ public class EmailVerification extends AppCompatActivity {
         }else{
             Log.i("user", "null");
         }
-    }
-
-    private void addNameAndEmailToDB(FirebaseUser user){
-        String name = user.getDisplayName() == null ? mName : user.getDisplayName();
-        Log.i("name", name);
-        String emailString = user.getEmail() == null ? mEmail : user.getEmail();
-        Log.i("email", emailString);
-
-        Map<String, String> restVital = new HashMap<>();
-        restVital.put("n", name);
-        restVital.put("e", emailString);
-
-        FirebaseFirestore.getInstance()
-                .collection("rest_vital").document(user.getUid())
-                .set(restVital)
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                    }
-                });
     }
 
 }

@@ -166,16 +166,27 @@ public class home extends AppCompatActivity {
                 });
     }
 
-    private void showMyDialog(int source){
+    private void showMyDialog(final int source){
         if(source==SourceHomePage.UNKNOWN) return;
-        String message = source==SourceHomePage.POST_CREATION_SUCCESSFUL ?
-                "Review added successfully": "Adding review failed";
+        String message = "";
+        switch (source){
+            case SourceHomePage.POST_CREATION_SUCCESSFUL:
+                message = "Review added successfully";
+                break;
+            case SourceHomePage.POST_CREATION_FAILED:
+                message = "Adding review failed";
+                break;
+            case SourceHomePage.PHOTO_UPLOAD_FAILED:
+                message = "Couldn't upload profile picture";
+                break;
+        }
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder.setMessage(message);
         dialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
+                if(source==SourceHomePage.PHOTO_UPLOAD_FAILED) return;
                 Toast.makeText(home.this,
                         "It might take some time to show your" +
                         " review in your timeline! Please refresh in a few moments.",

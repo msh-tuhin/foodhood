@@ -288,8 +288,7 @@ public class AdapterCreator {
                            final String personLink){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query bQuery = db.collection("own_activities")
-                .document("ySmyxU4yOwWAG7VG56dz0WwnpPe2")
-                // .document(personLink)
+                .document(personLink)
                 .collection("act").orderBy("ts", Query.Direction.DESCENDING);
         PagedList.Config config = new PagedList.Config.Builder()
                 .setEnablePlaceholders(false)
@@ -458,7 +457,7 @@ public class AdapterCreator {
                            final String personLink){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query bQuery = db.collection("own_activities")
-                .document("ySmyxU4yOwWAG7VG56dz0WwnpPe2")
+                .document(personLink)
                 .collection("act")
                 .orderBy("ts", Query.Direction.DESCENDING);
         PagedList.Config config = new PagedList.Config.Builder()

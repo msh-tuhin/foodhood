@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,6 +32,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class MainActivity extends AppCompatActivity {
 
     private Task<DocumentSnapshot> mEmailTypeTask;
+
+    LinearLayout mainLayout;
+    LinearLayout progressLayout;
     TextView errorMessageTextView, signUpTextView, forgotPasswordTextView;
     TextView createBusinessAccountTV;
     EditText email, password;
@@ -40,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mainLayout = findViewById(R.id.main_layout);
+        progressLayout = findViewById(R.id.progress_layout);
         errorMessageTextView = findViewById(R.id.error_message);
         errorMessageTextView.setVisibility(View.INVISIBLE);
 
@@ -55,7 +63,10 @@ public class MainActivity extends AppCompatActivity {
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                signIn.setEnabled(false);
                 signInWithEmailAndPassword(email.getText().toString(), password.getText().toString());
+                mainLayout.setVisibility(View.INVISIBLE);
+                progressLayout.setVisibility(View.VISIBLE);
             }
         });
 
@@ -99,8 +110,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         FirebaseUser user = mAuth.getCurrentUser();
-        if(user != null && user.isEmailVerified()){
-            chooseAndLaunchHome(user);
+        if(user != null){
+            Intent intent = new Intent(MainActivity.this, SplashScreen.class);
+            startActivity(intent);
+            MainActivity.this.finish();
         }
     }
 
@@ -111,17 +124,15 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(AuthResult authResult) {
                         final FirebaseUser user = authResult.getUser();
                         if(user != null){
-                             chooseAndLaunchHome(user);
-//                            if(user.isEmailVerified()){
-//                                Log.i("sign_in", "Successful");
-//                                chooseAndLaunchHome(user);
-//                            }else{
-//                                Log.i("sign_in", "Email not verified");
-//                                sendEmailVerification(user, email);
-//                            }
+                            Intent intent = new Intent(MainActivity.this, SplashScreen.class);
+                            startActivity(intent);
+                            MainActivity.this.finish();
                         }else{
                             // maybe this never happens
                             Log.i("sign_in", "User is null");
+                            progressLayout.setVisibility(View.INVISIBLE);
+                            mainLayout.setVisibility(View.VISIBLE);
+                            signIn.setEnabled(true);
                             errorMessageTextView.setText("User not found");
                             errorMessageTextView.setVisibility(View.VISIBLE);
                         }
@@ -130,123 +141,24 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.i("sign_in", e.getMessage());
-//                        errorMessageTextView.setText(e.getMessage());
-                        errorMessageTextView.setText("Email or Password is wrong.");
+                        Log.i("sign_in", "failed");
+                        progressLayout.setVisibility(View.INVISIBLE);
+                        mainLayout.setVisibility(View.VISIBLE);
+                        signIn.setEnabled(true);
+                        if(e instanceof FirebaseAuthInvalidUserException){
+                            Log.i("error", "FirebaseAuthInvalidUserException");
+                            errorMessageTextView.setText("The email is disabled or doesn't exist!");
+                        }
+                        else if(e instanceof FirebaseAuthInvalidCredentialsException){
+                            Log.i("error", "FirebaseAuthInvalidCredentialsException");
+                            errorMessageTextView.setText("Email or password is wrong!");
+                        }
+                        else{
+                            errorMessageTextView.setText("Couldn't sign in!");
+                        }
                         errorMessageTextView.setVisibility(View.VISIBLE);
                     }
                 });
     }
 
-    private void chooseAndLaunchHome(FirebaseUser user){
-        SharedPreferences sPref = getSharedPreferences(getString(R.string.account_type),
-                Context.MODE_PRIVATE);
-        int accountType = sPref.getInt(user.getEmail(), AccountTypes.UNSET);
-        if(accountType == AccountTypes.UNSET){
-            getAccountTypeFromDB(user);
-        }else if(accountType == AccountTypes.PERSON){
-            // TODO send to Welcome/ProfileSetup page if user is new
-            chooseHomeOrProfileCreation(user);
-        }else{
-            Intent intent = new Intent(MainActivity.this, RestaurantHome.class);
-            startActivity(intent);
-            MainActivity.this.finish();
-        }
-
-    }
-
-    private void getAccountTypeFromDB(final FirebaseUser user){
-        FirebaseFirestore.getInstance()
-                .collection("email_type")
-                .document(user.getEmail())
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Log.i("account_type_SP", "being added");
-                        SharedPreferences sPref = getSharedPreferences(getString(R.string.account_type),
-                                Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sPref.edit();
-                        if(documentSnapshot.exists()){
-                            Boolean forPerson = documentSnapshot.getBoolean("forPerson");
-                            Intent intent;
-                            if(forPerson){
-                                editor.putInt(user.getEmail(), AccountTypes.PERSON);
-                                editor.apply();
-                                chooseHomeOrProfileCreation(user);
-                            }else{
-                                editor.putInt(user.getEmail(), AccountTypes.RESTAURANT);
-                                editor.apply();
-                                intent = new Intent(MainActivity.this, RestaurantHome.class);
-                                startActivity(intent);
-                                MainActivity.this.finish();
-                            }
-                        }
-                    }
-                });
-    }
-
-    private void launchEmailVerification(FirebaseUser user, final String emailString){
-        FirebaseFirestore.getInstance()
-                .collection("email_type")
-                .document(user.getEmail())
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
-                            Boolean forPerson = documentSnapshot.getBoolean("forPerson");
-                            Intent intent = new Intent(MainActivity.this, EmailVerification.class);
-                            intent.putExtra("email", emailString);
-                            intent.putExtra("for_person", forPerson);
-                            startActivity(intent);
-                            MainActivity.this.finish();
-                        }
-                    }
-                });
-    }
-
-    private void sendEmailVerification(final FirebaseUser user, final String emailString){
-        user.sendEmailVerification()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.i("email_verification", "sent");
-                        launchEmailVerification(user, emailString);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // TODO show a dialog with the error message
-                        // TODO there are some quota limitations
-                        // TODO handle those
-                        // TODO add a firestore collection for saving
-                        // TODO verification email not sent error messages
-                        // TODO so that they can be checked by an admin later
-                        Log.i("email_verification", e.getMessage());
-                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-    }
-
-    private void chooseHomeOrProfileCreation(FirebaseUser user){
-        String uid = user.getUid();
-        FirebaseFirestore.getInstance().collection("profile_created")
-                .document(uid).get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.exists()){
-                            Intent intent = new Intent(MainActivity.this, home.class);
-                            startActivity(intent);
-                            MainActivity.this.finish();
-                        }else{
-                            Intent intent = new Intent(MainActivity.this, SetProfilePicture.class);
-                            startActivity(intent);
-                            MainActivity.this.finish();
-                        }
-                    }
-                });
-    }
 }
