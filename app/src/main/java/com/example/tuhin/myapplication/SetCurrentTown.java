@@ -1,5 +1,6 @@
 package com.example.tuhin.myapplication;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -30,6 +31,11 @@ public class SetCurrentTown extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Food Frenzy");
         setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        // not sure about this
+        // actionBar.setDisplayShowHomeEnabled(true);
 
         townSpinner = findViewById(R.id.town_spinner);
         skipOrNext = findViewById(R.id.skip_or_next);
@@ -66,8 +72,15 @@ public class SetCurrentTown extends AppCompatActivity {
                     personDataBundle.putString("current_town", selectedTown);
                 }
                 intent.putExtras(personDataBundle);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

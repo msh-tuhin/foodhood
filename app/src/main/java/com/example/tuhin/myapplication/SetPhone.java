@@ -1,5 +1,6 @@
 package com.example.tuhin.myapplication;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import myapp.utils.InputValidator;
@@ -40,6 +41,11 @@ public class SetPhone extends AppCompatActivity {
 
         toolbar.setTitle("Food Frenzy");
         setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        // not sure about this
+        // actionBar.setDisplayShowHomeEnabled(true);
 
         skipOrNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,5 +106,11 @@ public class SetPhone extends AppCompatActivity {
             phoneInputLayout.setError("Please type a valid phone number");
             skipOrNext.setText("Skip");
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }
