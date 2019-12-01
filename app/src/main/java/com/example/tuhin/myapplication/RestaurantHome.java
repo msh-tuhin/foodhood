@@ -62,6 +62,7 @@ public class RestaurantHome extends AppCompatActivity {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         // maybe not needed: IDK
         adapter.notifyDataSetChanged();
+        viewPager.setOffscreenPageLimit(4);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
 
