@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -31,6 +32,9 @@ import android.widget.Toast;
 public class home extends AppCompatActivity {
 
     private int source;
+
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseAuth.AuthStateListener mAuthStateListener;
 
     Toolbar toolbar;
     ViewPager viewPager;
@@ -71,6 +75,30 @@ public class home extends AppCompatActivity {
         }
 
         showMyDialog(source);
+
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if(user==null){
+                    Intent intent = new Intent(home.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+            }
+        };
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mAuth.removeAuthStateListener(mAuthStateListener);
     }
 
     @Override
@@ -83,13 +111,10 @@ public class home extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.logout:
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                mAuth.signOut();
                 return true;
-                default:
-                    return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
 
         }
     }

@@ -28,20 +28,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCanceledListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnPausedListener;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +39,8 @@ public class SetProfilePicture extends AppCompatActivity {
     final int IMAGE_CHOOSE_REQUEST_CODE = 1;
     final int REQUEST_EXTERNAL_STORAGE_READ_PERM = 1;
 
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseAuth.AuthStateListener mAuthStateListener;
     Uri uploadUri = null;
     String photoPath;
     Toolbar toolbar;
@@ -138,6 +128,30 @@ public class SetProfilePicture extends AppCompatActivity {
             }
         });
 
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if(user==null){
+                    Intent intent = new Intent(SetProfilePicture.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+            }
+        };
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mAuth.removeAuthStateListener(mAuthStateListener);
     }
 
     @Override
@@ -156,10 +170,7 @@ public class SetProfilePicture extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.logout:
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                mAuth.signOut();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
