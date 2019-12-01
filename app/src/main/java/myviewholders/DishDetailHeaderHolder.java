@@ -1,6 +1,7 @@
 package myviewholders;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 
 import com.example.tuhin.myapplication.DishDetail;
 import com.example.tuhin.myapplication.R;
+import com.example.tuhin.myapplication.RestDetail;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -133,10 +135,16 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
     private void bindRestaurantNameAddress(DocumentSnapshot dishVitalSnapshot){
         Map<String, String> restaurant = (Map) dishVitalSnapshot.get("re");
         if(restaurant==null) return;
-        String restaurantLink = restaurant.get("l");
-        if(restaurantLink==null) return;
         String restaurantName = restaurant.get("n");
         if(restaurantName==null) return;
+        SpannableString spannableName = new SpannableString(restaurantName);
+        spannableName.setSpan(new StyleSpan(Typeface.BOLD), 0,
+                restaurantName.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        restNameAddressTV.setText(restaurantName);
+        restNameAddressLayout.setVisibility(View.VISIBLE);
+        String restaurantLink = restaurant.get("l");
+        if(restaurantLink==null) return;
+        setRestaurantNameAddressOnClickListener(restaurantLink);
         setRestaurantNameAddress(restaurantName, restaurantLink);
     }
 
@@ -185,7 +193,7 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
         addToWishlist.setOnClickListener(getAddToWishlistOnClickListener(mDishLink));
     }
 
-    private void setRestaurantNameAddress(final String restaurantName, String restaurantLink){
+    private void setRestaurantNameAddress(final String restaurantName, final String restaurantLink){
         db.collection("rest_vital").document(restaurantLink)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -207,7 +215,19 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
                 SpannableString spannableNameAddress = new SpannableString(nameAddress);
                 spannableNameAddress.setSpan(new StyleSpan(Typeface.BOLD), 0, restaurantName.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 restNameAddressTV.setText(spannableNameAddress, TextView.BufferType.SPANNABLE);
+                // already visible; this is redundant
                 restNameAddressLayout.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    private void setRestaurantNameAddressOnClickListener(final String restaurantLink){
+        restNameAddressTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, RestDetail.class);
+                intent.putExtra("restaurantLink", restaurantLink);
+                mContext.startActivity(intent);
             }
         });
     }

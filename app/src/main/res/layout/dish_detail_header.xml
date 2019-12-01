@@ -40,7 +40,10 @@
             android:layout_marginLeft="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            android:text="Restaurant Name+Address"/>
+            android:text="Restaurant Name+Address"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@drawable/txtbtn_bg"/>
     </LinearLayout>
 
     <LinearLayout
