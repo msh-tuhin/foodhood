@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             app:itemLayout="@layout/search_hit_common"
-            app:autoHideKeyboard="true"
+            app:autoHideKeyboard="false"
             android:clipToPadding="false"
             android:paddingBottom="48dp"/>
 

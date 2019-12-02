@@ -99,6 +99,8 @@ public class SearchFragment extends Fragment {
                 bindPrice(hits, position, view);
                 bindAddress(hits, position, view);
                 bindPicture(hits, position, view);
+                bindDistrict(hits, position, view);
+                bindcategory(hits, position, view);
                 // setParentLayoutOnClickListener(hits, position, view);
             }
 
@@ -256,7 +258,50 @@ public class SearchFragment extends Fragment {
             String link = hits.get(position).getString("image_url");
             PictureBinder.bindPictureSearchResult((CircleImageView)view.findViewById(R.id.avatar), link);
         }catch (JSONException e){
-            Log.i("image_url", "no value found");;
+            Log.i("image_url", "no value found");
+        }
+    }
+
+    private void bindDistrict(Hits hits, int position, View view){
+        try{
+            String district = hits.get(position).getString("district");
+            SpannableStringBuilder builder = new SpannableStringBuilder();
+            builder.append(district);
+            boolean isDistrictHighlighted = getHighlight(hits.get(position), "district", builder);
+            SpannableStringBuilder newBuilder = new SpannableStringBuilder("District: ");
+            newBuilder.append(builder);
+            if(isDistrictHighlighted){
+                TextView districtTV = view.findViewById(R.id.district);
+                districtTV.setText(newBuilder);
+                districtTV.setVisibility(View.VISIBLE);
+            }
+        }catch (JSONException e){
+            Log.i("district", "no value found");
+        }
+    }
+
+    private void bindcategory(Hits hits, int position, View view){
+        try{
+            JSONArray categories = hits.get(position).getJSONArray("category");
+            String categoryText = "";
+            for(int i=0; i<categories.length(); i++){
+                categoryText += categories.getString(i);
+                categoryText += ", ";
+            }
+            SpannableStringBuilder builder = new SpannableStringBuilder(categoryText);
+            boolean isCategoryHighlighted = getHighlightedArrayField(hits.get(position),
+                    "category", builder);
+            if(isCategoryHighlighted){
+                Log.i("denug", "inside");
+                SpannableStringBuilder newBuilder = new SpannableStringBuilder();
+                newBuilder.append("Category: ");
+                newBuilder.append(builder);
+                TextView categoryTV = view.findViewById(R.id.category);
+                categoryTV.setText(newBuilder);
+                categoryTV.setVisibility(View.VISIBLE);
+            }
+        }catch (JSONException e){
+            Log.i("category", "no value found");
         }
     }
 
@@ -303,19 +348,25 @@ public class SearchFragment extends Fragment {
         TextView priceTV = view.findViewById(R.id.price);
         LinearLayout addressLayout = view.findViewById(R.id.address_layout);
         TextView addressTV = view.findViewById(R.id.address);
+        TextView districtTV = view.findViewById(R.id.district);
+        TextView categoryTV = view.findViewById(R.id.category);
 
         avatar.setImageResource(R.drawable.ltgray);
         nameTV.setText("");
         ratingTV.setText("");
         priceTV.setText("");
         addressTV.setText("");
+        districtTV.setText("");
+        districtTV.setVisibility(View.GONE);
+        categoryTV.setText("");
+        categoryTV.setVisibility(View.GONE);
         ratingLayout.setVisibility(View.GONE);
         priceLayout.setVisibility(View.GONE);
         addressLayout.setVisibility(View.GONE);
         //parentLayout.setOnClickListener(null);
     }
 
-    private void getHighlight(JSONObject hit, String attributeName,
+    private boolean getHighlight(JSONObject hit, String attributeName,
                                          SpannableStringBuilder builder){
         try{
             JSONObject highlightResult = hit.getJSONObject("_highlightResult");
@@ -335,17 +386,46 @@ public class SearchFragment extends Fragment {
             }
             if(highlightable!=null){
                 int start = builder.toString().toLowerCase().indexOf(highlightable);
-                int end = start + highlightable.length();
-                if(start<0){
-                    start = 0;
-                    end = 0;
+                if(start>=0){
+                    int end = start + highlightable.length();
+                    builder.setSpan(new ForegroundColorSpan(Color.BLUE),
+                            start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    return true;
                 }
-                builder.setSpan(new ForegroundColorSpan(Color.BLUE),
-                        start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
 
         }catch (JSONException e){
             Log.e("_highlightResult", "no value found");
         }
+        return false;
+    }
+
+    private boolean getHighlightedArrayField(JSONObject hit, String attributeName, SpannableStringBuilder builder){
+        boolean isCategoryHighlighted = false;
+        try{
+            JSONObject highlightResult = hit.getJSONObject("_highlightResult");
+            Log.i("hmm", "ase");
+            JSONArray highlightedAttributes = highlightResult.getJSONArray(attributeName);
+            Log.i("hmm", "nai");
+            for(int i=0; i<highlightedAttributes.length();i++){
+                JSONObject jsonObject = highlightedAttributes.getJSONObject(i);
+                if (jsonObject.getString("matchLevel").equals("none")) {
+                    continue;
+                }
+                JSONArray matchedWords = jsonObject.getJSONArray("matchedWords");
+                for(int j=0; j<matchedWords.length(); j++){
+                    int start = builder.toString().toLowerCase().indexOf(matchedWords.getString(j));
+                    if(start>=0){
+                        int end = start + matchedWords.getString(j).length();
+                        builder.setSpan(new ForegroundColorSpan(Color.BLUE),
+                                    start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        isCategoryHighlighted = true;
+                    }
+                }
+            }
+        }catch (JSONException e){
+            Log.e("_highlightResult", "no value found");
+        }
+        return isCategoryHighlighted;
     }
 }
