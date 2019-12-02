@@ -368,36 +368,27 @@ public class SearchFragment extends Fragment {
 
     private boolean getHighlight(JSONObject hit, String attributeName,
                                          SpannableStringBuilder builder){
+        boolean isHighlighted = false;
         try{
             JSONObject highlightResult = hit.getJSONObject("_highlightResult");
             JSONObject highlightedAttribute = highlightResult.getJSONObject(attributeName);
             JSONArray matchedWords = highlightedAttribute.getJSONArray("matchedWords");
-            ArrayList<String> wordsList = new ArrayList<>();
-            if(matchedWords != null) {
-                for (int i = 0; i < matchedWords.length(); i++) {
-                    wordsList.add(matchedWords.getString(i));
-                }
-            }
 
-            String highlightable = null;
-            if(wordsList.size()>0){
-                highlightable = wordsList.get(0);
-                Log.i("highlightable", highlightable);
-            }
-            if(highlightable!=null){
-                int start = builder.toString().toLowerCase().indexOf(highlightable);
+            for(int i=0; i<matchedWords.length(); i++){
+                int start = builder.toString().toLowerCase().indexOf(matchedWords.getString(i));
                 if(start>=0){
-                    int end = start + highlightable.length();
+                    int end = start + matchedWords.getString(i).length();
                     builder.setSpan(new ForegroundColorSpan(Color.BLUE),
                             start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    return true;
+                    // return true;
+                    isHighlighted = true;
                 }
             }
 
         }catch (JSONException e){
             Log.e("_highlightResult", "no value found");
         }
-        return false;
+        return isHighlighted;
     }
 
     private boolean getHighlightedArrayField(JSONObject hit, String attributeName, SpannableStringBuilder builder){
