@@ -46,6 +46,7 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/baseline_star_black_24dp"/>
                 <TextView
+                    android:textSize="16sp"
                     android:textColor="#000000"
                     android:id="@+id/rating"
                     android:layout_width="wrap_content"
@@ -68,6 +69,7 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/taka"/>
                 <TextView
+                    android:textSize="16sp"
                     android:textColor="#000000"
                     android:id="@+id/price"
                     android:layout_width="wrap_content"
@@ -86,9 +88,11 @@
                 android:visibility="gone">
                 <ImageView
                     android:layout_width="16dp"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/outline_room_black_24dp"/>
+                    android:layout_height="16dp"
+                    android:src="@drawable/baseline_room_black_24dp"
+                    android:layout_marginTop="4dp"/>
                 <TextView
+                    android:textSize="16sp"
                     android:textColor="#000000"
                     android:id="@+id/address"
                     android:layout_width="wrap_content"

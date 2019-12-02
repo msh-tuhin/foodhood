@@ -21,6 +21,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.SpannedString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -144,8 +145,10 @@ public class SearchFragment extends Fragment {
         String name = "";
         try{
             name = hits.get(position).getString("name");
-            SpannableString highlighted = getHighlight(hits.get(position), "name", name);
-            ((TextView) view.findViewById(R.id.name)).setText(highlighted);
+            SpannableStringBuilder builder = new SpannableStringBuilder();
+            builder.append(name);
+            getHighlight(hits.get(position), "name", builder);
+            ((TextView) view.findViewById(R.id.name)).setText(builder);
         }catch (JSONException e){
             Log.i("name", "no value found");
             ((TextView) view.findViewById(R.id.name)).setText("");
@@ -199,11 +202,12 @@ public class SearchFragment extends Fragment {
         try{
             currentTown = hits.get(position).getString("current_town");
             //SpannableString spannableAddress = new SpannableString(currentTown);
-            SpannableString spannableAddress = getHighlight(hits.get(position), "current_town",
-                    currentTown);
-            spannableAddress.setSpan(new StyleSpan(Typeface.BOLD), 0,
+            SpannableStringBuilder builder = new SpannableStringBuilder();
+            builder.append(currentTown);
+            getHighlight(hits.get(position), "current_town", builder);
+            builder.setSpan(new StyleSpan(Typeface.BOLD), 0,
                     currentTown.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            addressTV.setText(spannableAddress);
+            addressTV.setText(builder);
             addressLayout.setVisibility(View.VISIBLE);
             return;
         }catch (JSONException e){
@@ -213,8 +217,10 @@ public class SearchFragment extends Fragment {
         // for restaurants
         try{
             address = hits.get(position).getString("address");
-            SpannableString spannedAddress = getHighlight(hits.get(position), "address", address);
-            addressTV.setText(spannedAddress);
+            SpannableStringBuilder builder = new SpannableStringBuilder();
+            builder.append(address);
+            getHighlight(hits.get(position), "address", builder);
+            addressTV.setText(builder);
             addressLayout.setVisibility(View.VISIBLE);
             return;
         }catch (JSONException e){
@@ -230,14 +236,18 @@ public class SearchFragment extends Fragment {
         }
         if(restaurantName==null || restaurantName.equals("")) return;
         text = restaurantName;
-        if(restaurantAddress!=null && !restaurantAddress.equals("")){
-            text += "\n" + restaurantAddress;
-        }
-        SpannableString spannedAddress = new SpannableString(text);
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        builder.append(restaurantName);
+        getHighlight(hits.get(position), "restaurant_name", builder);
         int start = text.indexOf(restaurantName);
         int end = start + restaurantName.length();
-        spannedAddress.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        addressTV.setText(spannedAddress);
+        builder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if(restaurantAddress!=null && !restaurantAddress.equals("")){
+            builder.append("\n");
+            builder.append(restaurantAddress);
+            getHighlight(hits.get(position), "restaurant_address", builder);
+        }
+        addressTV.setText(builder);
         addressLayout.setVisibility(View.VISIBLE);
     }
 
@@ -305,8 +315,8 @@ public class SearchFragment extends Fragment {
         //parentLayout.setOnClickListener(null);
     }
 
-    private SpannableString getHighlight(JSONObject hit, String attributeName, String attributeValue){
-        SpannableString highlightedText = new SpannableString(attributeValue);
+    private void getHighlight(JSONObject hit, String attributeName,
+                                         SpannableStringBuilder builder){
         try{
             JSONObject highlightResult = hit.getJSONObject("_highlightResult");
             JSONObject highlightedAttribute = highlightResult.getJSONObject(attributeName);
@@ -324,15 +334,18 @@ public class SearchFragment extends Fragment {
                 Log.i("highlightable", highlightable);
             }
             if(highlightable!=null){
-                int start = attributeValue.toLowerCase().indexOf(highlightable);
+                int start = builder.toString().toLowerCase().indexOf(highlightable);
                 int end = start + highlightable.length();
-                highlightedText.setSpan(new ForegroundColorSpan(Color.BLUE),
+                if(start<0){
+                    start = 0;
+                    end = 0;
+                }
+                builder.setSpan(new ForegroundColorSpan(Color.BLUE),
                         start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
 
         }catch (JSONException e){
             Log.e("_highlightResult", "no value found");
         }
-        return highlightedText;
     }
 }
