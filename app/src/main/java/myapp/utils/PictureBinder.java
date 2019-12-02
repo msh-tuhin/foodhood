@@ -37,4 +37,13 @@ public class PictureBinder {
             }
         }
     }
+
+    public static void bindPictureSearchResult(ImageView view, String imageUrlString){
+        if(imageUrlString!=null && !imageUrlString.equals("")){
+            Picasso.get().load(imageUrlString)
+                    .placeholder(R.drawable.ltgray)
+                    .error(R.drawable.ltgray)
+                    .into(view);
+        }
+    }
 }
