@@ -8,6 +8,7 @@ public class DishFeedback implements Serializable {
     public String name;
     public float rating;
     public String review;
+    public String imageUrl;
 
     public DishFeedback(String link, String name, float rating, String review) {
         this.link = link;

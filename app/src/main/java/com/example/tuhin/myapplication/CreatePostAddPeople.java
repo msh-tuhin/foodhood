@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.algolia.instantsearch.core.helpers.Searcher;
+import com.algolia.instantsearch.core.model.NumericRefinement;
 import com.algolia.instantsearch.ui.helpers.InstantSearch;
 import com.algolia.instantsearch.ui.utils.ItemClickSupport;
 import com.algolia.instantsearch.ui.views.Hits;
@@ -30,6 +33,7 @@ import models.DishFeedback;
 import models.RestaurantFeedback;
 import models.SelectedPerson;
 import myapp.utils.AlgoliaCredentials;
+import myapp.utils.SearchHitBinder;
 
 // receives explicit intent with bundle extra
 // the keys =>
@@ -39,7 +43,7 @@ import myapp.utils.AlgoliaCredentials;
 //     "dishFeedbacks": ArrayList<DishFeedback>
 public class CreatePostAddPeople extends AppCompatActivity {
 
-    private final String ALGOLIA_INDEX_NAME = "People";
+    private final String ALGOLIA_INDEX_NAME = "main";
 
     ArrayList<String> addedPeople = new ArrayList<>();
     ArrayList<SelectedPerson> addedPeopleList = new ArrayList<>();
@@ -81,21 +85,23 @@ public class CreatePostAddPeople extends AppCompatActivity {
         selectedPeopleLayout = findViewById(R.id.selected_people_layout);
 
         searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, ALGOLIA_INDEX_NAME);
+        searcher.addNumericRefinement(new NumericRefinement("type", 2, 0));
         instantSearch = new InstantSearch(this, searcher);
         instantSearch.search();
+        //instantSearch.setSearchOnEmptyString(false);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        hits.addItemDecoration(dividerItemDecoration);
 
         hits.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
             public void onChildViewAttachedToWindow(@NonNull View view) {
+                SearchHitBinder.refreshView(view);
                 int position = hits.getChildAdapterPosition(view);
                 Log.i("position", Integer.toString(position));
-                String name = "";
-                try{
-                    name = hits.get(position).getString("name");
-                }catch (JSONException e){
-                    e.printStackTrace();
-                }
-                ((TextView) view.findViewById(R.id.restaurant_name)).setText(name);
+                SearchHitBinder searchHitBinder = new SearchHitBinder(hits, position, view);
+                searchHitBinder.bind(true, true, false, false,
+                        false, false, false);
             }
 
             @Override
@@ -114,10 +120,6 @@ public class CreatePostAddPeople extends AppCompatActivity {
                     selectedPerson.setFromJSONObject(hits.get(position));
                 }catch (JSONException e){
                     e.printStackTrace();
-                    selectedPerson.name = null;
-                    selectedPerson.id = null;
-                    Log.e("ERROR", "OH!!FUCK!!!");
-                    return;
                 }
                 if(!addedPeople.contains(selectedPerson.id)){
                     addedPeopleList.add(selectedPerson);

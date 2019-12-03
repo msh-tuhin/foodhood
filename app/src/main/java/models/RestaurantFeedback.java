@@ -8,6 +8,7 @@ public class RestaurantFeedback implements Serializable {
     public String name;
     public float rating;
     public String review;
+    public String imageUrl;
 
     public RestaurantFeedback(String link, String name, float rating, String review) {
         this.link = link;

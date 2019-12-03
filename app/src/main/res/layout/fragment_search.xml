@@ -9,7 +9,7 @@
     <LinearLayout
         android:id="@+id/searchLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
         <com.algolia.instantsearch.ui.views.SearchBox
             android:id="@+id/searchBox"
@@ -22,7 +22,7 @@
         <com.algolia.instantsearch.ui.views.Hits
             android:id="@+id/search_hits"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginTop="8dp"
             app:itemLayout="@layout/search_hit_common"
             app:autoHideKeyboard="false"
@@ -34,7 +34,9 @@
             android:layout_height="wrap_content"
             android:id="@android:id/empty"
             android:text="No Result Found"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"/>
 
     </LinearLayout>
 

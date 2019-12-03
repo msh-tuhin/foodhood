@@ -29,8 +29,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:id="@+id/search_layout"
-            android:layout_marginTop="?attr/actionBarSize"
-            android:padding="16dp">
+            android:layout_marginTop="?attr/actionBarSize">
 
             <com.algolia.instantsearch.ui.views.SearchBox
                 android:id="@+id/searchBox"
@@ -43,18 +42,21 @@
             <com.algolia.instantsearch.ui.views.Hits
                 android:id="@+id/search_hits"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
-                app:itemLayout="@layout/search_hit_item"
+                app:itemLayout="@layout/search_hit_common"
                 app:autoHideKeyboard="true"
-                />
+                android:clipToPadding="false"
+                android:paddingBottom="48dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@android:id/empty"
                 android:text="No Dish Found"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"/>
 
         </LinearLayout>
 
@@ -91,7 +93,7 @@
             android:id="@+id/selected_dish_avatar"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/key_lime_pie"
+            android:src="@drawable/ltgray"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cancel"
             android:layout_marginTop="24dp"/>

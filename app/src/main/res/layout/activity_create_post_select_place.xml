@@ -22,8 +22,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:padding="16dp">
+        android:layout_marginTop="?attr/actionBarSize">
 
         <TextView
             android:id="@+id/textView"
@@ -34,7 +33,10 @@
             android:textStyle="normal"
             android:textSize="24sp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"/>
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -51,24 +53,26 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:queryHint="Search Places"
-                    app:submitButtonEnabled="false"
-                    android:layout_marginTop="16dp" />
+                    app:submitButtonEnabled="false"/>
 
                 <com.algolia.instantsearch.ui.views.Hits
                     android:id="@+id/search_hits"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginTop="8dp"
-                    app:itemLayout="@layout/search_hit_item"
+                    app:itemLayout="@layout/search_hit_common"
                     app:autoHideKeyboard="true"
-                    />
+                    android:clipToPadding="false"
+                    android:paddingBottom="48dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@android:id/empty"
                     android:text="No Places Found"
-                    android:layout_marginTop="8dp"/>
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"/>
 
             </LinearLayout>
 
@@ -76,7 +80,8 @@
                 android:id="@+id/selected_restaurant"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone">
+                android:visibility="gone"
+                android:padding="16dp">
                 <ImageButton
                     android:id="@+id/delete_button"
                     android:layout_width="32dp"
@@ -90,7 +95,7 @@
                     android:id="@+id/selected_restaurant_avatar"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/restaurant"
+                    android:src="@drawable/ltgray"
                     app:layout_constraintStart_toEndOf="@id/delete_button"
                     app:layout_constraintTop_toTopOf="parent"
                     android:layout_marginLeft="16dp"/>
@@ -167,7 +172,4 @@
 
         </FrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -7,6 +7,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
@@ -18,21 +20,25 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.algolia.instantsearch.core.helpers.Searcher;
+import com.algolia.instantsearch.core.model.NumericRefinement;
 import com.algolia.instantsearch.ui.helpers.InstantSearch;
 import com.algolia.instantsearch.ui.utils.ItemClickSupport;
 import com.algolia.instantsearch.ui.views.Hits;
 
 import org.json.JSONException;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import models.DishFeedback;
 import models.SelectedDish;
 import myapp.utils.AlgoliaCredentials;
+import myapp.utils.PictureBinder;
+import myapp.utils.SearchHitBinder;
 
 
 // receives explicit intent with extra string("restaurantLink")
 public class CreatePostDishSelectReview extends AppCompatActivity {
 
-    private final String ALGOLIA_INDEX_NAME = "Dishes";
+    private final String ALGOLIA_INDEX_NAME = "main";
 
 
     SelectedDish selectedDish = new SelectedDish();
@@ -42,6 +48,7 @@ public class CreatePostDishSelectReview extends AppCompatActivity {
     Toolbar toolbar;
     Hits hits;
     CoordinatorLayout selectDishLayout;
+    CircleImageView selectedDishAvatar;
     ConstraintLayout dishReviewLayout;
     TextView selectedDishName;
     RatingBar dishRatingBar;
@@ -58,6 +65,7 @@ public class CreatePostDishSelectReview extends AppCompatActivity {
         hits = findViewById(R.id.search_hits);
         selectDishLayout = findViewById(R.id.coordinatorLayout);
         dishReviewLayout = findViewById(R.id.dish_review);
+        selectedDishAvatar = findViewById(R.id.selected_dish_avatar);
         selectedDishName = findViewById(R.id.selected_dish_name);
         dishRatingBar = findViewById(R.id.dish_ratingBar);
         reviewEditText = findViewById(R.id.review);
@@ -72,24 +80,26 @@ public class CreatePostDishSelectReview extends AppCompatActivity {
         // not sure about this
         // actionBar.setDisplayShowHomeEnabled(true);
 
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        hits.addItemDecoration(dividerItemDecoration);
+
         String restaurantLink = getIntent().getStringExtra("restaurantLink");
         searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, ALGOLIA_INDEX_NAME);
         searcher.addFacetRefinement("restaurant", restaurantLink);
+        searcher.addNumericRefinement(new NumericRefinement("type", 2, 1));
         instantSearch = new InstantSearch(this, searcher);
         instantSearch.search();
 
         hits.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
             public void onChildViewAttachedToWindow(@NonNull View view) {
+                SearchHitBinder.refreshView(view);
                 int position = hits.getChildAdapterPosition(view);
                 Log.i("position", Integer.toString(position));
-                String name = "";
-                try{
-                    name = hits.get(position).getString("name");
-                }catch (JSONException e){
-                    e.printStackTrace();
-                }
-                ((TextView) view.findViewById(R.id.restaurant_name)).setText(name);
+
+                SearchHitBinder searchHitBinder = new SearchHitBinder(hits, position, view);
+                searchHitBinder.bind(true, true, true, true,
+                        false, false, false);
             }
 
             @Override
@@ -106,13 +116,13 @@ public class CreatePostDishSelectReview extends AppCompatActivity {
                     selectedDish.setFromJSONObject(hits.get(position));
                 }catch (JSONException e){
                     e.printStackTrace();
-                    selectedDish.name = null;
-                    selectedDish.id = null;
-                    return;
                 }
 
                 selectDishLayout.setVisibility(View.GONE);
-                selectedDishName.setText(selectedDish.name);
+                PictureBinder.bindPictureSearchResult(selectedDishAvatar, selectedDish.imageUrl);
+                if(selectedDish.name!=null){
+                    selectedDishName.setText(selectedDish.name);
+                }
                 dishReviewLayout.setVisibility(View.VISIBLE);
             }
         });
@@ -144,6 +154,7 @@ public class CreatePostDishSelectReview extends AppCompatActivity {
                 Intent intent = new Intent();
                 // pack all the data in one object
                 DishFeedback dishFeedback = new DishFeedback(selectedDish.id, selectedDish.name, rating, review);
+                dishFeedback.imageUrl = selectedDish.imageUrl;
                 intent.putExtra("dishFeedback", dishFeedback);
                 setResult(RESULT_OK, intent);
                 finish();

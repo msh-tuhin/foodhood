@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.algolia.instantsearch.core.events.QueryTextChangeEvent;
 import com.algolia.instantsearch.core.helpers.Searcher;
+import com.algolia.instantsearch.core.model.NumericRefinement;
 import com.algolia.instantsearch.ui.helpers.InstantSearch;
 import com.algolia.instantsearch.ui.utils.ItemClickSupport;
 import com.algolia.instantsearch.ui.views.Hits;
@@ -34,9 +35,12 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import models.RestaurantFeedback;
 import models.SelectedPlace;
 import myapp.utils.AlgoliaCredentials;
+import myapp.utils.PictureBinder;
+import myapp.utils.SearchHitBinder;
 
 // receives explicit intent with bundle extra
 // the keys =>
@@ -44,7 +48,7 @@ import myapp.utils.AlgoliaCredentials;
 //     "imageSringUris": ArrayList<String>
 public class CreatePostSelectPlace extends AppCompatActivity {
 
-    private final String ALGOLIA_INDEX_NAME = "Places";
+    private final String ALGOLIA_INDEX_NAME = "main";
 
     Bundle post;
     Searcher searcher;
@@ -54,6 +58,7 @@ public class CreatePostSelectPlace extends AppCompatActivity {
     Toolbar toolbar;
     Hits hits;
     ConstraintLayout selectedRestaurantLayout;
+    CircleImageView selectedRestaurantAvatar;
     TextView selectedRestaurantName;
     ImageButton deleteButton;
     LinearLayout searchLayout;
@@ -79,6 +84,7 @@ public class CreatePostSelectPlace extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         hits = findViewById(R.id.search_hits);
+        selectedRestaurantAvatar = findViewById(R.id.selected_restaurant_avatar);
         selectedRestaurantLayout = findViewById(R.id.selected_restaurant);
         selectedRestaurantName = findViewById(R.id.selected_restaurant_name);
         deleteButton = findViewById(R.id.delete_button);
@@ -100,6 +106,7 @@ public class CreatePostSelectPlace extends AppCompatActivity {
         // actionBar.setDisplayShowHomeEnabled(true);
 
         searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, ALGOLIA_INDEX_NAME);
+        searcher.addNumericRefinement(new NumericRefinement("type", 2, 2));
         instantSearch = new InstantSearch(this, searcher);
 //        instantSearch.setSearchOnEmptyString(false);
         instantSearch.search();
@@ -107,15 +114,12 @@ public class CreatePostSelectPlace extends AppCompatActivity {
         hits.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
             public void onChildViewAttachedToWindow(@NonNull View view) {
+                SearchHitBinder.refreshView(view);
                 int position = hits.getChildAdapterPosition(view);
                 Log.i("position", Integer.toString(position));
-                String name = "";
-                try{
-                    name = hits.get(position).getString("name");
-                }catch (JSONException e){
-                    e.printStackTrace();
-                }
-                ((TextView) view.findViewById(R.id.restaurant_name)).setText(name);
+                SearchHitBinder searchHitBinder = new SearchHitBinder(hits, position, view);
+                searchHitBinder.bind(true, true, true, false,
+                        true, false, false);
             }
 
             @Override
@@ -132,13 +136,13 @@ public class CreatePostSelectPlace extends AppCompatActivity {
                     selectedPlace.setFromJSONObject(hits.get(position));
                 }catch (JSONException e){
                     e.printStackTrace();
-                    selectedPlace.name = null;
-                    selectedPlace.id = null;
-                    return;
                 }
 //                setSelectedPlace(position, selectedPlace);
                 searchLayout.setVisibility(View.GONE);
-                selectedRestaurantName.setText(selectedPlace.name);
+                PictureBinder.bindPictureSearchResult(selectedRestaurantAvatar, selectedPlace.imageUrl);
+                if(selectedPlace.name != null){
+                    selectedRestaurantName.setText(selectedPlace.name);
+                }
                 selectedRestaurantLayout.setVisibility(View.VISIBLE);
             }
         });
@@ -172,6 +176,7 @@ public class CreatePostSelectPlace extends AppCompatActivity {
                 String review = reviewEditText.getText().toString();
                 float rating = ratingBar.getRating();
                 RestaurantFeedback restaurantFeedback = new RestaurantFeedback(selectedPlace.id, selectedPlace.name, rating, review);
+                restaurantFeedback.imageUrl = selectedPlace.imageUrl;
                 post.putSerializable("restaurantFeedback", restaurantFeedback);
 //                post.putString("restaurantLink", selectedPlace.id);
                 intent.putExtras(post);

@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import id.zelory.compressor.Compressor;
 import models.DishFeedback;
 import models.PostModel;
@@ -62,6 +63,7 @@ import models.SelectedPerson;
 import models.FeedbackModel;
 import myapp.utils.FeedbackTypes;
 import myapp.utils.ImagesAdapter;
+import myapp.utils.PictureBinder;
 import myapp.utils.SourceHomePage;
 
 // receives explicit intent with bundle extra
@@ -80,6 +82,7 @@ public class CreatePostPreview extends AppCompatActivity {
     AppBarLayout appBarLayout;
     ScrollView postPreviewLayout;
     LinearLayout progressLayout;
+    CircleImageView dishOrRestaurantAvatar;
     TextView captionTextView, dishOrRestaurantNameTextView, reviewTextView;
     TextView captionHeaderTextView, imagesHeaderTextView, peopleHeaderTextView;
     RatingBar ratingBar;
@@ -117,6 +120,7 @@ public class CreatePostPreview extends AppCompatActivity {
         imagesHeaderTextView = findViewById(R.id.images_header);
         peopleHeaderTextView = findViewById(R.id.people_header);
         viewPager = findViewById(R.id.viewPager);
+        dishOrRestaurantAvatar = findViewById(R.id.dish_avatar);
         dishOrRestaurantNameTextView = findViewById(R.id.dish_name);
         reviewTextView = findViewById(R.id.review);
         ratingBar = findViewById(R.id.dish_ratingBar);
@@ -161,6 +165,7 @@ public class CreatePostPreview extends AppCompatActivity {
             viewPager.setAdapter(adapter);
         }
 
+        PictureBinder.bindPictureSearchResult(dishOrRestaurantAvatar, restaurantFeedback.imageUrl);
         dishOrRestaurantNameTextView.setText(restaurantFeedback.name);
         ratingBar.setRating(restaurantFeedback.rating);
         ratingBar.setIsIndicator(true);
@@ -168,6 +173,8 @@ public class CreatePostPreview extends AppCompatActivity {
 
         for(DishFeedback dishFeedback : dishFeedbacks){
             View view = LayoutInflater.from(this).inflate(R.layout.feedback_preview, null);
+            PictureBinder.bindPictureSearchResult((CircleImageView) view.findViewById(R.id.dish_avatar),
+                    dishFeedback.imageUrl);
             ((TextView) view.findViewById(R.id.dish_name)).setText(dishFeedback.name);
             ((TextView) view.findViewById(R.id.review)).setText(dishFeedback.review);
             ((RatingBar) view.findViewById(R.id.dish_ratingBar)).setRating(dishFeedback.rating);
@@ -181,6 +188,8 @@ public class CreatePostPreview extends AppCompatActivity {
         }else{
             for(SelectedPerson selectedPerson : addedPeopleList){
                 View view = LayoutInflater.from(this).inflate(R.layout.search_hit_item, null);
+                PictureBinder.bindPictureSearchResult((CircleImageView)view.findViewById(R.id.avatar),
+                        selectedPerson.imageUrl);
                 ((TextView) view.findViewById(R.id.restaurant_name)).setText(selectedPerson.name);
                 taggedPeopleLayout.addView(view);
             }

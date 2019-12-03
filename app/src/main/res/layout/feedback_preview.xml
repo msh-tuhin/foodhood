@@ -17,7 +17,7 @@
         android:layout_marginStart="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/key_lime_pie"/>
+        android:src="@drawable/ltgray"/>
 
     <TextView
         android:id="@+id/dish_name"

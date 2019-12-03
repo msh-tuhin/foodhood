@@ -17,8 +17,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 import models.DishFeedback;
 import models.RestaurantFeedback;
+import myapp.utils.PictureBinder;
 
 
 // receives explicit intent with bundle extra
@@ -114,7 +117,10 @@ public class CreatePostAddDishes extends AppCompatActivity {
                     }else{
                         addedDishes.add(dishFeedback.link);
                         dishFeedbacks.add(dishFeedback);
-                        final View view = LayoutInflater.from(CreatePostAddDishes.this).inflate(R.layout.dish_with_feedback, null);
+                        final View view = LayoutInflater.from(CreatePostAddDishes.this)
+                                .inflate(R.layout.dish_with_feedback, null);
+                        PictureBinder.bindPictureSearchResult(((CircleImageView)view.findViewById(R.id.dish_avatar)),
+                                dishFeedback.imageUrl);
                         ((TextView)view.findViewById(R.id.dish_name)).setText(dishFeedback.name);
                         ((TextView)view.findViewById(R.id.review)).setText(dishFeedback.review);
                         ((RatingBar)view.findViewById(R.id.dish_ratingBar)).setRating(dishFeedback.rating);

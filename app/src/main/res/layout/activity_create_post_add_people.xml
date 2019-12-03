@@ -19,10 +19,11 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize">
+        android:layout_marginTop="?attr/actionBarSize"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/textView"
@@ -57,40 +58,30 @@
 
         </HorizontalScrollView>
 
-        <LinearLayout
-            android:id="@+id/searchLayout"
+        <com.algolia.instantsearch.ui.views.SearchBox
+            android:id="@+id/searchBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@id/horizontal_scroll_view"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp">
-            <com.algolia.instantsearch.ui.views.SearchBox
-                android:id="@+id/searchBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:queryHint="Search Places"
-                app:submitButtonEnabled="false"
-                android:layout_marginTop="16dp" />
+            app:queryHint="Search by name"
+            app:submitButtonEnabled="false"/>
 
-            <com.algolia.instantsearch.ui.views.Hits
-                android:id="@+id/search_hits"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:itemLayout="@layout/search_hit_item"
-                app:autoHideKeyboard="true"
-                />
+        <com.algolia.instantsearch.ui.views.Hits
+            android:id="@+id/search_hits"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            app:itemLayout="@layout/search_hit_common"
+            app:autoHideKeyboard="true"
+            android:paddingBottom="48dp"
+            android:clipToPadding="false"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@android:id/empty"
-                android:text="No Person Found"
-                android:layout_marginTop="8dp"/>
-
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@android:id/empty"
+            android:text="No Person Found"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"/>
+    </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
