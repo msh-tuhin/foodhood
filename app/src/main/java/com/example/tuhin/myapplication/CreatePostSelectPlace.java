@@ -38,7 +38,9 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 import models.RestaurantFeedback;
 import models.SelectedPlace;
+import myapp.utils.AlgoliaAttributeNames;
 import myapp.utils.AlgoliaCredentials;
+import myapp.utils.AlgoliaIndexNames;
 import myapp.utils.PictureBinder;
 import myapp.utils.SearchHitBinder;
 
@@ -47,8 +49,6 @@ import myapp.utils.SearchHitBinder;
 //     "caption": str
 //     "imageSringUris": ArrayList<String>
 public class CreatePostSelectPlace extends AppCompatActivity {
-
-    private final String ALGOLIA_INDEX_NAME = "main";
 
     Bundle post;
     Searcher searcher;
@@ -105,8 +105,9 @@ public class CreatePostSelectPlace extends AppCompatActivity {
         // not sure about this
         // actionBar.setDisplayShowHomeEnabled(true);
 
-        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, ALGOLIA_INDEX_NAME);
-        searcher.addNumericRefinement(new NumericRefinement("type", 2, 2));
+        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY,
+                AlgoliaIndexNames.INDEX_MAIN);
+        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 2));
         instantSearch = new InstantSearch(this, searcher);
         instantSearch.setSearchOnEmptyString(false);
         // instantSearch.search();
@@ -137,7 +138,7 @@ public class CreatePostSelectPlace extends AppCompatActivity {
                 }catch (JSONException e){
                     e.printStackTrace();
                 }
-//                setSelectedPlace(position, selectedPlace);
+
                 searchLayout.setVisibility(View.GONE);
                 PictureBinder.bindPictureSearchResult(selectedRestaurantAvatar, selectedPlace.imageUrl);
                 if(selectedPlace.name != null){
@@ -208,17 +209,6 @@ public class CreatePostSelectPlace extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
-    }
-
-    // will be deleted later
-    @Deprecated
-    private void setSelectedPlace(int position, SelectedPlace selectedPlace) {
-        try {
-            selectedPlace.name = hits.get(position).getString("name");
-            selectedPlace.id = hits.get(position).getString("objectID");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

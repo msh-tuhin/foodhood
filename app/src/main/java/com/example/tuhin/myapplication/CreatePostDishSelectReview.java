@@ -30,16 +30,15 @@ import org.json.JSONException;
 import de.hdodenhof.circleimageview.CircleImageView;
 import models.DishFeedback;
 import models.SelectedDish;
+import myapp.utils.AlgoliaAttributeNames;
 import myapp.utils.AlgoliaCredentials;
+import myapp.utils.AlgoliaIndexNames;
 import myapp.utils.PictureBinder;
 import myapp.utils.SearchHitBinder;
 
 
 // receives explicit intent with extra string("restaurantLink")
 public class CreatePostDishSelectReview extends AppCompatActivity {
-
-    private final String ALGOLIA_INDEX_NAME = "main";
-
 
     SelectedDish selectedDish = new SelectedDish();
     Searcher searcher;
@@ -84,9 +83,10 @@ public class CreatePostDishSelectReview extends AppCompatActivity {
         hits.addItemDecoration(dividerItemDecoration);
 
         String restaurantLink = getIntent().getStringExtra("restaurantLink");
-        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, ALGOLIA_INDEX_NAME);
-        searcher.addFacetRefinement("restaurant", restaurantLink);
-        searcher.addNumericRefinement(new NumericRefinement("type", 2, 1));
+        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY,
+                AlgoliaIndexNames.INDEX_MAIN);
+        searcher.addFacetRefinement(AlgoliaAttributeNames.RESTAURANT_LINK, restaurantLink);
+        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 1));
         instantSearch = new InstantSearch(this, searcher);
         instantSearch.search();
 

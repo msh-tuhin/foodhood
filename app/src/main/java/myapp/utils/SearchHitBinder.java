@@ -41,10 +41,10 @@ public class SearchHitBinder {
         Log.i("inside", "bindname");
         String name = "";
         try{
-            name = hits.get(position).getString("name");
+            name = hits.get(position).getString(AlgoliaAttributeNames.NAME);
             SpannableStringBuilder builder = new SpannableStringBuilder();
             builder.append(name);
-            getHighlight(hits.get(position), "name", builder);
+            getHighlight(hits.get(position), AlgoliaAttributeNames.NAME, builder);
             ((TextView) view.findViewById(R.id.name)).setText(builder);
         }catch (JSONException e){
             Log.i("name", "no value found");
@@ -55,7 +55,7 @@ public class SearchHitBinder {
     public void bindRating(){
         Double rating;
         try{
-            rating = hits.get(position).getDouble("rating");
+            rating = hits.get(position).getDouble(AlgoliaAttributeNames.RATING);
         }catch (JSONException e){
             Log.i("rating", "no value found");
             return;
@@ -74,7 +74,7 @@ public class SearchHitBinder {
     public void bindPrice(){
         Double price;
         try{
-            price = hits.get(position).getDouble("price");
+            price = hits.get(position).getDouble(AlgoliaAttributeNames.PRICE);
         }catch (JSONException e){
             Log.i("price", "no value found");
             return;
@@ -97,11 +97,11 @@ public class SearchHitBinder {
 
         // for persons
         try{
-            currentTown = hits.get(position).getString("current_town");
+            currentTown = hits.get(position).getString(AlgoliaAttributeNames.CURRENT_TOWN);
             //SpannableString spannableAddress = new SpannableString(currentTown);
             SpannableStringBuilder builder = new SpannableStringBuilder();
             builder.append(currentTown);
-            getHighlight(hits.get(position), "current_town", builder);
+            getHighlight(hits.get(position), AlgoliaAttributeNames.CURRENT_TOWN, builder);
             builder.setSpan(new StyleSpan(Typeface.BOLD), 0,
                     currentTown.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             addressTV.setText(builder);
@@ -113,10 +113,10 @@ public class SearchHitBinder {
 
         // for restaurants
         try{
-            address = hits.get(position).getString("address");
+            address = hits.get(position).getString(AlgoliaAttributeNames.ADDRESS);
             SpannableStringBuilder builder = new SpannableStringBuilder();
             builder.append(address);
-            getHighlight(hits.get(position), "address", builder);
+            getHighlight(hits.get(position), AlgoliaAttributeNames.ADDRESS, builder);
             addressTV.setText(builder);
             addressLayout.setVisibility(View.VISIBLE);
             return;
@@ -126,23 +126,23 @@ public class SearchHitBinder {
 
         // for dishes
         try{
-            restaurantName = hits.get(position).getString("restaurant_name");
-            restaurantAddress = hits.get(position).getString("restaurant_address");
+            restaurantName = hits.get(position).getString(AlgoliaAttributeNames.RESTAURANT_NAME);
+            restaurantAddress = hits.get(position).getString(AlgoliaAttributeNames.RESTAURANT_ADDRESS);
         }catch (JSONException e){
-            Log.i("name_address", "no value found");;
+            Log.i("name_address", "no value found");
         }
         if(restaurantName==null || restaurantName.equals("")) return;
         text = restaurantName;
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(restaurantName);
-        getHighlight(hits.get(position), "restaurant_name", builder);
+        getHighlight(hits.get(position), AlgoliaAttributeNames.RESTAURANT_NAME, builder);
         int start = text.indexOf(restaurantName);
         int end = start + restaurantName.length();
         builder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         if(restaurantAddress!=null && !restaurantAddress.equals("")){
             builder.append("\n");
             builder.append(restaurantAddress);
-            getHighlight(hits.get(position), "restaurant_address", builder);
+            getHighlight(hits.get(position), AlgoliaAttributeNames.RESTAURANT_ADDRESS, builder);
         }
         addressTV.setText(builder);
         addressLayout.setVisibility(View.VISIBLE);
@@ -150,22 +150,23 @@ public class SearchHitBinder {
 
     public void bindPicture(){
         try{
-            String link = hits.get(position).getString("image_url");
+            String link = hits.get(position).getString(AlgoliaAttributeNames.IMAGE_URL);
             PictureBinder.bindPictureSearchResult((CircleImageView)view.findViewById(R.id.avatar), link);
         }catch (JSONException e){
             Log.i("image_url", "no value found");
         }
     }
 
-    public void bindDistrict(){
+    public void bindDistrict(boolean onlyHighlighted){
         try{
-            String district = hits.get(position).getString("district");
+            String district = hits.get(position).getString(AlgoliaAttributeNames.DISTRICT);
             SpannableStringBuilder builder = new SpannableStringBuilder();
             builder.append(district);
-            boolean isDistrictHighlighted = getHighlight(hits.get(position), "district", builder);
+            boolean isDistrictHighlighted = getHighlight(hits.get(position),
+                    AlgoliaAttributeNames.DISTRICT, builder);
             SpannableStringBuilder newBuilder = new SpannableStringBuilder("District: ");
             newBuilder.append(builder);
-            if(isDistrictHighlighted){
+            if(!(onlyHighlighted && !isDistrictHighlighted)){
                 TextView districtTV = view.findViewById(R.id.district);
                 districtTV.setText(newBuilder);
                 districtTV.setVisibility(View.VISIBLE);
@@ -175,9 +176,9 @@ public class SearchHitBinder {
         }
     }
 
-    public void bindCategory(){
+    public void bindCategory(boolean onlyHighlighted){
         try{
-            JSONArray categories = hits.get(position).getJSONArray("category");
+            JSONArray categories = hits.get(position).getJSONArray(AlgoliaAttributeNames.CATEGORY);
             String categoryText = "";
 
             // comma is not added after the last element
@@ -189,9 +190,8 @@ public class SearchHitBinder {
 
             SpannableStringBuilder builder = new SpannableStringBuilder(categoryText);
             boolean isCategoryHighlighted = getHighlightedArrayField(hits.get(position),
-                    "category", builder);
-            if(isCategoryHighlighted){
-                Log.i("denug", "inside");
+                    AlgoliaAttributeNames.CATEGORY, builder);
+            if(!(onlyHighlighted && !isCategoryHighlighted)){
                 SpannableStringBuilder newBuilder = new SpannableStringBuilder();
                 newBuilder.append("Category: ");
                 newBuilder.append(builder);
@@ -204,16 +204,40 @@ public class SearchHitBinder {
         }
     }
 
-    public void bind(boolean bindPicture, boolean bindName, boolean bindRating,
-                     boolean bindPrice, boolean bindAddress, boolean bindDistrict,
+    public void bind(boolean bindPicture,
+                     boolean bindName,
+                     boolean bindRating,
+                     boolean bindPrice,
+                     boolean bindAddress,
+                     boolean bindDistrictOnlyHighlighted,
+                     boolean bindCategoryOnlyHighlighted){
+        if(bindPicture) bindPicture();
+        if(bindName) bindName();
+        if(bindRating) bindRating();
+        if(bindPrice) bindPrice();
+        if(bindAddress) bindAddress();
+        if(bindDistrictOnlyHighlighted) bindDistrict(true);
+        if(bindCategoryOnlyHighlighted) bindCategory(true);
+    }
+
+    public void bind(boolean bindPicture,
+                     boolean bindName,
+                     boolean bindRating,
+                     boolean bindPrice,
+                     boolean bindAddress,
+                     boolean bindDistrictOnlyHighlighted,
+                     boolean bindDistrict,
+                     boolean bindCategoryOnlyHighlighted,
                      boolean bindCategory){
         if(bindPicture) bindPicture();
         if(bindName) bindName();
         if(bindRating) bindRating();
         if(bindPrice) bindPrice();
         if(bindAddress) bindAddress();
-        if(bindDistrict) bindDistrict();
-        if(bindCategory) bindCategory();
+        if(bindDistrictOnlyHighlighted) bindDistrict(true);
+        if(bindDistrict) bindDistrict(false);
+        if(bindCategoryOnlyHighlighted) bindCategory(true);
+        if(bindCategory) bindCategory(false);
     }
 
     public static void refreshView(View view){
@@ -273,9 +297,7 @@ public class SearchHitBinder {
         boolean isCategoryHighlighted = false;
         try{
             JSONObject highlightResult = hit.getJSONObject("_highlightResult");
-            Log.i("hmm", "ase");
             JSONArray highlightedAttributes = highlightResult.getJSONArray(attributeName);
-            Log.i("hmm", "nai");
             for(int i=0; i<highlightedAttributes.length();i++){
                 JSONObject jsonObject = highlightedAttributes.getJSONObject(i);
                 if (jsonObject.getString("matchLevel").equals("none")) {

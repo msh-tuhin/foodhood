@@ -14,7 +14,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.AlgoliaAttributeNames;
 import myapp.utils.AlgoliaCredentials;
+import myapp.utils.AlgoliaIndexNames;
 import myapp.utils.PictureBinder;
 import myapp.utils.SearchHitBinder;
 
@@ -52,8 +54,6 @@ import java.util.Arrays;
 
 public class SearchFragment extends Fragment {
 
-    private final String ALGOLIA_INDEX_NAME = "main";
-
     InstantSearch instantSearch;
     Searcher searcher;
     SearchBox searchBox;
@@ -78,7 +78,7 @@ public class SearchFragment extends Fragment {
         hits = view.findViewById(R.id.search_hits);
 
         searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID,
-                AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, ALGOLIA_INDEX_NAME);
+                AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, AlgoliaIndexNames.INDEX_MAIN);
 
         instantSearch = new InstantSearch(getActivity(), searcher);
         instantSearch.search();
@@ -111,8 +111,8 @@ public class SearchFragment extends Fragment {
             @Override
             public void onItemClick(RecyclerView recyclerView, int position, View v) {
                 try{
-                    String id = hits.get(position).getString("objectID");
-                    int type = hits.get(position).getInt("type");
+                    String id = hits.get(position).getString(AlgoliaAttributeNames.ID);
+                    int type = hits.get(position).getInt(AlgoliaAttributeNames.TYPE);
                     Intent intent;
                     switch (type){
                         case 0:
@@ -145,8 +145,8 @@ public class SearchFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try{
-                    String id = hits.get(position).getString("objectID");
-                    int type = hits.get(position).getInt("type");
+                    String id = hits.get(position).getString(AlgoliaAttributeNames.ID);
+                    int type = hits.get(position).getInt(AlgoliaAttributeNames.TYPE);
                     Intent intent;
                     switch (type){
                         case 0:

@@ -7,9 +7,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
+import myapp.utils.AlgoliaAttributeNames;
 import myapp.utils.AlgoliaCredentials;
+import myapp.utils.AlgoliaIndexNames;
 import myapp.utils.AnimationUtils;
+import myapp.utils.SearchHitBinder;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -43,6 +47,7 @@ import android.widget.Toast;
 import com.algolia.instantsearch.core.helpers.Searcher;
 import com.algolia.instantsearch.core.model.NumericRefinement;
 import com.algolia.instantsearch.ui.helpers.InstantSearch;
+import com.algolia.instantsearch.ui.utils.ItemClickSupport;
 import com.algolia.instantsearch.ui.views.Hits;
 import com.algolia.instantsearch.ui.views.SearchBox;
 import com.algolia.search.saas.AbstractQuery;
@@ -125,8 +130,12 @@ public class AdvancedSearchDish extends AppCompatActivity{
         ratingEditText = findViewById(R.id.rating_edittext);
 
         hits = findViewById(R.id.search_hits);
-        final String ALGOLIA_INDEX_NAME = "Dishes";
-        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, ALGOLIA_INDEX_NAME);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        hits.addItemDecoration(dividerItemDecoration);
+
+        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY,
+                AlgoliaIndexNames.INDEX_RATING_DESC);
+        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 1));
         instantSearch = new InstantSearch(this, searcher);
 
         // TODO handle clicking on a search hit item
@@ -192,15 +201,14 @@ public class AdvancedSearchDish extends AppCompatActivity{
         hits.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
             public void onChildViewAttachedToWindow(@NonNull View view) {
+                SearchHitBinder.refreshView(view);
                 int position = hits.getChildAdapterPosition(view);
                 Log.i("position", Integer.toString(position));
-                String name = "";
-                try {
-                    name = hits.get(position).getString("name");
-                    ((TextView) view.findViewById(R.id.restaurant_name)).setText(name);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+
+                SearchHitBinder searchHitBinder = new SearchHitBinder(hits, position, view);
+                searchHitBinder.bind(true, true, true, true,
+                        true, false, false,
+                        false, true);
             }
 
             @Override
@@ -208,6 +216,21 @@ public class AdvancedSearchDish extends AppCompatActivity{
 
             }
 
+        });
+
+        hits.setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClick(RecyclerView recyclerView, int position, View v) {
+                try{
+                    String id = hits.get(position).getString(AlgoliaAttributeNames.ID);
+                    Intent intent;
+                    intent = new Intent(AdvancedSearchDish.this, DishDetail.class);
+                    intent.putExtra("dishLink", id);
+                    startActivity(intent);
+                }catch (JSONException e){
+                    Log.i("object_id", "no value found");
+                }
+            }
         });
 
         searchButton.setOnClickListener(new View.OnClickListener() {
@@ -491,8 +514,8 @@ public class AdvancedSearchDish extends AppCompatActivity{
 
     private void clearRefinements(){
         searcher.clearFacetRefinements();
-        searcher.removeNumericRefinement("price");
-        searcher.removeNumericRefinement("rating");
+        searcher.removeNumericRefinement(AlgoliaAttributeNames.PRICE);
+        searcher.removeNumericRefinement(AlgoliaAttributeNames.RATING);
         searcher.getQuery().setAroundLatLng(null);
     }
 
@@ -542,26 +565,26 @@ public class AdvancedSearchDish extends AppCompatActivity{
 
     private void addRefinements(){
         if (minPrice > 0.0) {
-            minPriceFilter = new NumericRefinement("price", 4, minPrice);
+            minPriceFilter = new NumericRefinement(AlgoliaAttributeNames.PRICE, 4, minPrice);
             searcher.addNumericRefinement(minPriceFilter);
         }
 
         if (maxPrice > 0.0) {
-            maxPriceFilter = new NumericRefinement("price", 1, maxPrice);
+            maxPriceFilter = new NumericRefinement(AlgoliaAttributeNames.PRICE, 1, maxPrice);
             searcher.addNumericRefinement(maxPriceFilter);
         }
 
         if (rating > 0.0) {
-            ratingFilter = new NumericRefinement("rating", 4, rating);
+            ratingFilter = new NumericRefinement(AlgoliaAttributeNames.RATING, 4, rating);
             searcher.addNumericRefinement(ratingFilter);
         }
 
         if(checkBox.isChecked()){
-//            searcher.addFacetRefinement("district", selectedDistrict);
+            searcher.addFacetRefinement(AlgoliaAttributeNames.DISTRICT, selectedDistrict);
         }
 
         if(foodCategoryCheckbox.isChecked()){
-            searcher.addFacetRefinement("category", selectedCategory);
+            searcher.addFacetRefinement(AlgoliaAttributeNames.CATEGORY, selectedCategory);
         }
     }
 
@@ -630,9 +653,8 @@ public class AdvancedSearchDish extends AppCompatActivity{
         Log.i("Provider", location.getProvider());
         Log.i("Latitude", String.valueOf(location.getLatitude()));
         Log.i("Longitude", String.valueOf(location.getLongitude()));
-//        AbstractQuery.LatLng userLocation = new AbstractQuery.LatLng(location.getLatitude(), location.getLongitude());
-//        searcher.getQuery().setAroundLatLng(userLocation).setAroundRadius(1000000);
-        AbstractQuery.LatLng userLocation = new AbstractQuery.LatLng(40.71, -74.01);
+        AbstractQuery.LatLng userLocation = new AbstractQuery.LatLng(location.getLatitude(), location.getLongitude());
+//        AbstractQuery.LatLng userLocation = new AbstractQuery.LatLng(40.71, -74.01);
         searcher.getQuery().setAroundLatLng(userLocation).setAroundRadius(1000000);
         if(!(previousLatitude.equals(location.getLatitude())
                 && previousLongitude.equals(location.getLongitude()))){

@@ -32,7 +32,9 @@ import java.util.ArrayList;
 import models.DishFeedback;
 import models.RestaurantFeedback;
 import models.SelectedPerson;
+import myapp.utils.AlgoliaAttributeNames;
 import myapp.utils.AlgoliaCredentials;
+import myapp.utils.AlgoliaIndexNames;
 import myapp.utils.SearchHitBinder;
 
 // receives explicit intent with bundle extra
@@ -42,8 +44,6 @@ import myapp.utils.SearchHitBinder;
 //     "restaurantFeedback": RestaurantFeedback
 //     "dishFeedbacks": ArrayList<DishFeedback>
 public class CreatePostAddPeople extends AppCompatActivity {
-
-    private final String ALGOLIA_INDEX_NAME = "main";
 
     ArrayList<String> addedPeople = new ArrayList<>();
     ArrayList<SelectedPerson> addedPeopleList = new ArrayList<>();
@@ -84,8 +84,9 @@ public class CreatePostAddPeople extends AppCompatActivity {
         hits = findViewById(R.id.search_hits);
         selectedPeopleLayout = findViewById(R.id.selected_people_layout);
 
-        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, ALGOLIA_INDEX_NAME);
-        searcher.addNumericRefinement(new NumericRefinement("type", 2, 0));
+        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY,
+                AlgoliaIndexNames.INDEX_MAIN);
+        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 0));
         instantSearch = new InstantSearch(this, searcher);
         // instantSearch.search();
         instantSearch.setSearchOnEmptyString(false);
