@@ -87,7 +87,6 @@ public class SearchFragment extends Fragment {
                 DividerItemDecoration.VERTICAL);
         hits.addItemDecoration(dividerItemDecoration);
 
-        // TODO add highlighting
         hits.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
             public void onChildViewAttachedToWindow(@NonNull View view) {
@@ -100,7 +99,7 @@ public class SearchFragment extends Fragment {
                 bindAddress(hits, position, view);
                 bindPicture(hits, position, view);
                 bindDistrict(hits, position, view);
-                bindcategory(hits, position, view);
+                bindCategory(hits, position, view);
                 // setParentLayoutOnClickListener(hits, position, view);
             }
 
@@ -280,14 +279,18 @@ public class SearchFragment extends Fragment {
         }
     }
 
-    private void bindcategory(Hits hits, int position, View view){
+    private void bindCategory(Hits hits, int position, View view){
         try{
             JSONArray categories = hits.get(position).getJSONArray("category");
             String categoryText = "";
-            for(int i=0; i<categories.length(); i++){
+
+            // comma is not added after the last element
+            for(int i=0; i <= categories.length()-2; i++){
                 categoryText += categories.getString(i);
                 categoryText += ", ";
             }
+            categoryText += categories.getString(categories.length()-1);
+
             SpannableStringBuilder builder = new SpannableStringBuilder(categoryText);
             boolean isCategoryHighlighted = getHighlightedArrayField(hits.get(position),
                     "category", builder);
