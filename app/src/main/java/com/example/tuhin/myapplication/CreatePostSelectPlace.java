@@ -108,8 +108,8 @@ public class CreatePostSelectPlace extends AppCompatActivity {
         searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, ALGOLIA_INDEX_NAME);
         searcher.addNumericRefinement(new NumericRefinement("type", 2, 2));
         instantSearch = new InstantSearch(this, searcher);
-//        instantSearch.setSearchOnEmptyString(false);
-        instantSearch.search();
+        instantSearch.setSearchOnEmptyString(false);
+        // instantSearch.search();
         // because data binding doesn't work
         hits.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override

@@ -87,8 +87,8 @@ public class CreatePostAddPeople extends AppCompatActivity {
         searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, ALGOLIA_INDEX_NAME);
         searcher.addNumericRefinement(new NumericRefinement("type", 2, 0));
         instantSearch = new InstantSearch(this, searcher);
-        instantSearch.search();
-        //instantSearch.setSearchOnEmptyString(false);
+        // instantSearch.search();
+        instantSearch.setSearchOnEmptyString(false);
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         hits.addItemDecoration(dividerItemDecoration);
