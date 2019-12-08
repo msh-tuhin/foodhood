@@ -107,7 +107,7 @@
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Current Town:"/>
+                android:text="Current Town/Thana:"/>
             <Spinner
                 android:id="@+id/current_town_spinner"
                 android:layout_width="wrap_content"
@@ -120,7 +120,7 @@
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hometown:"
+                android:text="Hometown/Thana:"
                 android:layout_marginTop="16dp"/>
             <Spinner
                 android:id="@+id/home_town_spinner"

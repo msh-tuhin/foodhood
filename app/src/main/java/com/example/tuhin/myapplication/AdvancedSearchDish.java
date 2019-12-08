@@ -400,8 +400,10 @@ public class AdvancedSearchDish extends AppCompatActivity{
         task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                Log.i("location_settings", "enabled from before");
-                isLocationSettingsEnabled = true;
+                if(locationSettingsResponse.getLocationSettingsStates().isLocationUsable()){
+                    Log.i("location_settings", "enabled from before");
+                    isLocationSettingsEnabled = true;
+                }
             }
         });
 

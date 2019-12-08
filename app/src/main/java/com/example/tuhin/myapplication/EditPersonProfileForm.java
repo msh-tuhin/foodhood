@@ -56,15 +56,15 @@ public class EditPersonProfileForm extends AppCompatActivity {
             "July", "Aug", "Sep", "Oct", "Nov", "Dec"};
     private String mBio = "";
     private String mPhone = "";
-    private String mCurrentTown = "Select Current Town";
-    private String mHomeTown = "Select Home Town";
+    private String mCurrentTown = "Select a city/thana";
+    private String mHomeTown = "Select a city/thana";
     private String mYearString = "Year";
     private String mMonthString = "Month";
     private String mDateString = "Date";
     private String oldBio = "";
     private String oldPhone = "";
-    private String oldHomeTown = "Select Home Town";
-    private String oldCurrentTown = "Select Current Town";
+    private String oldHomeTown = "Select a city/thana";
+    private String oldCurrentTown = "Select a city/thana";
     private String oldYearString = "Year";
     private String oldMonthString = "Month";
     private String oldDateString = "Date";
@@ -349,8 +349,6 @@ public class EditPersonProfileForm extends AppCompatActivity {
         String[] towns = getResources().getStringArray(R.array.towns_bd);
         ArrayList<String> townsArrayList = new ArrayList<>(Arrays.asList(towns));
         int position = 0;
-        townsArrayList.remove("Select Current Town");
-        townsArrayList.add(0, "Select Home Town");
         if(homeTown != null){
             position = townsArrayList.indexOf(homeTown);
         }

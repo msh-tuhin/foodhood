@@ -1,31 +1,61 @@
 package com.example.tuhin.myapplication;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import myapp.utils.CityMapping;
 import myapp.utils.InputValidator;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -33,12 +63,26 @@ import java.util.regex.Pattern;
 
 public class EditRestProfileForm extends AppCompatActivity {
 
+    private final int REQUEST_LOCATION_PERMISSION = 1;
+    private final int REQUEST_CHECK_SETTINGS = 1;
+
+    private boolean locationPermissionGranted = false;
+    private LocationRequest locationRequest;
+    private boolean isLocationSettingsEnabled = false;
+    private boolean isGoogleApiAvailable = false;
+
+    private Double mLatitudeValue = 0.0;
+    private Double mLongitudeValue = 0.0;
     private String mAddress = "";
     private String mPhone = "";
     private String mWebsite = "";
+    private String mTown = "Select a city/thana";
     private String oldAddress = "";
     private String oldPhone = "";
     private String oldWebsite = "";
+    private Double oldLatitudeValue = null;
+    private Double oldLongitudeValue = null;
+    private String oldTown = "Select a city/thana";
 
     SaveButtonController saveButtonController;
     private String mRestaurantLink;
@@ -57,13 +101,16 @@ public class EditRestProfileForm extends AppCompatActivity {
     TextInputEditText phoneEditText;
     TextInputLayout websiteLayout;
     TextInputEditText websiteEditText;
+    CheckBox locationChechbox;
+    TextView latitudeTV;
+    TextView longitudeTV;
+    Spinner townSpinner;
     Button saveButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_rest_profile_form);
-
 
         mRestaurantLink = mAuth.getCurrentUser().getUid();
 
@@ -79,6 +126,10 @@ public class EditRestProfileForm extends AppCompatActivity {
         phoneEditText = findViewById(R.id.phone);
         websiteLayout = findViewById(R.id.website_layout);
         websiteEditText = findViewById(R.id.website);
+        locationChechbox = findViewById(R.id.location_checkbox);
+        latitudeTV = findViewById(R.id.lat_tv);
+        longitudeTV = findViewById(R.id.lng_tv);
+        townSpinner = findViewById(R.id.town_spinner);
         saveButton = findViewById(R.id.save_button);
 
         toolbar.setTitle("Edit Profile");
@@ -101,6 +152,8 @@ public class EditRestProfileForm extends AppCompatActivity {
                             bindAddress(restVitalSnapshot);
                             bindPhone(restVitalSnapshot);
                             bindWebsite(restVitalSnapshot);
+                            bindLocation(restVitalSnapshot);
+                            bindTownSpinner(restVitalSnapshot);
                         }
                     }
                 });
@@ -192,6 +245,19 @@ public class EditRestProfileForm extends AppCompatActivity {
             }
         });
 
+        locationChechbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    calculateLocationAfterCheckingPermission();
+                }else{
+                    displayLocation(oldLatitudeValue, oldLongitudeValue);
+                    saveButtonController.shouldLocationBeSaved = false;
+                    saveButtonController.enableOrDisableSaveButton();
+                }
+            }
+        });
+
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -208,6 +274,23 @@ public class EditRestProfileForm extends AppCompatActivity {
                 if(saveButtonController.shouldWebsiteBeSaved){
                     restaurantVital.put("w", mWebsite);
                     oldWebsite = mWebsite;
+                }
+
+                if(saveButtonController.shouldLocationBeSaved){
+                    Map<String, Double> locationMap = new HashMap<>();
+                    locationMap.put("lat", mLatitudeValue);
+                    locationMap.put("lng", mLongitudeValue);
+                    restaurantVital.put("loc", locationMap);
+                    oldLatitudeValue = mLatitudeValue;
+                    oldLongitudeValue = mLongitudeValue;
+                }
+
+                if(saveButtonController.shouldTownBeSaved){
+                    restaurantVital.put("t", mTown);
+                    oldTown = mTown;
+                    //CityMapping cityMapping = new CityMapping();
+                    //restaurantVital.put("div", cityMapping.getDivision(mTown));
+                    //restaurantVital.put("dis", cityMapping.getDistrict(mTown));
                 }
 
                 formLayout.setVisibility(View.INVISIBLE);
@@ -241,12 +324,78 @@ public class EditRestProfileForm extends AppCompatActivity {
                 websiteEditText.setEnabled(false);
             }
         });
+
+        createLocationRequest();
+        if(checkLocationPermissions()){
+            checkChangeLocationSettings();
+        }
+        checkAskLocationPermissions();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkGoogleApiAvailability();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_LOCATION_PERMISSION:
+                if (grantResults.length > 0) {
+                    // although there are two different location permissions(coarse and fine) asked,
+                    // user gives location permission and both are granted
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        // permission granted
+                        Log.i("location", "permission granted");
+                        if(locationChechbox.isChecked()){
+                            calculateLocationAfterCheckingSettings();
+                        }else{
+                            checkChangeLocationSettings();
+                        }
+                        locationPermissionGranted = true;
+                    } else {
+                        // permission denied
+                        Log.i("location", "permission denied");
+                        locationChechbox.setChecked(false);
+                        locationPermissionGranted = false;
+                        // TODO
+                    }
+                }
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode){
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode){
+                    case Activity.RESULT_OK:
+                        isLocationSettingsEnabled = true;
+                        Log.i("location_settings", "enabled by user");
+                        if(locationChechbox.isChecked()){
+                            calculateLocation();
+                        }
+                        // TODO
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        isLocationSettingsEnabled = false;
+                        locationChechbox.setChecked(false);
+                        Log.i("location_settings", "ignored by user");
+                        // TODO
+                        break;
+                }
+                break;
+        }
     }
 
     private void bindAddress(DocumentSnapshot restVitalSnapshot){
         String address = restVitalSnapshot.getString("a");
-        Log.i("address", address);
         if(address != null){
+            Log.i("address", address);
             oldAddress = address;
             addressEditText.setText(address);
         }
@@ -268,6 +417,55 @@ public class EditRestProfileForm extends AppCompatActivity {
         }
     }
 
+    private void bindLocation(DocumentSnapshot restVitalSnapshot){
+        Map<String, Double> location = (Map<String, Double>) restVitalSnapshot.get("loc");
+        if(location==null) return;
+        Double latitude = location.get("lat");
+        if(latitude!=null){
+            latitudeTV.setText("Latitude: " + Double.toString(latitude));
+            oldLatitudeValue = latitude;
+        }
+
+        Double longitude = location.get("lng");
+        if(longitude!=null){
+            longitudeTV.setText("Longitude: " + Double.toString(longitude));
+            oldLongitudeValue = longitude;
+        }
+    }
+
+    private void bindTownSpinner(DocumentSnapshot restVitalSnapshot){
+        String[] towns = getResources().getStringArray(R.array.towns_bd);
+        ArrayList<String> townsArrayList = new ArrayList<>(Arrays.asList(towns));
+        int position = 0;
+
+        String townString = restVitalSnapshot.getString("t");
+        if(townString != null){
+            oldTown = townString;
+            position = townsArrayList.indexOf(townString);
+        }
+
+        ArrayAdapter<String> townAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, townsArrayList);
+        townAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        townSpinner.setAdapter(townAdapter);
+        townSpinner.setSelection(position);
+
+        townSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.i("town", parent.getItemAtPosition(position).toString());
+                mTown = parent.getItemAtPosition(position).toString();
+                saveButtonController.shouldTownBeSaved = shouldTownBeSaved();
+                saveButtonController.enableOrDisableSaveButton();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
     private boolean shouldAddressBeSaved(){
         return !oldAddress.equals(mAddress);
     }
@@ -279,6 +477,16 @@ public class EditRestProfileForm extends AppCompatActivity {
 
     private boolean shouldWebsiteBeSaved(){
         return !oldWebsite.equals(mWebsite);
+    }
+
+    private boolean shouldLocationBeSaved(Double latitude, Double longitude){
+        if(latitude==null || longitude==null) return false;
+        if(oldLatitudeValue==null || oldLongitudeValue==null) return false;
+        return (!latitude.equals(oldLatitudeValue) || !longitude.equals(oldLongitudeValue));
+    }
+
+    private boolean shouldTownBeSaved(){
+        return (mTown!=null && !mTown.equals(oldTown));
     }
 
     private void checkPhoneEditText(String phoneNumber){
@@ -322,6 +530,8 @@ public class EditRestProfileForm extends AppCompatActivity {
         boolean shouldAddressBeSaved = false;
         boolean shouldPhoneBeSaved = false;
         boolean shouldWebsiteBeSaved = false;
+        boolean shouldLocationBeSaved = false;
+        boolean shouldTownBeSaved = false;
         Button saveButton;
 
         SaveButtonController(Button saveButton){
@@ -329,7 +539,8 @@ public class EditRestProfileForm extends AppCompatActivity {
         }
 
         void enableOrDisableSaveButton(){
-            if(shouldAddressBeSaved || shouldPhoneBeSaved || shouldWebsiteBeSaved){
+            if(shouldAddressBeSaved || shouldPhoneBeSaved || shouldWebsiteBeSaved ||
+                    shouldLocationBeSaved || shouldTownBeSaved){
                 saveButton.setEnabled(true);
             }else{
                 saveButton.setEnabled(false);
@@ -341,6 +552,196 @@ public class EditRestProfileForm extends AppCompatActivity {
             shouldAddressBeSaved = false;
             shouldPhoneBeSaved = false;
             shouldWebsiteBeSaved = false;
+            shouldLocationBeSaved = false;
+            shouldTownBeSaved = false;
         }
+    }
+
+    private void checkAskLocationPermissions(){
+        String[] permissionsArray = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+        ArrayList<String> permissionsArrayList = new ArrayList<>();
+
+        for (String permission : permissionsArray) {
+            if (!hasPermission(permission)) {
+                permissionsArrayList.add(permission);
+            }
+        }
+
+        if (permissionsArrayList.size() > 0) {
+            ActivityCompat.requestPermissions(this, permissionsArrayList.toArray(new String[0]), REQUEST_LOCATION_PERMISSION);
+        } else{
+            Log.i("location", "permission pre exists");
+            locationPermissionGranted = true;
+        }
+    }
+
+    private boolean hasPermission(String permission) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
+        }
+        return true;
+    }
+
+    private void createLocationRequest(){
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    private boolean checkLocationPermissions(){
+        String[] permissionsArray = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+
+        for (String permission : permissionsArray) {
+            if (!hasPermission(permission)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void checkChangeLocationSettings(){
+        Task<LocationSettingsResponse> task = getLocationSettingsResponseTask();
+        task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                if(locationSettingsResponse.getLocationSettingsStates().isLocationUsable()){
+                    Log.i("location_settings", "enabled from before");
+                    isLocationSettingsEnabled = true;
+                }
+            }
+        });
+
+        task.addOnFailureListener(this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult(EditRestProfileForm.this,
+                                REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        Log.i("location_settings", "asking dialog failed");
+                    }
+                }
+            }
+        });
+    }
+
+    private Task<LocationSettingsResponse> getLocationSettingsResponseTask(){
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(locationRequest);
+        SettingsClient client = LocationServices.getSettingsClient(this);
+        return client.checkLocationSettings(builder.build());
+    }
+
+    private void checkGoogleApiAvailability(){
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int googlePlayAvailability = googleApiAvailability.isGooglePlayServicesAvailable(this);
+        switch (googlePlayAvailability) {
+            case ConnectionResult.SUCCESS:
+                Log.i("Google_Play", "Up to date");
+                isGoogleApiAvailable = true;
+                break;
+            default:
+                // TODO google play not available/updated
+                // TODO show dialog with action
+                // use getErrorDialog()
+                Log.i("Google_Play", "Some Problem");
+                isGoogleApiAvailable = false;
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void calculateLocation(){
+        if(isGoogleApiAvailable){
+            FusedLocationProviderClient fusedLocationClient = LocationServices.
+                    getFusedLocationProviderClient(EditRestProfileForm.this);
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(EditRestProfileForm.this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if(location != null){
+                                mLatitudeValue = location.getLatitude();
+                                mLongitudeValue = location.getLongitude();
+                                saveButtonController.shouldLocationBeSaved = shouldLocationBeSaved(mLatitudeValue,
+                                        mLongitudeValue);
+                                saveButtonController.enableOrDisableSaveButton();
+                                displayLocation(mLatitudeValue, mLongitudeValue);
+                            } else{
+                                Log.i("location", "null");
+                                Toast.makeText(EditRestProfileForm.this, "Couldn't read location! Please try again.",
+                                        Toast.LENGTH_SHORT).show();
+                                locationChechbox.setChecked(false);
+                            }
+                        }
+                    }).addOnFailureListener(EditRestProfileForm.this, new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(EditRestProfileForm.this, "Couldn't read location! Please try again.",
+                            Toast.LENGTH_SHORT).show();
+                    locationChechbox.setChecked(false);
+                }
+            });
+        } else{
+            // no location
+            // TODO maybe get location by legacy methods
+            locationChechbox.setChecked(false);
+        }
+    }
+
+    private void calculateLocationAfterCheckingPermission(){
+        if(checkLocationPermissions()){
+            calculateLocationAfterCheckingSettings();
+        } else{
+            // no location
+            Log.i("location", "permission denied");
+            checkAskLocationPermissions();
+        }
+    }
+
+    private void calculateLocationAfterCheckingSettings(){
+        Task<LocationSettingsResponse> task = getLocationSettingsResponseTask();
+        task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                if(locationSettingsResponse.getLocationSettingsStates().isLocationUsable()){
+                    Log.i("location", "usable");
+                    isLocationSettingsEnabled = true;
+                    calculateLocation();
+                }else{
+                    Log.i("location", "not usable");
+                    locationChechbox.setChecked(false);
+                }
+            }
+        });
+        task.addOnFailureListener(this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult(EditRestProfileForm.this,
+                                REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        Log.i("location_settings", "asking dialog failed");
+                    }
+                }
+            }
+        });
+    }
+
+    private void displayLocation(Double latitude, Double longitude){
+        String latitudeText = "Latitude: ";
+        latitudeText += latitude==null ? "not found": Double.toString(latitude);
+        latitudeTV.setText(latitudeText);
+        String longitudeText = "Longitude: ";
+        longitudeText += longitude==null ? "not found": Double.toString(longitude);
+        longitudeTV.setText(longitudeText);
+
     }
 }
