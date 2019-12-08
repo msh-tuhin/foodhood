@@ -19,6 +19,8 @@ import myviewholders.NotificationHolder;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -44,6 +46,7 @@ public class AllNotificationsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.i("LIFECYCLE-TEST", "oncreate");
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         db = FirebaseFirestore.getInstance();
     }
 
@@ -79,6 +82,12 @@ public class AllNotificationsFragment extends Fragment {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.findItem(R.id.alter_timeline).setVisible(false);
     }
 
     @Override

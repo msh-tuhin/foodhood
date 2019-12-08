@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.example.tuhin.myapplication.ActivityResponse;
 
+import models.PostModel;
+import myviewholders.AlternatePostHolder;
 import myviewholders.BaseHomeFeedHolder;
 import myviewholders.EditPersonProfileHeaderHolder;
 import myviewholders.HalfPostHolder;
@@ -618,5 +620,55 @@ public class AdapterCreator {
             }
         };
         return adapter;
+    }
+
+    public static  FirestorePagingAdapter<PostModel, AlternatePostHolder>
+    getHomeFeedAlternativeAdapter(final LifecycleOwner lifecycleOwner,
+                       final Context context,
+                       final String division){
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query bQuery = db.collection("posts")
+                // needs composite index
+                .whereEqualTo("div", division)
+                .orderBy("ts", Query.Direction.DESCENDING);
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setPrefetchDistance(10)
+                .setPageSize(10).build();
+        FirestorePagingOptions<PostModel> options = new FirestorePagingOptions.Builder<PostModel>()
+                .setLifecycleOwner(lifecycleOwner)
+                .setQuery(bQuery, config, PostModel.class).build();
+
+        FirestorePagingAdapter<PostModel, AlternatePostHolder> adapter;
+        adapter = new FirestorePagingAdapter<PostModel, AlternatePostHolder>(options) {
+
+            @Override
+            protected void onBindViewHolder(@NonNull final AlternatePostHolder holder, final int position, @NonNull final PostModel model) {
+                DocumentSnapshot postSnapshot = this.getCurrentList().get(position);
+                holder.bindTo(context, postSnapshot);
+            }
+
+            @NonNull
+            @Override
+            public AlternatePostHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                AlternatePostHolder viewHolder;
+                View view;
+                view = LayoutInflater.from(viewGroup.getContext())
+                        .inflate(R.layout.post_half, viewGroup, false);
+                viewHolder = new AlternatePostHolder(view);
+                return viewHolder;
+            }
+
+            @Override
+            public int getItemCount() {
+                int c = super.getItemCount();
+                Log.i("count", Integer.toString(c));
+                return c;
+            }
+
+        };
+
+        return adapter;
+
     }
 }

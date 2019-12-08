@@ -114,6 +114,8 @@ public class home extends AppCompatActivity {
             case R.id.logout:
                 mAuth.signOut();
                 return true;
+            case R.id.alter_timeline:
+                return false;
             default:
                 return super.onOptionsItemSelected(item);
 

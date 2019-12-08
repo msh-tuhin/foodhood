@@ -8,4 +8,10 @@
         android:title="Logout"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/alter_timeline"
+        android:title="Alter Timeline"
+        android:icon="@drawable/change_icon_png_24"
+        app:showAsAction="ifRoom"/>
+
 </menu>

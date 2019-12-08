@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -13,26 +15,39 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import models.PostModel;
 import myapp.utils.AdapterCreator;
+import myapp.utils.CityMapping;
+import myviewholders.AlternatePostHolder;
 
 public class HomeFeedFragment extends Fragment {
 
     SwipeRefreshLayout swipeRefreshLayout;
     RecyclerView rv;
     LinearLayoutManager linearLayoutManager;
-    FirebaseFirestore db;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirestorePagingAdapter<ActivityResponse, RecyclerView.ViewHolder> adapter;
+    FirestorePagingAdapter<PostModel, AlternatePostHolder> alternateAdapter;
+
+    private boolean isTimelineAltered = false;
+    private String mCurrentUserLink;
 
     public HomeFeedFragment(){
 
@@ -48,7 +63,7 @@ public class HomeFeedFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db = FirebaseFirestore.getInstance();
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -66,7 +81,8 @@ public class HomeFeedFragment extends Fragment {
         rv.setLayoutManager(linearLayoutManager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(), linearLayoutManager.getOrientation());
         rv.addItemDecoration(dividerItemDecoration);
-        adapter = AdapterCreator.getHomeFeedAdapter(this, getActivity(), "YdnyQzx5XIMD0N2s8FDRPFVKRSo1");
+        mCurrentUserLink = mAuth.getCurrentUser().getUid();
+        adapter = AdapterCreator.getHomeFeedAdapter(this, getActivity(), mCurrentUserLink);
         adapter.notifyDataSetChanged();
         rv.setAdapter(adapter);
 
@@ -93,13 +109,70 @@ public class HomeFeedFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        adapter.startListening();
+        if(adapter!=null){
+            adapter.startListening();
+        }
+        if(alternateAdapter!=null){
+            alternateAdapter.startListening();
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        adapter.stopListening();
+        if(adapter!=null){
+            adapter.stopListening();
+        }
+        if(alternateAdapter!=null){
+            alternateAdapter.stopListening();
+        }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.alter_timeline:
+                Log.i("timeline", "please alter");
+                if(isTimelineAltered){
+                    isTimelineAltered = false;
+                    alternateAdapter.stopListening();
+                    alternateAdapter = null;
+                    adapter = AdapterCreator.getHomeFeedAdapter(this, getActivity(), mCurrentUserLink);
+                    adapter.startListening();
+                    rv.setAdapter(adapter);
+                    Toast.makeText(getActivity(), "Showing reviews from your followings",
+                            Toast.LENGTH_SHORT).show();
+                }else{
+                    isTimelineAltered = true;
+                    adapter.stopListening();
+                    adapter = null;
+                    db.collection("person_vital").document(mAuth.getCurrentUser().getUid())
+                            .get()
+                            .addOnSuccessListener(HomeFeedFragment.this.getActivity(), new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    if(documentSnapshot.exists()){
+                                        String currentTown = documentSnapshot.getString("ct");
+                                        if(currentTown==null || currentTown.equals("")) return;
+                                        CityMapping cityMapping = new CityMapping();
+                                        String division = cityMapping.getDivision(currentTown);
+                                        alternateAdapter = AdapterCreator.getHomeFeedAlternativeAdapter(
+                                                HomeFeedFragment.this,
+                                                HomeFeedFragment.this.getActivity(),
+                                                division);
+                                        alternateAdapter.startListening();
+                                        rv.setAdapter(alternateAdapter);
+                                    }
+                                }
+                            });
+                    Toast.makeText(getActivity(), "Showing reviews about restaurants from your division",
+                            Toast.LENGTH_SHORT).show();
+                }
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
 }

@@ -47,6 +47,9 @@ public class PostModel {
     @PropertyName("ts")
     private Timestamp timestamp;
 
+    @PropertyName("div")
+    private String division;
+
     public PostModel(){
 
     }
@@ -169,5 +172,15 @@ public class PostModel {
     @PropertyName("ts")
     public void setTimestamp(Timestamp ts) {
         this.timestamp = ts;
+    }
+
+    @PropertyName("div")
+    public String getDivision() {
+        return division;
+    }
+
+    @PropertyName("div")
+    public void setDivision(String division) {
+        this.division = division;
     }
 }

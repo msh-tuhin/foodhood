@@ -68,7 +68,9 @@ public class PeoplePosts extends Fragment {
     getAdapter(LifecycleOwner lifecycleOwner){
         String currentUserLink = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Query bQuery = db.collection("posts")
-                .whereEqualTo("r.l", currentUserLink);
+                // needs composite index
+                .whereEqualTo("r.l", currentUserLink)
+                .orderBy("ts", Query.Direction.DESCENDING);
         PagedList.Config config = new PagedList.Config.Builder()
                 .setEnablePlaceholders(false)
                 .setPrefetchDistance(10)
