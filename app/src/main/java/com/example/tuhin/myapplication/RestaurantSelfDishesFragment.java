@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import myapp.utils.EditDishFormSource;
 import myapp.utils.PostTypes;
 import myviewholders.SelfDishesItemHolder;
@@ -20,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -37,7 +39,10 @@ public class RestaurantSelfDishesFragment extends Fragment {
     RecyclerView rv;
     FloatingActionButton fab;
     SelfDishesAdapter adapter;
+    SwipeRefreshLayout swipeRefreshLayout;
     ListenerRegistration registration;
+
+    public int editedPosition = -1;
 
     public RestaurantSelfDishesFragment() {
         // Required empty public constructor
@@ -60,15 +65,17 @@ public class RestaurantSelfDishesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         rv = view.findViewById(R.id.dishes_rv);
         fab = view.findViewById(R.id.fab);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false);
         rv.setLayoutManager(linearLayoutManager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(), linearLayoutManager.getOrientation());
         rv.addItemDecoration(dividerItemDecoration);
         adapter = new SelfDishesAdapter(RestaurantSelfDishesFragment.this.getActivity(),
+                RestaurantSelfDishesFragment.this,
                 new ArrayList<String>());
         rv.setAdapter(adapter);
-        // initializeAdapter();
+        initializeAdapter();
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,19 +86,34 @@ public class RestaurantSelfDishesFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                initializeAdapter();
+                Toast.makeText(RestaurantSelfDishesFragment.this.getActivity(),
+                        "Refreshing", Toast.LENGTH_SHORT).show();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     @Override
     public void onStart() {
         super.onStart();
         // initializeAdapter();
-        registerListener();
+        // registerListener();
+        if(editedPosition > -1){
+            Log.i("item", "being edited");
+            adapter.notifyItemChanged(editedPosition);
+            editedPosition = -1;
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        registration.remove();
+        // registration.remove();
     }
 
     private void initializeAdapter(){
@@ -140,16 +162,18 @@ public class RestaurantSelfDishesFragment extends Fragment {
     private class SelfDishesAdapter extends RecyclerView.Adapter<SelfDishesItemHolder>{
 
         Context context;
+        Fragment fragment;
         ArrayList<String> dishes;
 
-        SelfDishesAdapter(Context context, ArrayList<String> dishes){
+        SelfDishesAdapter(Context context, Fragment fragment, ArrayList<String> dishes){
             this.context = context;
+            this.fragment = fragment;
             this.dishes = dishes;
         }
 
         @Override
         public void onBindViewHolder(@NonNull SelfDishesItemHolder dishHolder, int i) {
-            dishHolder.bindTo(context, dishes.get(i));
+            dishHolder.bindTo(context, fragment, dishes.get(i), i);
         }
 
         @Override

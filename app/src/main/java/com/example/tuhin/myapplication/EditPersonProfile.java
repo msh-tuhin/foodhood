@@ -75,7 +75,7 @@ public class EditPersonProfile extends AppCompatActivity {
 
         String personLink = mAuth.getCurrentUser().getUid();
         adapter = AdapterCreator.getEditPersonProfileAdapter(this, this, personLink);
-        adapter.notifyDataSetChanged();
+        //adapter.notifyDataSetChanged();
         rv.setAdapter(adapter);
 
         Log.i("total", Integer.toString(appBarLayout.getTotalScrollRange()));

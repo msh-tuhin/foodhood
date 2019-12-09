@@ -151,6 +151,7 @@ public class EditDishForm extends AppCompatActivity {
 
         if(mSource==EditDishFormSource.NEW_DISH){
             nameLinearLayout.setVisibility(View.VISIBLE);
+            bindCategorySpinner(null);
         }
 
         if(mSource==EditDishFormSource.EDIT_DISH){
@@ -666,14 +667,16 @@ public class EditDishForm extends AppCompatActivity {
         ArrayList<String> categoriesArrayList = new ArrayList<>(Arrays.asList(categories));
         int position = 0;
 
-        ArrayList<String> dishCategories = (ArrayList<String>) dishVitalSnapshot.get("c");
-        if(dishCategories!=null && dishCategories.size()>0){
-            oldCategory = dishCategories.get(0);
-            position = categoriesArrayList.indexOf(dishCategories.get(0));
-        }else{
-            categoriesArrayList.add(0, nullCategoryString);
+        if(dishVitalSnapshot!=null){
+            ArrayList<String> dishCategories = (ArrayList<String>) dishVitalSnapshot.get("c");
+            if(dishCategories!=null && dishCategories.size()>0){
+                oldCategory = dishCategories.get(0);
+                position = categoriesArrayList.indexOf(dishCategories.get(0));
+            }else{
+                categoriesArrayList.add(0, nullCategoryString);
+            }
+            position = position<0 ? 0:position;
         }
-        position = position<0 ? 0:position;
 
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, categoriesArrayList);

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.example.tuhin.myapplication.DishDetail;
 import com.example.tuhin.myapplication.EditDishForm;
 import com.example.tuhin.myapplication.R;
+import com.example.tuhin.myapplication.RestaurantSelfDishesFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +23,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.EditDishFormSource;
@@ -52,7 +54,7 @@ public class SelfDishesItemHolder extends RecyclerView.ViewHolder {
         categoryTV = v.findViewById(R.id.category);
     }
 
-    public void bindTo(final Context context, final String dishLink){
+    public void bindTo(final Context context, final Fragment fragment, final String dishLink, final int position){
         refreshHolder();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("dish_vital").document(dishLink)
@@ -79,6 +81,7 @@ public class SelfDishesItemHolder extends RecyclerView.ViewHolder {
         editImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((RestaurantSelfDishesFragment)fragment).editedPosition = position;
                 Intent intent = new Intent(context, EditDishForm.class);
                 intent.putExtra("source", EditDishFormSource.EDIT_DISH);
                 intent.putExtra("dishLink", dishLink);
