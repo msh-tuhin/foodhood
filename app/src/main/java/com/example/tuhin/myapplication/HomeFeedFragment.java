@@ -135,7 +135,9 @@ public class HomeFeedFragment extends Fragment {
                 Log.i("timeline", "please alter");
                 if(isTimelineAltered){
                     isTimelineAltered = false;
-                    alternateAdapter.stopListening();
+                    if(alternateAdapter!=null){
+                        alternateAdapter.stopListening();
+                    }
                     alternateAdapter = null;
                     adapter = AdapterCreator.getHomeFeedAdapter(this, getActivity(), mCurrentUserLink);
                     adapter.startListening();
@@ -143,9 +145,6 @@ public class HomeFeedFragment extends Fragment {
                     Toast.makeText(getActivity(), "Showing reviews from your followings",
                             Toast.LENGTH_SHORT).show();
                 }else{
-                    isTimelineAltered = true;
-                    adapter.stopListening();
-                    adapter = null;
                     db.collection("person_vital").document(mAuth.getCurrentUser().getUid())
                             .get()
                             .addOnSuccessListener(HomeFeedFragment.this.getActivity(), new OnSuccessListener<DocumentSnapshot>() {
@@ -153,7 +152,15 @@ public class HomeFeedFragment extends Fragment {
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     if(documentSnapshot.exists()){
                                         String currentTown = documentSnapshot.getString("ct");
-                                        if(currentTown==null || currentTown.equals("")) return;
+                                        if(currentTown==null || currentTown.equals("")) {
+                                            Toast.makeText(getActivity(),
+                                                    "You need to set your hometown/thana",
+                                                    Toast.LENGTH_LONG).show();
+                                            return;
+                                        }
+                                        isTimelineAltered = true;
+                                        adapter.stopListening();
+                                        adapter = null;
                                         CityMapping cityMapping = new CityMapping();
                                         String division = cityMapping.getDivision(currentTown);
                                         alternateAdapter = AdapterCreator.getHomeFeedAlternativeAdapter(
@@ -162,11 +169,12 @@ public class HomeFeedFragment extends Fragment {
                                                 division);
                                         alternateAdapter.startListening();
                                         rv.setAdapter(alternateAdapter);
+                                        Toast.makeText(getActivity(),
+                                                "Showing reviews about restaurants from your division",
+                                                Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
-                    Toast.makeText(getActivity(), "Showing reviews about restaurants from your division",
-                            Toast.LENGTH_SHORT).show();
                 }
 
                 return true;
