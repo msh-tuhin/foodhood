@@ -29,6 +29,7 @@ import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import myapp.utils.NullStrings;
 import myapp.utils.SourceMorePeople;
 
 public class EditPersonProfileHeaderHolder extends RecyclerView.ViewHolder {
@@ -169,7 +170,8 @@ public class EditPersonProfileHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindCurrentTown(DocumentSnapshot personVitalSnapshot){
         String personCurrentTown = personVitalSnapshot.getString("ct");
-        if(personCurrentTown != null){
+        if(!(personCurrentTown == null || personCurrentTown.equals("") ||
+                personCurrentTown.equals(NullStrings.NULL_CURRENT_TOWN_STRING))){
             currentTownTV.setText(personCurrentTown);
         }
     }
@@ -185,7 +187,8 @@ public class EditPersonProfileHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindHomeTown(DocumentSnapshot personVitalSnapshot){
         String personHomeTown = personVitalSnapshot.getString("ht");
-        if(personHomeTown != null){
+        if(!(personHomeTown == null || personHomeTown.equals("") ||
+                personHomeTown.equals(NullStrings.NULL_HOME_TOWN_STRING))){
             homeTownTV.setText(personHomeTown);
         }
     }

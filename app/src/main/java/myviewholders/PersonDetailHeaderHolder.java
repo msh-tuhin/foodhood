@@ -50,6 +50,7 @@ import java.util.Map;
 import myapp.utils.AccountTypes;
 import myapp.utils.DateTimeExtractor;
 import myapp.utils.NotificationTypes;
+import myapp.utils.NullStrings;
 import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PictureBinder;
 import myapp.utils.SourceAllDishes;
@@ -185,7 +186,8 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindCurrentTown(DocumentSnapshot personVitalSnapshot){
         String personCurrentTown = personVitalSnapshot.getString("ct");
-        if(personCurrentTown != null && !personCurrentTown.equals("")){
+        if(!(personCurrentTown == null || personCurrentTown.equals("") ||
+                personCurrentTown.equals(NullStrings.NULL_CURRENT_TOWN_STRING))){
             currentLocationTV.setText(personCurrentTown);
             currentLocationLayout.setVisibility(View.VISIBLE);
         }
@@ -193,7 +195,8 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
 
     private void bindHomeTown(DocumentSnapshot personVitalSnapshot){
         String personHomeTown = personVitalSnapshot.getString("ht");
-        if(personHomeTown != null && !personHomeTown.equals("")){
+        if(!(personHomeTown == null || personHomeTown.equals("") ||
+                personHomeTown.equals(NullStrings.NULL_HOME_TOWN_STRING))){
             hometownTV.setText(personHomeTown);
             hometownLayout.setVisibility(View.VISIBLE);
         }

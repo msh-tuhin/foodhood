@@ -9,6 +9,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import myapp.utils.CityMapping;
 import myapp.utils.InputValidator;
+import myapp.utils.NullStrings;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -439,11 +440,12 @@ public class EditRestProfileForm extends AppCompatActivity {
         int position = 0;
 
         String townString = restVitalSnapshot.getString("t");
-        if(!(townString == null || townString.equals("") || townString.equals("Select a city/thana"))){
+        if(!(townString == null || townString.equals("") || townString.equals(NullStrings.NULL_TOWN_STRING))){
             oldTown = townString;
             townsArrayList.remove(0);
             position = townsArrayList.indexOf(townString);
         }
+        position = position<0 ? 0:position;
 
         ArrayAdapter<String> townAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, townsArrayList);

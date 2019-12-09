@@ -673,6 +673,7 @@ public class EditDishForm extends AppCompatActivity {
         }else{
             categoriesArrayList.add(0, nullCategoryString);
         }
+        position = position<0 ? 0:position;
 
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, categoriesArrayList);

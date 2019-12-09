@@ -3,6 +3,7 @@ package com.example.tuhin.myapplication;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import myapp.utils.NullStrings;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -49,7 +50,7 @@ public class SetCurrentTown extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.i("town", parent.getItemAtPosition(position).toString());
                 selectedTown = parent.getItemAtPosition(position).toString();
-                if(selectedTown.equals("Select Current Town")){
+                if(selectedTown.equals(NullStrings.NULL_CURRENT_TOWN_STRING)){
                     skipOrNext.setText("Skip");
                 }else{
                     skipOrNext.setText("Next");

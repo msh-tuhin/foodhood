@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import myapp.utils.InputValidator;
+import myapp.utils.NullStrings;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -252,11 +253,19 @@ public class EditPersonProfileForm extends AppCompatActivity {
                     oldPhone = mPhone;
                 }
                 if(saveButtonController.shouldCurrentTownBeSaved){
-                    personVital.put("ct", mCurrentTown);
+                    if(!mCurrentTown.equals(NullStrings.NULL_CURRENT_TOWN_STRING)){
+                        personVital.put("ct", mCurrentTown);
+                    }else{
+                        personVital.put("ct", "");
+                    }
                     oldCurrentTown = mCurrentTown;
                 }
                 if(saveButtonController.shouldHomeTownBeSaved){
-                    personVital.put("ht", mHomeTown);
+                    if(!mHomeTown.equals(NullStrings.NULL_HOME_TOWN_STRING)){
+                        personVital.put("ht", mHomeTown);
+                    }else{
+                        personVital.put("ht", "");
+                    }
                     oldHomeTown = mHomeTown;
                 }
                 if(saveButtonController.shouldBirthDateBeSaved){
@@ -319,9 +328,10 @@ public class EditPersonProfileForm extends AppCompatActivity {
         String[] towns = getResources().getStringArray(R.array.towns_bd);
         ArrayList<String> townsArrayList = new ArrayList<>(Arrays.asList(towns));
         int position = 0;
-        if(currentTown != null){
+        if(!(currentTown == null || currentTown.equals(""))){
             position = townsArrayList.indexOf(currentTown);
         }
+        position = position<0 ? 0:position;
 
         ArrayAdapter<String> townAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, townsArrayList);
@@ -349,9 +359,10 @@ public class EditPersonProfileForm extends AppCompatActivity {
         String[] towns = getResources().getStringArray(R.array.towns_bd);
         ArrayList<String> townsArrayList = new ArrayList<>(Arrays.asList(towns));
         int position = 0;
-        if(homeTown != null){
+        if(!(homeTown == null || homeTown.equals(""))){
             position = townsArrayList.indexOf(homeTown);
         }
+        position = position<0 ? 0:position;
 
         ArrayAdapter<String> townAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, townsArrayList);
