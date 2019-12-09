@@ -77,13 +77,13 @@ public class EditRestProfileForm extends AppCompatActivity {
     private String mAddress = "";
     private String mPhone = "";
     private String mWebsite = "";
-    private String mTown = "Select a city/thana";
+    private String mTown = NullStrings.NULL_TOWN_STRING;
     private String oldAddress = "";
     private String oldPhone = "";
     private String oldWebsite = "";
     private Double oldLatitudeValue = null;
     private Double oldLongitudeValue = null;
-    private String oldTown = "Select a city/thana";
+    private String oldTown = NullStrings.NULL_TOWN_STRING;
 
     SaveButtonController saveButtonController;
     private String mRestaurantLink;
@@ -489,7 +489,7 @@ public class EditRestProfileForm extends AppCompatActivity {
     }
 
     private boolean shouldTownBeSaved(){
-        return !(mTown==null || mTown.equals("Select a city/thana") || mTown.equals(oldTown));
+        return !(mTown==null || mTown.equals(NullStrings.NULL_TOWN_STRING) || mTown.equals(oldTown));
     }
 
     private void checkPhoneEditText(String phoneNumber){

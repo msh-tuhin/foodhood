@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import id.zelory.compressor.Compressor;
 import myapp.utils.EditDishFormSource;
+import myapp.utils.NullStrings;
 import myapp.utils.PictureBinder;
 import myapp.utils.RealPathUtil;
 
@@ -84,7 +85,6 @@ public class EditDishForm extends AppCompatActivity {
     Spinner dishCategorySpinner;
     Button saveButton;
 
-    private String nullCategoryString = "Select a category";
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String mDishlink;
@@ -100,8 +100,8 @@ public class EditDishForm extends AppCompatActivity {
     private Double oldPrice = -1.0;
     private Double mPrice = -1.0;
     private String oldCoverPhotoLink = "";
-    private String oldCategory = nullCategoryString;
-    private String mCategory = nullCategoryString;
+    private String oldCategory = NullStrings.NULL_CATEGORY_STRING;
+    private String mCategory = NullStrings.NULL_CATEGORY_STRING;
     private  SaveButtonController saveButtonController;
 
     @Override
@@ -417,7 +417,7 @@ public class EditDishForm extends AppCompatActivity {
     }
 
     private boolean shouldCategoryBeSaved(){
-        return !(mCategory==null || mCategory.equals(nullCategoryString) || mCategory.equals(oldCategory));
+        return !(mCategory==null || mCategory.equals(NullStrings.NULL_CATEGORY_STRING) || mCategory.equals(oldCategory));
     }
 
     private String getPathFromContentUri(Uri contentUri){
@@ -673,7 +673,7 @@ public class EditDishForm extends AppCompatActivity {
                 oldCategory = dishCategories.get(0);
                 position = categoriesArrayList.indexOf(dishCategories.get(0));
             }else{
-                categoriesArrayList.add(0, nullCategoryString);
+                categoriesArrayList.add(0, NullStrings.NULL_CATEGORY_STRING);
             }
             position = position<0 ? 0:position;
         }
