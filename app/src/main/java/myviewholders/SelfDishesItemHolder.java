@@ -19,6 +19,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +38,7 @@ public class SelfDishesItemHolder extends RecyclerView.ViewHolder {
     private TextView dishPriceTV;
     private ImageView removeImageView;
     private ImageView editImageView;
+    private TextView categoryTV;
     public SelfDishesItemHolder(@NonNull View v) {
         super(v);
         parentLayout = v.findViewById(R.id.parent_layout);
@@ -47,6 +49,7 @@ public class SelfDishesItemHolder extends RecyclerView.ViewHolder {
         dishPriceTV = v.findViewById(R.id.price);
         removeImageView = v.findViewById(R.id.remove);
         editImageView = v.findViewById(R.id.edit);
+        categoryTV = v.findViewById(R.id.category);
     }
 
     public void bindTo(final Context context, final String dishLink){
@@ -66,6 +69,7 @@ public class SelfDishesItemHolder extends RecyclerView.ViewHolder {
                                 bindDescription(dishInfo);
                                 bindRating(dishInfo);
                                 bindPrice(dishInfo);
+                                bindCategory(dishInfo);
                                 setParentLayoutOnClickListener(context, dishLink);
                             }
                         }
@@ -147,6 +151,16 @@ public class SelfDishesItemHolder extends RecyclerView.ViewHolder {
         Double price = dishVitalSnapshot.getDouble("p");
         if(price==null) return;
         dishPriceTV.setText(Double.toString(price)+" BDT");
+    }
+
+    private void bindCategory(DocumentSnapshot dishVitalSnapshot){
+        String categoryText = "Category: ";
+        ArrayList<String> categories = (ArrayList<String>) dishVitalSnapshot.get("c");
+        if(categories!=null && categories.size()>0){
+            categoryText += categories.get(0);
+            categoryTV.setText(categoryText);
+            categoryTV.setVisibility(View.VISIBLE);
+        }
     }
 
     private void refreshHolder(){

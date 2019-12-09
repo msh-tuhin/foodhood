@@ -439,8 +439,9 @@ public class EditRestProfileForm extends AppCompatActivity {
         int position = 0;
 
         String townString = restVitalSnapshot.getString("t");
-        if(townString != null){
+        if(!(townString == null || townString.equals("") || townString.equals("Select a city/thana"))){
             oldTown = townString;
+            townsArrayList.remove(0);
             position = townsArrayList.indexOf(townString);
         }
 
@@ -486,7 +487,7 @@ public class EditRestProfileForm extends AppCompatActivity {
     }
 
     private boolean shouldTownBeSaved(){
-        return (mTown!=null && !mTown.equals(oldTown));
+        return !(mTown==null || mTown.equals("Select a city/thana") || mTown.equals(oldTown));
     }
 
     private void checkPhoneEditText(String phoneNumber){

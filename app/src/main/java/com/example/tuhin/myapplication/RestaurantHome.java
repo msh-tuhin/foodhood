@@ -101,6 +101,7 @@ public class RestaurantHome extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.home_menu, menu);
+        menu.findItem(R.id.alter_timeline).setVisible(false);
         return super.onCreateOptionsMenu(menu);
     }
 

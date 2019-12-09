@@ -3,11 +3,13 @@
     <string-array name="food_categories">
         <item>Chicken</item>
         <item>Beef</item>
+        <item>Mutton</item>
         <item>Biriyani</item>
         <item>Coffee</item>
         <item>Beverage</item>
         <item>Juice</item>
         <item>Ice Cream</item>
         <item>Salad</item>
+        <item>Rice</item>
     </string-array>
 </resources>

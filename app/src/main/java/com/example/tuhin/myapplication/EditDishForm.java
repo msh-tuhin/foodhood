@@ -24,10 +24,13 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.Continuation;
@@ -52,6 +55,8 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,8 +81,10 @@ public class EditDishForm extends AppCompatActivity {
     ImageButton chooseFrom;
     ImageButton deleteImage;
     ImageView coverPhotoIV;
+    Spinner dishCategorySpinner;
     Button saveButton;
 
+    private String nullCategoryString = "Select a category";
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private String mDishlink;
@@ -93,6 +100,8 @@ public class EditDishForm extends AppCompatActivity {
     private Double oldPrice = -1.0;
     private Double mPrice = -1.0;
     private String oldCoverPhotoLink = "";
+    private String oldCategory = nullCategoryString;
+    private String mCategory = nullCategoryString;
     private  SaveButtonController saveButtonController;
 
     @Override
@@ -120,6 +129,7 @@ public class EditDishForm extends AppCompatActivity {
         imageSourceChooser = findViewById(R.id.image_source_chooser);
         coverPhotoIV = findViewById(R.id.cover_photo);
         saveButton = findViewById(R.id.save_button);
+        dishCategorySpinner = findViewById(R.id.food_category_spinner);
 
         String title = mSource==EditDishFormSource.NEW_DISH ? "Add Dish": "Edit Dish";
         toolbar.setTitle(title);
@@ -405,6 +415,10 @@ public class EditDishForm extends AppCompatActivity {
         return false;
     }
 
+    private boolean shouldCategoryBeSaved(){
+        return !(mCategory==null || mCategory.equals(nullCategoryString) || mCategory.equals(oldCategory));
+    }
+
     private String getPathFromContentUri(Uri contentUri){
         String path = RealPathUtil.getRealPath(this, contentUri);
         Log.i("PATH", path);
@@ -508,6 +522,9 @@ public class EditDishForm extends AppCompatActivity {
         Map<String, Object> dishVital = new HashMap<>();
         dishVital.put("n", mName);
         dishVital.put("p", mPrice);
+        ArrayList<String> categories = new ArrayList<>();
+        categories.add(mCategory);
+        dishVital.put("c", categories);
         if(saveButtonController.shouldDescriptionBeSaved){
             dishVital.put("d", mDescription);
         }
@@ -553,6 +570,11 @@ public class EditDishForm extends AppCompatActivity {
             dishVital.put("cp", uri.toString());
         }else{
             dishVital.put("cp", "");
+        }
+        if(saveButtonController.shouldCategoryBeSaved){
+            ArrayList<String> categories = new ArrayList<>();
+            categories.add(mCategory);
+            dishVital.put("c", categories);
         }
         final DocumentReference ref = db.collection("dish_vital").document(mDishlink);
         ref.update(dishVital)
@@ -605,6 +627,7 @@ public class EditDishForm extends AppCompatActivity {
                                 bindDishImage(dishInfo);
                                 bindDescription(dishInfo);
                                 bindPrice(dishInfo);
+                                bindCategorySpinner(dishInfo);
                             }
                         }
                     }
@@ -638,11 +661,47 @@ public class EditDishForm extends AppCompatActivity {
         priceEditText.setText(Double.toString(price));
     }
 
+    private void bindCategorySpinner(DocumentSnapshot dishVitalSnapshot){
+        String[] categories = getResources().getStringArray(R.array.food_categories);
+        ArrayList<String> categoriesArrayList = new ArrayList<>(Arrays.asList(categories));
+        int position = 0;
+
+        ArrayList<String> dishCategories = (ArrayList<String>) dishVitalSnapshot.get("c");
+        if(dishCategories!=null && dishCategories.size()>0){
+            oldCategory = dishCategories.get(0);
+            position = categoriesArrayList.indexOf(dishCategories.get(0));
+        }else{
+            categoriesArrayList.add(0, nullCategoryString);
+        }
+
+        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, categoriesArrayList);
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dishCategorySpinner.setAdapter(categoryAdapter);
+        dishCategorySpinner.setSelection(position);
+
+        dishCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.i("category", parent.getItemAtPosition(position).toString());
+                mCategory = parent.getItemAtPosition(position).toString();
+                saveButtonController.shouldCategoryBeSaved = shouldCategoryBeSaved();
+                saveButtonController.enableOrDisableSaveButton();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
     private class SaveButtonController{
         boolean shouldDescriptionBeSaved = false;
         boolean shouldNameBeSaved = false;
         boolean shouldPriceBeSaved = false;
         boolean shouldCoverPhotoBeSaved = false;
+        boolean shouldCategoryBeSaved = false;
         Button saveButton;
         int source;
         boolean condition;
@@ -655,14 +714,15 @@ public class EditDishForm extends AppCompatActivity {
         void enableOrDisableSaveButton(){
             if(source==EditDishFormSource.NEW_DISH){
                 // description & cover photo are optional
-                this.condition = shouldNameBeSaved && shouldPriceBeSaved;
+                this.condition = shouldNameBeSaved && shouldPriceBeSaved && shouldCategoryBeSaved;
                 // description & cover photo are mandatory
-                // this.condition = shouldNameBeSaved && shouldPriceBeSaved && shouldDescriptionBeSaved && shouldCoverPhotoBeSaved;
+                 //this.condition = shouldNameBeSaved && shouldPriceBeSaved && shouldDescriptionBeSaved &&
+                 //shouldCoverPhotoBeSaved && shouldCategoryBeSaved;
             }else{
                 this.condition = shouldNameBeSaved ||
                         shouldDescriptionBeSaved ||
                         shouldCoverPhotoBeSaved ||
-                        shouldPriceBeSaved;
+                        shouldPriceBeSaved || shouldCategoryBeSaved;
             }
             if(condition){
                 saveButton.setEnabled(true);
@@ -677,6 +737,7 @@ public class EditDishForm extends AppCompatActivity {
             shouldCoverPhotoBeSaved = false;
             shouldDescriptionBeSaved = false;
             shouldPriceBeSaved = false;
+            shouldCategoryBeSaved = false;
         }
     }
 }
