@@ -112,11 +112,12 @@ public class CreatePostSelectImages extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i("MORE_IMAGES", "clicked");
-                imageSourceChooser.setVisibility(View.VISIBLE);
+                // imageSourceChooser.setVisibility(View.VISIBLE);
 //                noImages.setVisibility(View.GONE);
                 viewPager.setVisibility(View.GONE);
                 deleteImage.setVisibility(View.GONE);
                 deleteImage.setClickable(false);
+                sendIntentForImage();
             }
         });
 
@@ -132,18 +133,7 @@ public class CreatePostSelectImages extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i("Gallery", "Choose From Here");
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/*");
-                // choose only from local images
-                // not working!
-                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                if(Build.VERSION.SDK_INT >= 18) {
-                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                }
-                if(intent.resolveActivity(getPackageManager()) != null){
-                    startActivityForResult(Intent.createChooser(intent, "Select Image"), IMAGE_CHOOSE_REQUEST_CODE);
-                }
+                sendIntentForImage();
             }
         });
 
@@ -311,6 +301,21 @@ public class CreatePostSelectImages extends AppCompatActivity {
             next.setEnabled(true);
         }else{
             next.setEnabled(false);
+        }
+    }
+
+    private void sendIntentForImage(){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        // choose only from local images
+        // not working!
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        if(Build.VERSION.SDK_INT >= 18) {
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        }
+        if(intent.resolveActivity(getPackageManager()) != null){
+            startActivityForResult(Intent.createChooser(intent, "Select Image"), IMAGE_CHOOSE_REQUEST_CODE);
         }
     }
 }

@@ -46,7 +46,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
-                android:visibility="visible"/>
+                android:visibility="visible"
+                android:src="@drawable/ltgray"/>
 
             <ImageButton
                 android:id="@+id/delete_image"
@@ -54,14 +55,14 @@
                 android:layout_height="wrap_content"
                 android:src="@android:drawable/ic_delete"
                 android:layout_gravity="end"
-                android:visibility="visible"/>
+                android:visibility="invisible"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/image_source_chooser"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#eeeeee"
-                android:visibility="visible">
+                android:visibility="invisible">
 
                 <ImageButton
                     android:id="@+id/camera"
@@ -84,6 +85,20 @@
                     app:layout_constraintStart_toEndOf="@id/camera"
                     app:layout_constraintEnd_toEndOf="parent"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:id="@+id/add_image_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center">
+
+                <ImageButton
+                    android:id="@+id/add_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/outline_add_black_24dp"
+                    android:layout_gravity="center"/>
+            </LinearLayout>
 
         </FrameLayout>
 

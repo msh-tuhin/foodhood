@@ -47,6 +47,7 @@
             android:layout_gravity="end"
             android:visibility="invisible"/>
 
+        <!-- only one of the following two is needed-->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/image_source_chooser"
             android:layout_width="match_parent"
@@ -75,6 +76,22 @@
                 app:layout_constraintStart_toEndOf="@id/camera"
                 app:layout_constraintEnd_toEndOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/add_image_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="invisible"
+            android:layout_gravity="center">
+
+            <ImageButton
+                android:id="@+id/add_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/outline_add_black_24dp"
+                android:layout_gravity="center"/>
+        </LinearLayout>
 
     </FrameLayout>
 

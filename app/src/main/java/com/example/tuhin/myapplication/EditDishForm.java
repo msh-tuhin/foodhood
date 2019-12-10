@@ -20,6 +20,7 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -77,6 +78,8 @@ public class EditDishForm extends AppCompatActivity {
     ImageView enableNameEditIV;
     ImageView enableDescriptionEditIV;
     ImageView enablePriceEditIV;
+    LinearLayout addImageLayout;
+    ImageButton addImageButton;
     ConstraintLayout imageSourceChooser;
     ImageButton captureImage;
     ImageButton chooseFrom;
@@ -123,6 +126,8 @@ public class EditDishForm extends AppCompatActivity {
         enableNameEditIV = findViewById(R.id.enable_name_edit);
         enableDescriptionEditIV = findViewById(R.id.enable_description_edit);
         enablePriceEditIV = findViewById(R.id.enable_price_edit);
+        addImageLayout = findViewById(R.id.add_image_layout);
+        addImageButton = findViewById(R.id.add_image);
         captureImage = findViewById(R.id.camera);
         chooseFrom = findViewById(R.id.gallery);
         deleteImage = findViewById(R.id.delete_image);
@@ -252,15 +257,14 @@ public class EditDishForm extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i("Gallery", "Choose From Here");
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/*");
-                // choose only from local images
-                // not working!
-                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                if(intent.resolveActivity(getPackageManager()) != null){
-                    startActivityForResult(Intent.createChooser(intent, "Select Image"), IMAGE_CHOOSE_REQUEST_CODE);
-                }
+                sendIntentForImage();
+            }
+        });
+
+        addImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendIntentForImage();
             }
         });
 
@@ -268,10 +272,11 @@ public class EditDishForm extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 uploadUri = null;
-                coverPhotoIV.setImageURI(null);
+                coverPhotoIV.setImageResource(R.drawable.ltgray);
                 deleteImage.setClickable(false);
                 deleteImage.setVisibility(View.INVISIBLE);
-                imageSourceChooser.setVisibility(View.VISIBLE);
+                //imageSourceChooser.setVisibility(View.VISIBLE);
+                addImageLayout.setVisibility(View.VISIBLE);
                 imageChanged = true;
                 imageCurrent = false;
                 saveButtonController.shouldCoverPhotoBeSaved = shoulCoverPhotoBeSaved();
@@ -375,7 +380,8 @@ public class EditDishForm extends AppCompatActivity {
                     saveButtonController.shouldCoverPhotoBeSaved = shoulCoverPhotoBeSaved();
                     saveButtonController.enableOrDisableSaveButton();
 
-                    imageSourceChooser.setVisibility(View.INVISIBLE);
+                    //imageSourceChooser.setVisibility(View.INVISIBLE);
+                    addImageLayout.setVisibility(View.INVISIBLE);
                     deleteImage.setClickable(true);
                     deleteImage.setVisibility(View.VISIBLE);
                 }catch (IOException e){
@@ -643,7 +649,9 @@ public class EditDishForm extends AppCompatActivity {
         oldCoverPhotoLink = coverPhotoLink;
         imagePrevious = true;
         imageCurrent = true;
-        imageSourceChooser.setVisibility(View.INVISIBLE);
+        //imageSourceChooser.setVisibility(View.INVISIBLE);
+        addImageLayout.setVisibility(View.INVISIBLE);
+        deleteImage.setClickable(true);
         deleteImage.setVisibility(View.VISIBLE);
         PictureBinder.bindCoverPicture(coverPhotoIV, dishVitalSnapshot);
     }
@@ -742,6 +750,21 @@ public class EditDishForm extends AppCompatActivity {
             shouldDescriptionBeSaved = false;
             shouldPriceBeSaved = false;
             shouldCategoryBeSaved = false;
+        }
+    }
+
+    private void sendIntentForImage(){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        // choose only from local images
+        // not working!
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        if(Build.VERSION.SDK_INT >= 18) {
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        }
+        if(intent.resolveActivity(getPackageManager()) != null){
+            startActivityForResult(Intent.createChooser(intent, "Select Image"), IMAGE_CHOOSE_REQUEST_CODE);
         }
     }
 }

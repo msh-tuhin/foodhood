@@ -27,6 +27,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -44,6 +45,8 @@ public class SetProfilePicture extends AppCompatActivity {
     Uri uploadUri = null;
     String photoPath;
     Toolbar toolbar;
+    LinearLayout addImageLayout;
+    ImageButton addImageButton;
     ImageButton captureImage, chooseFrom, deleteImage;
     ConstraintLayout imageSourceChooser;
     ImageView profilePicture;
@@ -56,6 +59,8 @@ public class SetProfilePicture extends AppCompatActivity {
         setContentView(R.layout.activity_set_profile_picture);
 
         toolbar = findViewById(R.id.toolbar);
+        addImageLayout = findViewById(R.id.add_image_layout);
+        addImageButton = findViewById(R.id.add_image);
         captureImage = findViewById(R.id.camera);
         chooseFrom = findViewById(R.id.gallery);
         deleteImage = findViewById(R.id.delete_image);
@@ -92,15 +97,14 @@ public class SetProfilePicture extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i("Gallery", "Choose From Here");
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/*");
-                // choose only from local images
-                // not working!
-                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                if(intent.resolveActivity(getPackageManager()) != null){
-                    startActivityForResult(Intent.createChooser(intent, "Select Image"), IMAGE_CHOOSE_REQUEST_CODE);
-                }
+                sendIntentForImage();
+            }
+        });
+
+        addImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendIntentForImage();
             }
         });
 
@@ -108,9 +112,11 @@ public class SetProfilePicture extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 uploadUri = null;
-                profilePicture.setImageURI(null);
+                profilePicture.setImageResource(R.drawable.ltgray);
                 deleteImage.setClickable(false);
-                imageSourceChooser.setVisibility(View.VISIBLE);
+                deleteImage.setVisibility(View.INVISIBLE);
+                //imageSourceChooser.setVisibility(View.VISIBLE);
+                addImageLayout.setVisibility(View.VISIBLE);
                 skipOrNext.setText("Skip");
             }
         });
@@ -207,8 +213,10 @@ public class SetProfilePicture extends AppCompatActivity {
                     uploadUri = compressedFileUri;
                     profilePicture.setImageURI(compressedFileUri);
 
-                    imageSourceChooser.setVisibility(View.INVISIBLE);
+                    //imageSourceChooser.setVisibility(View.INVISIBLE);
+                    addImageLayout.setVisibility(View.INVISIBLE);
                     deleteImage.setClickable(true);
+                    deleteImage.setVisibility(View.VISIBLE);
                     skipOrNext.setText("Next");
                 }catch (IOException e){
 
@@ -243,5 +251,20 @@ public class SetProfilePicture extends AppCompatActivity {
         String path = RealPathUtil.getRealPath(this, contentUri);
         Log.i("PATH", path);
         return path;
+    }
+
+    private void sendIntentForImage(){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        // choose only from local images
+        // not working!
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        if(Build.VERSION.SDK_INT >= 18) {
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        }
+        if(intent.resolveActivity(getPackageManager()) != null){
+            startActivityForResult(Intent.createChooser(intent, "Select Image"), IMAGE_CHOOSE_REQUEST_CODE);
+        }
     }
 }

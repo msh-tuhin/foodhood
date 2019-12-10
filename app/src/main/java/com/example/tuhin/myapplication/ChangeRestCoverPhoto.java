@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +27,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,6 +74,8 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
     private String oldCoverPhotoLink = "";
 
     Toolbar toolbar;
+    LinearLayout addImageLayout;
+    ImageButton addImageButton;
     ImageButton captureImage;
     ImageButton chooseFrom;
     ImageButton deleteImage;
@@ -88,6 +92,8 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
         setContentView(R.layout.activity_change_rest_cover_photo);
 
         toolbar = findViewById(R.id.toolbar);
+        addImageLayout = findViewById(R.id.add_image_layout);
+        addImageButton = findViewById(R.id.add_image);
         captureImage = findViewById(R.id.camera);
         chooseFrom = findViewById(R.id.gallery);
         deleteImage = findViewById(R.id.delete_image);
@@ -144,15 +150,15 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i("Gallery", "Choose From Here");
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/*");
-                // choose only from local images
-                // not working!
-                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                if(intent.resolveActivity(getPackageManager()) != null){
-                    startActivityForResult(Intent.createChooser(intent, "Select Image"), IMAGE_CHOOSE_REQUEST_CODE);
-                }
+                sendIntentForImage();
+
+            }
+        });
+
+        addImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendIntentForImage();
             }
         });
 
@@ -160,10 +166,11 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 uploadUri = null;
-                coverPhotoIV.setImageURI(null);
+                coverPhotoIV.setImageResource(R.drawable.ltgray);
                 deleteImage.setClickable(false);
                 deleteImage.setVisibility(View.INVISIBLE);
-                imageSourceChooser.setVisibility(View.VISIBLE);
+                //imageSourceChooser.setVisibility(View.VISIBLE);
+                addImageLayout.setVisibility(View.VISIBLE);
                 imageChanged = true;
                 imageCurrent = false;
                 enableOrDisableSaveButton();
@@ -222,7 +229,8 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
                     uploadUri = compressedFileUri;
                     coverPhotoIV.setImageURI(compressedFileUri);
 
-                    imageSourceChooser.setVisibility(View.INVISIBLE);
+                    //imageSourceChooser.setVisibility(View.INVISIBLE);
+                    addImageLayout.setVisibility(View.INVISIBLE);
                     deleteImage.setClickable(true);
                     deleteImage.setVisibility(View.VISIBLE);
                     imageChanged = true;
@@ -430,7 +438,8 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
 
         if(coverPhotoLink == null || coverPhotoLink.equals("")){
             deleteImage.setVisibility(View.INVISIBLE);
-            imageSourceChooser.setVisibility(View.VISIBLE);
+            //imageSourceChooser.setVisibility(View.VISIBLE);
+            addImageLayout.setVisibility(View.VISIBLE);
         }else{
             oldCoverPhotoLink = coverPhotoLink;
             imageCurrent = true;
@@ -445,11 +454,24 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
 
     private void enableOrDisableSaveButton(){
         if(imageChanged){
-            if(imagePrevious || imageCurrent){
-                saveButton.setEnabled(true);
-            }
+            saveButton.setEnabled(imagePrevious || imageCurrent);
         }else{
             saveButton.setEnabled(false);
+        }
+    }
+
+    private void sendIntentForImage(){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        // choose only from local images
+        // not working!
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        if(Build.VERSION.SDK_INT >= 18) {
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        }
+        if(intent.resolveActivity(getPackageManager()) != null){
+            startActivityForResult(Intent.createChooser(intent, "Select Image"), IMAGE_CHOOSE_REQUEST_CODE);
         }
     }
 }
