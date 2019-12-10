@@ -85,7 +85,7 @@ public class FeedbackHolderCommon extends RecyclerView.ViewHolder {
     private void bindTime(DocumentSnapshot feedbackSnapshot){
         Timestamp timestamp = feedbackSnapshot.getTimestamp("ts");
         if(timestamp==null) return;
-        timeTV.setText(DateTimeExtractor.getDateTimeString(timestamp));
+        timeTV.setText(DateTimeExtractor.getDateOrTimeString(timestamp));
     }
 
     private void bindAvatar(DocumentSnapshot personVitalSnapshot){

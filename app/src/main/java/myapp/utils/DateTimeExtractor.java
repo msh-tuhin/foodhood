@@ -8,7 +8,7 @@ import java.util.Date;
 public class DateTimeExtractor {
     public static String[] months = {"Jan", "Feb", "March", "April", "May", "June",
             "July", "Aug", "Sep", "Oct", "Nov", "Dec"};
-    public static String getDateTimeString(Timestamp ts){
+    public static String getDateTimeStringFull(Timestamp ts){
         if(ts == null) return null;
         Date dateObj = ts.toDate();
         Calendar cal = Calendar.getInstance();
@@ -19,17 +19,25 @@ public class DateTimeExtractor {
         int hour = cal.get(Calendar.HOUR);
         int minute = cal.get(Calendar.MINUTE);
         int am_pm = cal.get(Calendar.AM_PM);
+        hour = (am_pm==1 && hour==0) ? 12 : hour;
         String yearString = Integer.toString(year);
         String monthString = months[month];
         String dateString = Integer.toString(date);
         String hourString = Integer.toString(hour);
+        hourString = hourString.length()==1 ? "0"+hourString : hourString;
         String minuteString = Integer.toString(minute);
+        minuteString = minuteString.length()==1 ? "0"+minuteString : minuteString;
         String amPmString = am_pm==0 ? "AM":"PM";
         return hourString + ":" + minuteString + " " + amPmString + ", "
                 + dateString + " " + monthString + ", " + yearString;
     }
 
     public static String getDateOrTimeString(Timestamp ts){
+        return getDateTimeStringFull(ts);
+        //return getDateTimeStringSelective(ts);
+    }
+
+    public static String getDateTimeStringSelective(Timestamp ts){
         if(ts == null) return null;
         Date dateObj = ts.toDate();
         Calendar cal = Calendar.getInstance();
@@ -38,8 +46,11 @@ public class DateTimeExtractor {
             int hour = cal.get(Calendar.HOUR);
             int minute = cal.get(Calendar.MINUTE);
             int am_pm = cal.get(Calendar.AM_PM);
+            hour = (am_pm==1 && hour==0) ? 12 : hour;
             String hourString = Integer.toString(hour);
+            hourString = hourString.length()==1 ? "0"+hourString : hourString;
             String minuteString = Integer.toString(minute);
+            minuteString = minuteString.length()==1 ? "0"+minuteString : minuteString;
             String amPmString = am_pm==0 ? "AM":"PM";
             return hourString + ":" + minuteString + " " + amPmString;
         }else{
