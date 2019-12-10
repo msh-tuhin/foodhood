@@ -23,19 +23,27 @@ public class InputValidator {
     public static boolean validatePhone(String phoneNumber){
         phoneNumber = phoneNumber.replaceAll("[\\s-]", "");
         Log.i("phone", phoneNumber);
-        String phoneValidationRegex = "(\\+88)?0" +
-                // mobile
-                "(1[^02\\D][0-9]{8}|" +
-                // btcl-dhaka
-                "2[0-9]{7,9}|" +
-                // btcl-others
-                "[3-9][0-9]{1,2}[0-9]{6,8}|" +
-                // ip telephony
-                "96[0-9]{2}[0-9]{6})";
+        String phoneValidationRegex = getPhoneValidationRegex(true);
         return phoneNumber.matches(phoneValidationRegex);
     }
 
     public static boolean confirmPassword(String password, String passwordAgain){
         return password.equals(passwordAgain);
+    }
+
+    private static String getPhoneValidationRegex(boolean onlyCellNumber){
+        if(onlyCellNumber){
+            return "(\\+88)?01[^02\\D][0-9]{8}";
+        }else{
+            return "(\\+88)?0" +
+                    // mobile
+                    "(1[^02\\D][0-9]{8}|" +
+                    // btcl-dhaka
+                    "2[0-9]{7,9}|" +
+                    // btcl-others
+                    "[3-9][0-9]{1,2}[0-9]{6,8}|" +
+                    // ip telephony
+                    "96[0-9]{2}[0-9]{6})";
+        }
     }
 }
