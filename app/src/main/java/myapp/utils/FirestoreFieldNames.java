@@ -117,6 +117,7 @@ public class FirestoreFieldNames {
     public static final String POSTS_CREATOR_LINK = "l";
     public static final String POSTS_CREATOR_NAME = "n";
     public static final String POSTS_TIMESTAMP = "ts";
+    public static final String POSTS_DISTRICT = "dis";
 
     public static final String PROFILE_CREATED_ARRAY = "a";
 
