@@ -59,4 +59,17 @@ public class HalfPostHolderForRestaurant extends HalfPostHolder{
     public void setCommentIconOnClickListener() {
 
     }
+
+    @Override
+    public void setNoOfCommentOnClickListener() {
+        noOfCommentsTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, FullPostForRestaurant.class);
+                intent.putExtra("entry_point", EntryPoints.CLICKED_GO_TO_FULL_POST);
+                intent.putExtra("postLink", mPostLink);
+                mContext.startActivity(intent);
+            }
+        });
+    }
 }

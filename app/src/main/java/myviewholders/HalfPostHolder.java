@@ -499,7 +499,15 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     @Override
     public void setNoOfCommentOnClickListener() {
-
+        noOfCommentsTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, FullPost.class);
+                intent.putExtra("entry_point", EntryPoints.CLICKED_GO_TO_FULL_POST);
+                intent.putExtra("postLink", mPostLink);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     public void bindParentLayout(){

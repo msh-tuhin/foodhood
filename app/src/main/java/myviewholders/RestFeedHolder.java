@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.ActualActivity;
+import com.example.tuhin.myapplication.FullPost;
 import com.example.tuhin.myapplication.FullRestFeed;
 import com.example.tuhin.myapplication.MorePeole;
 import com.example.tuhin.myapplication.R;
@@ -492,7 +493,14 @@ public class RestFeedHolder extends BaseHomeFeedHolder
 
     @Override
     public void setNoOfCommentOnClickListener() {
-
+        noOfCommentsTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, FullRestFeed.class);
+                intent.putExtra("restFeedLink", mRestFeedLink);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
