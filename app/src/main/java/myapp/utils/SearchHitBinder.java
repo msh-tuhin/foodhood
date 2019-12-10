@@ -97,11 +97,11 @@ public class SearchHitBinder {
 
         // for persons
         try{
-            currentTown = hits.get(position).getString(AlgoliaAttributeNames.CURRENT_TOWN);
+            currentTown = hits.get(position).getString(AlgoliaAttributeNames.PERSON_CURRENT_TOWN);
             //SpannableString spannableAddress = new SpannableString(currentTown);
             SpannableStringBuilder builder = new SpannableStringBuilder();
             builder.append(currentTown);
-            getHighlight(hits.get(position), AlgoliaAttributeNames.CURRENT_TOWN, builder);
+            getHighlight(hits.get(position), AlgoliaAttributeNames.PERSON_CURRENT_TOWN, builder);
             builder.setSpan(new StyleSpan(Typeface.BOLD), 0,
                     currentTown.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             addressTV.setText(builder);
@@ -126,8 +126,8 @@ public class SearchHitBinder {
 
         // for dishes
         try{
-            restaurantName = hits.get(position).getString(AlgoliaAttributeNames.RESTAURANT_NAME);
-            restaurantAddress = hits.get(position).getString(AlgoliaAttributeNames.RESTAURANT_ADDRESS);
+            restaurantName = hits.get(position).getString(AlgoliaAttributeNames.DISH_PARENT_RESTAURANT_NAME);
+            restaurantAddress = hits.get(position).getString(AlgoliaAttributeNames.DISH_PARENT_RESTAURANT_ADDRESS);
         }catch (JSONException e){
             Log.i("name_address", "no value found");
         }
@@ -135,14 +135,14 @@ public class SearchHitBinder {
         text = restaurantName;
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(restaurantName);
-        getHighlight(hits.get(position), AlgoliaAttributeNames.RESTAURANT_NAME, builder);
+        getHighlight(hits.get(position), AlgoliaAttributeNames.DISH_PARENT_RESTAURANT_NAME, builder);
         int start = text.indexOf(restaurantName);
         int end = start + restaurantName.length();
         builder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         if(restaurantAddress!=null && !restaurantAddress.equals("")){
             builder.append("\n");
             builder.append(restaurantAddress);
-            getHighlight(hits.get(position), AlgoliaAttributeNames.RESTAURANT_ADDRESS, builder);
+            getHighlight(hits.get(position), AlgoliaAttributeNames.DISH_PARENT_RESTAURANT_ADDRESS, builder);
         }
         addressTV.setText(builder);
         addressLayout.setVisibility(View.VISIBLE);

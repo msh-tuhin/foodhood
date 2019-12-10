@@ -85,7 +85,7 @@ public class CreatePostDishSelectReview extends AppCompatActivity {
         String restaurantLink = getIntent().getStringExtra("restaurantLink");
         searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY,
                 AlgoliaIndexNames.INDEX_MAIN);
-        searcher.addFacetRefinement(AlgoliaAttributeNames.RESTAURANT_LINK, restaurantLink);
+        searcher.addFacetRefinement(AlgoliaAttributeNames.DISH_PARENT_RESTAURANT_LINK, restaurantLink);
         searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 1));
         instantSearch = new InstantSearch(this, searcher);
         instantSearch.search();
