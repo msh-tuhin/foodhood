@@ -83,7 +83,6 @@ public class HomeFeedFragment extends Fragment {
         rv.addItemDecoration(dividerItemDecoration);
         mCurrentUserLink = mAuth.getCurrentUser().getUid();
         adapter = AdapterCreator.getHomeFeedAdapter(this, getActivity(), mCurrentUserLink);
-        adapter.notifyDataSetChanged();
         rv.setAdapter(adapter);
 
         FloatingActionButton fab = view.findViewById(R.id.fab);
@@ -99,7 +98,16 @@ public class HomeFeedFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                adapter.refresh();
+                // this nesting is redundant
+                if(!isTimelineAltered){
+                    if(adapter != null){
+                        adapter.refresh();
+                    }
+                }else{
+                    if(alternateAdapter != null){
+                        alternateAdapter.refresh();
+                    }
+                }
                 swipeRefreshLayout.setRefreshing(false);
             }
         });

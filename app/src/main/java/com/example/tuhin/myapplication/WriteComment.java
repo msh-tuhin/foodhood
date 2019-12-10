@@ -2,6 +2,7 @@ package com.example.tuhin.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import models.CommentModel;
 import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -54,9 +56,11 @@ public class WriteComment extends AppCompatActivity {
     private int mEntryPoint;
     private CommentIntentExtra mCommentIntentExtra;
 
+    ConstraintLayout commentLayout;
     ImageView cancel;
     Button done;
     EditText commentEditext;
+    ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,9 +73,11 @@ public class WriteComment extends AppCompatActivity {
         mPostLink =mCommentIntentExtra.getPostLink();
         mEntryPoint =mCommentIntentExtra.getEntryPoint();
 
+        commentLayout = findViewById(R.id.comment_layout);
         cancel = findViewById(R.id.cancel);
         done = findViewById(R.id.done);
         commentEditext = findViewById(R.id.comment_editText);
+        progressBar = findViewById(R.id.progressBar);
 
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +97,8 @@ public class WriteComment extends AppCompatActivity {
                     cancel.setClickable(false);
                     done.setFocusable(false);
                     done.setClickable(false);
+                    commentLayout.setVisibility(View.INVISIBLE);
+                    progressBar.setVisibility(View.VISIBLE);
                     commentOrReply(commentText);
                }
             }
@@ -179,6 +187,7 @@ public class WriteComment extends AppCompatActivity {
         Intent intent = new Intent(WriteComment.this, FullPost.class);
         intent.putExtra("comment_extra",mCommentIntentExtra);
         startActivity(intent);
+        finish();
     }
 
     private void commentOnRFFromHome(String commentText, String newCommentLink){
@@ -193,6 +202,7 @@ public class WriteComment extends AppCompatActivity {
         Intent intent = new Intent(WriteComment.this, FullRestFeed.class);
         intent.putExtra("comment_extra",mCommentIntentExtra);
         startActivity(intent);
+        finish();
     }
 
     private void commentOnPostFromFullPost(String commentText, String newCommentLink){
@@ -227,6 +237,7 @@ public class WriteComment extends AppCompatActivity {
         Intent intent = new Intent(WriteComment.this, CommentDetail.class);
         intent.putExtra("comment_extra", mCommentIntentExtra);
         startActivity(intent);
+        finish();
     }
 
     private void replyToCommentFromRF(String commentText, String newCommentLink){
@@ -243,6 +254,7 @@ public class WriteComment extends AppCompatActivity {
         Intent intent = new Intent(WriteComment.this, CommentDetail.class);
         intent.putExtra("comment_extra", mCommentIntentExtra);
         startActivity(intent);
+        finish();
     }
 
     private void replyToCommentFromCDPost(String commentText, String newCommentLink){
@@ -283,6 +295,7 @@ public class WriteComment extends AppCompatActivity {
         Intent intent = new Intent(WriteComment.this, CommentDetail.class);
         intent.putExtra("comment_extra", mCommentIntentExtra);
         startActivity(intent);
+        finish();
     }
 
     private void replyToReplyFromHomeRF(String newCommentLink){
@@ -296,6 +309,7 @@ public class WriteComment extends AppCompatActivity {
         Intent intent = new Intent(WriteComment.this, CommentDetail.class);
         intent.putExtra("comment_extra", mCommentIntentExtra);
         startActivity(intent);
+        finish();
     }
 
     private void replyToReplyFromCDPost(String newCommentLink){
