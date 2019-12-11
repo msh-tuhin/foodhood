@@ -162,7 +162,7 @@ public class HomeFeedFragment extends Fragment {
                                         String currentTown = documentSnapshot.getString("ct");
                                         if(currentTown==null || currentTown.equals("")) {
                                             Toast.makeText(getActivity(),
-                                                    "You need to set your hometown/thana",
+                                                    "You need to set your hometown/upozilla",
                                                     Toast.LENGTH_LONG).show();
                                             return;
                                         }
@@ -170,15 +170,16 @@ public class HomeFeedFragment extends Fragment {
                                         adapter.stopListening();
                                         adapter = null;
                                         CityMapping cityMapping = new CityMapping();
-                                        String division = cityMapping.getDivision(currentTown);
+                                        String district = cityMapping.getDistrict(currentTown);
+                                        Log.i("district", district);
                                         alternateAdapter = AdapterCreator.getHomeFeedAlternativeAdapter(
                                                 HomeFeedFragment.this,
                                                 HomeFeedFragment.this.getActivity(),
-                                                division);
+                                                district);
                                         alternateAdapter.startListening();
                                         rv.setAdapter(alternateAdapter);
                                         Toast.makeText(getActivity(),
-                                                "Showing reviews about restaurants from your division",
+                                                "Showing reviews about restaurants from your district",
                                                 Toast.LENGTH_SHORT).show();
                                     }
                                 }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="towns_bd">
-        <item>Select a city/thana</item>
-        <item>Chattogram</item>
+        <item>Select a city/upozilla</item>
+        <item>Chittagong</item>
         <item>Dhaka</item>
         <item>Rajshahi</item>
-        <item>Cumilla</item>
+        <item>Comilla</item>
         <item>Barishal</item>
         <item>Sylhet</item>
     </string-array>

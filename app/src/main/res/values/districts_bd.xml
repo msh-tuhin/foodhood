@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="districts_bd">
-        <item>Chattogram</item>
+        <item>Chittagong</item>
         <item>Dhaka</item>
         <item>Rajshahi</item>
-        <item>Cumilla</item>
+        <item>Comilla</item>
         <item>Barishal</item>
         <item>Sylhet</item>
     </string-array>

@@ -47,8 +47,8 @@ public class PostModel {
     @PropertyName("ts")
     private Timestamp timestamp;
 
-    @PropertyName("div")
-    private String division;
+    @PropertyName("dis")
+    private String district;
 
     public PostModel(){
 
@@ -174,13 +174,13 @@ public class PostModel {
         this.timestamp = ts;
     }
 
-    @PropertyName("div")
-    public String getDivision() {
-        return division;
+    @PropertyName("dis")
+    public String getDistrict() {
+        return district;
     }
 
-    @PropertyName("div")
-    public void setDivision(String division) {
-        this.division = division;
+    @PropertyName("dis")
+    public void setDistrict(String district) {
+        this.district = district;
     }
 }

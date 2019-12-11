@@ -625,11 +625,11 @@ public class AdapterCreator {
     public static  FirestorePagingAdapter<PostModel, AlternatePostHolder>
     getHomeFeedAlternativeAdapter(final LifecycleOwner lifecycleOwner,
                        final Context context,
-                       final String division){
+                       final String district){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query bQuery = db.collection("posts")
                 // needs composite index
-                .whereEqualTo("div", division)
+                .whereEqualTo(FirestoreFieldNames.POSTS_DISTRICT, district)
                 .orderBy("ts", Query.Direction.DESCENDING);
         PagedList.Config config = new PagedList.Config.Builder()
                 .setEnablePlaceholders(false)
