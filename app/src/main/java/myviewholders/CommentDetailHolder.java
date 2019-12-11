@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.tuhin.myapplication.CommentDetail;
+import com.example.tuhin.myapplication.FullPost;
+import com.example.tuhin.myapplication.FullRestFeed;
 import com.example.tuhin.myapplication.MorePeole;
 import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.R;
@@ -175,6 +177,25 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
 
     private void setOnClickListenersIndependent(){
         setCommentLayoutOnClickListener();
+        setPostLinkOnClickListener();
+    }
+
+    public void setPostLinkOnClickListener(){
+        if(mEntryPoint<=0) return;
+        postLinkTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                if(mEntryPoint%2==0){
+                    intent = new Intent(mContext, FullRestFeed.class);
+                    intent.putExtra("restFeedLink", mPostLink);
+                }else{
+                    intent = new Intent(mContext, FullPost.class);
+                    intent.putExtra("postLink", mPostLink);
+                }
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override

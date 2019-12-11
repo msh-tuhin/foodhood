@@ -2,6 +2,7 @@ package com.example.tuhin.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -77,6 +78,11 @@ public class CommentDetail extends AppCompatActivity{
         toolbar.setTitle("Comment");
         setSupportActionBar(toolbar);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        // not sure about this
+        // actionBar.setDisplayShowHomeEnabled(true);
+
         mLinearLayoutManager = new LinearLayoutManager(this,
                 RecyclerView.VERTICAL, false);
         rv.setLayoutManager(mLinearLayoutManager);
@@ -98,6 +104,12 @@ public class CommentDetail extends AppCompatActivity{
         initializeAdapter();
         rv.setAdapter(adapter);
         populateAdapter();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     private void initializeAdapter(){
