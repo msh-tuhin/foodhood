@@ -167,16 +167,24 @@ public class HomeFeedFragment extends Fragment {
                                             return;
                                         }
                                         isTimelineAltered = true;
-                                        adapter.stopListening();
+                                        if(adapter!=null) {
+                                            adapter.stopListening();
+                                        }
                                         adapter = null;
                                         CityMapping cityMapping = new CityMapping();
+                                        Log.i("current_town", currentTown);
                                         String district = cityMapping.getDistrict(currentTown);
-                                        Log.i("district", district);
-                                        alternateAdapter = AdapterCreator.getHomeFeedAlternativeAdapter(
-                                                HomeFeedFragment.this,
-                                                HomeFeedFragment.this.getActivity(),
-                                                district);
-                                        alternateAdapter.startListening();
+                                        if(district!=null){
+                                            Log.i("district", district);
+                                            alternateAdapter = AdapterCreator.getHomeFeedAlternativeAdapter(
+                                                    HomeFeedFragment.this,
+                                                    HomeFeedFragment.this.getActivity(),
+                                                    district);
+                                            alternateAdapter.startListening();
+                                        }else{
+                                            Log.i("district", "null");
+                                            alternateAdapter = null;
+                                        }
                                         rv.setAdapter(alternateAdapter);
                                         Toast.makeText(getActivity(),
                                                 "Showing reviews about restaurants from your district",

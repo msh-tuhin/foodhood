@@ -13,6 +13,7 @@ import myapp.utils.AlgoliaAttributeNames;
 import myapp.utils.AlgoliaCredentials;
 import myapp.utils.AlgoliaIndexNames;
 import myapp.utils.AnimationUtils;
+import myapp.utils.NullStrings;
 import myapp.utils.SearchHitBinder;
 
 import android.Manifest;
@@ -164,7 +165,7 @@ public class AdvancedSearchDish extends AppCompatActivity{
 
         districtSpinner.setEnabled(false);
         ArrayAdapter<CharSequence> districtAdapter = ArrayAdapter.createFromResource(this,
-                R.array.districts_bd, android.R.layout.simple_spinner_item);
+                R.array.towns_bd, android.R.layout.simple_spinner_item);
         districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         districtSpinner.setAdapter(districtAdapter);
         districtSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -684,7 +685,7 @@ public class AdvancedSearchDish extends AppCompatActivity{
 
         final Snackbar snackbar = Snackbar.make(coordinatorLayout,
                 "Can't use precise location.\n" +
-                        "Select district instead?", Snackbar.LENGTH_LONG);
+                        "Select city/upazila instead?", Snackbar.LENGTH_LONG);
         snackbar.setAction("Yes", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
