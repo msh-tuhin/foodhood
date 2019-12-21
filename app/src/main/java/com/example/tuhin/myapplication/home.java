@@ -176,7 +176,7 @@ public class home extends AppCompatActivity {
 
     private void setCurrentUserNameLocal(){
         SharedPreferences sPref = getSharedPreferences(
-                getString(R.string.account_type),
+                getString(R.string.vital_info),
                 Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sPref.edit();
         FirebaseFirestore.getInstance()

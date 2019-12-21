@@ -3,7 +3,6 @@ package myviewholders;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.SpannableStringBuilder;
@@ -49,6 +48,7 @@ import myapp.utils.CommentIntentExtra;
 import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
+import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PictureBinder;
 import myapp.utils.ResourceIds;
 import myapp.utils.SourceMorePeople;
@@ -118,11 +118,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
     }
 
     private void setmForPerson(){
-        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        SharedPreferences sPref = mContext.getSharedPreferences(
-                mContext.getString(R.string.account_type),
-                Context.MODE_PRIVATE);
-        int accountType = sPref.getInt(email, AccountTypes.PERSON);
+        int accountType = OrphanUtilityMethods.getAccountType(mContext);
         mForPerson = accountType == AccountTypes.PERSON;
         if(mForPerson) Log.i("account", "for person");
         else Log.i("account", "for restaurant");

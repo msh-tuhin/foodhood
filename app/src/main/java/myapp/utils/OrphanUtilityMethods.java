@@ -9,6 +9,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -22,13 +23,22 @@ import androidx.annotation.NonNull;
 public class OrphanUtilityMethods {
 
     public static FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public static FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public static String getCurrentUserName(Context context){
         SharedPreferences sPref = context.getSharedPreferences(
-                context.getString(R.string.account_type),
+                context.getString(R.string.vital_info),
                 Context.MODE_PRIVATE);
         Log.i("current_user_name", sPref.getString("name", ""));
         return sPref.getString("name", "");
+    }
+
+    public static int getAccountType(Context context){
+        FirebaseUser user = mAuth.getCurrentUser();
+        SharedPreferences sPref = context.getSharedPreferences(
+                context.getString(R.string.account_type),
+                Context.MODE_PRIVATE);
+        return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
     }
 
     public static void sendFollowingNotification(final Context context,

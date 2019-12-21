@@ -3,7 +3,6 @@ package myviewholders;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -32,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.AccountTypes;
+import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PictureBinder;
 
 public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
@@ -178,7 +178,7 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
     private void bindAddToWishlistIB(final Context context,
                                      final String dishLink,
                                      Task<DocumentSnapshot> taskWithCurrentUserWishlist){
-        if(getAccountType(context) == AccountTypes.RESTAURANT){
+        if(OrphanUtilityMethods.getAccountType(context) == AccountTypes.RESTAURANT){
             return;
         }
         taskWithCurrentUserWishlist
@@ -236,15 +236,6 @@ public class RestaurantAllDishesItemHolder extends RecyclerView.ViewHolder {
                 }
             }
         };
-    }
-
-    private int getAccountType(Context context){
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
-        SharedPreferences sPref = context.getSharedPreferences(
-                context.getString(R.string.account_type),
-                Context.MODE_PRIVATE);
-        return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
     }
 
     private void refreshHolder(){

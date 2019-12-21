@@ -3,6 +3,7 @@ package com.example.tuhin.myapplication;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import myapp.utils.AccountTypes;
+import myapp.utils.OrphanUtilityMethods;
 
 import android.content.Context;
 import android.content.Intent;
@@ -42,9 +43,7 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void chooseAndLaunchHome(FirebaseUser user){
-        SharedPreferences sPref = getSharedPreferences(getString(R.string.account_type),
-                Context.MODE_PRIVATE);
-        int accountType = sPref.getInt(user.getEmail(), AccountTypes.UNSET);
+        int accountType = OrphanUtilityMethods.getAccountType(this);
         if(accountType == AccountTypes.UNSET){
             getAccountTypeFromDB(user);
         }else if(accountType == AccountTypes.PERSON){

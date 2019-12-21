@@ -2,11 +2,11 @@ package myviewholders;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import myapp.utils.AccountTypes;
+import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PictureBinder;
 
 import android.text.SpannableString;
@@ -186,7 +186,7 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
     }
 
     private void setAddToWishlistButton(){
-        if(getAccountType() == AccountTypes.RESTAURANT){
+        if(OrphanUtilityMethods.getAccountType(mContext) == AccountTypes.RESTAURANT){
             return;
         }
         addToWishlist.setVisibility(View.VISIBLE);
@@ -260,14 +260,6 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
                 }
             }
         };
-    }
-
-    private int getAccountType(){
-        FirebaseUser user = mAuth.getCurrentUser();
-        SharedPreferences sPref = mContext.getSharedPreferences(
-                mContext.getString(R.string.account_type),
-                Context.MODE_PRIVATE);
-        return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
     }
 
     private void setCollapsedTitle(final Context context, DocumentSnapshot dishVital){

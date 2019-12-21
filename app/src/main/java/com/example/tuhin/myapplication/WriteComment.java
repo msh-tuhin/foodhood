@@ -9,10 +9,9 @@ import myapp.utils.CommentIntentExtra;
 import myapp.utils.CommentTypes;
 import myapp.utils.EntryPoints;
 import myapp.utils.NotificationTypes;
+import myapp.utils.OrphanUtilityMethods;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,7 +26,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
@@ -107,11 +105,7 @@ public class WriteComment extends AppCompatActivity {
     }
 
     private void setmForPerson(){
-        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        SharedPreferences sPref = getSharedPreferences(
-                                        getString(R.string.account_type),
-                                        Context.MODE_PRIVATE);
-        int accountType = sPref.getInt(email, AccountTypes.PERSON);
+        int accountType = OrphanUtilityMethods.getAccountType(this);
         mForPerson = accountType == AccountTypes.PERSON;
         if(mForPerson) Log.i("account", "for person");
         else Log.i("account", "for restaurant");
@@ -357,7 +351,7 @@ public class WriteComment extends AppCompatActivity {
         CommentModel commentModel = new CommentModel(comment, postLink);
         Map<String, Object> who = new HashMap<>();
         who.put("l", FirebaseAuth.getInstance().getCurrentUser().getUid());
-        who.put("n", getCurrentUserName());
+        who.put("n", OrphanUtilityMethods.getCurrentUserName(this));
         if(mForPerson)  who.put("t", AccountTypes.PERSON);
         else who.put("t", AccountTypes.RESTAURANT);
         commentModel.setW(who);
@@ -701,13 +695,5 @@ public class WriteComment extends AppCompatActivity {
                 Log.i("func_call", e.getMessage());
             }
         });
-    }
-
-    private String getCurrentUserName(){
-        SharedPreferences sPref = getSharedPreferences(
-                getString(R.string.account_type),
-                Context.MODE_PRIVATE);
-        Log.i("current_user_name", sPref.getString("name", ""));
-        return sPref.getString("name", "");
     }
 }

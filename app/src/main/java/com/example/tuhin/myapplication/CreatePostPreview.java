@@ -63,6 +63,7 @@ import models.SelectedPerson;
 import models.FeedbackModel;
 import myapp.utils.FeedbackTypes;
 import myapp.utils.ImagesAdapter;
+import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PictureBinder;
 import myapp.utils.SourceHomePage;
 
@@ -228,6 +229,7 @@ public class CreatePostPreview extends AppCompatActivity {
 
                 Map<String, String> who = new HashMap<>();
                 who.put("l", currentUserLink);
+                who.put("n", OrphanUtilityMethods.getCurrentUserName(this));
                 postModel.setWho(who);
 
                 postModel.setCaption(caption);

@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -287,7 +286,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
     }
 
     private void bindFollowButton(){
-        if(getAccountType() == AccountTypes.RESTAURANT){
+        if(OrphanUtilityMethods.getAccountType(mContext) == AccountTypes.RESTAURANT){
             return;
         }
         db.collection("followers").document(mRestaurantLink)
@@ -375,14 +374,6 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                 }
             }
         });
-    }
-
-    private int getAccountType(){
-        FirebaseUser user = mAuth.getCurrentUser();
-        SharedPreferences sPref = mContext.getSharedPreferences(
-                mContext.getString(R.string.account_type),
-                Context.MODE_PRIVATE);
-        return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
     }
 
     private SpannableStringBuilder getSpannedText(String fullText, String spannable){

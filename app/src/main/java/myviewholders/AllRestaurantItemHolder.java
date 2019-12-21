@@ -3,7 +3,6 @@ package myviewholders;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -146,7 +145,7 @@ public class AllRestaurantItemHolder extends RecyclerView.ViewHolder {
     private void bindFollowButton(final Context context,
                                   final String restaurantLink,
                                   Task<DocumentSnapshot> taskWithCurrentUserFollowingRestaurants){
-        if(getAccountType(context) == AccountTypes.RESTAURANT){
+        if(OrphanUtilityMethods.getAccountType(context) == AccountTypes.RESTAURANT){
             return;
         }
         taskWithCurrentUserFollowingRestaurants
@@ -209,15 +208,6 @@ public class AllRestaurantItemHolder extends RecyclerView.ViewHolder {
                 }
             }
         };
-    }
-
-    private int getAccountType(Context context){
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
-        SharedPreferences sPref = context.getSharedPreferences(
-                context.getString(R.string.account_type),
-                Context.MODE_PRIVATE);
-        return sPref.getInt(user.getEmail(), AccountTypes.UNSET);
     }
 
     private void refreshHolder(){

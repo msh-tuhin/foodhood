@@ -3,7 +3,6 @@ package myviewholders;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -43,6 +42,7 @@ import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
+import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PictureBinder;
 import myapp.utils.PostImagesAdapter;
 import myapp.utils.SourceMorePeople;
@@ -134,11 +134,7 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
     }
 
     private void setmForPerson() {
-        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        SharedPreferences sPref = mContext.getSharedPreferences(
-                mContext.getString(R.string.account_type),
-                Context.MODE_PRIVATE);
-        int accountType = sPref.getInt(email, AccountTypes.PERSON);
+        int accountType = OrphanUtilityMethods.getAccountType(mContext);
         mForPerson = accountType == AccountTypes.PERSON;
     }
 

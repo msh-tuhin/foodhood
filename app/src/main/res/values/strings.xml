@@ -77,4 +77,8 @@
     <string name="account_type">
         com.example.tuhin.myapplication.ACCOUNT_TYPE
     </string>
+
+    <string name="vital_info">
+        com.example.tuhin.myapplication.VITAL_INFO
+    </string>
 </resources>
