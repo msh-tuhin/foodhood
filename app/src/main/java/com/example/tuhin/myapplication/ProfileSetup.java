@@ -32,6 +32,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,9 +84,11 @@ public class ProfileSetup extends AppCompatActivity {
     private void uploadPhotoAndAddUrlToDB(Uri uploadUri){
         if(uploadUri != null){
             Log.i("upload_uri", "not null");
+            Date now = new Date();
+            String timestampString = String.valueOf(now.getTime()) + "_";
             FirebaseStorage storage = FirebaseStorage.getInstance();
             final StorageReference storageReference = storage.getReference()
-                    .child("profile-pictures").child(uploadUri.getLastPathSegment());
+                    .child("profile-pictures").child(timestampString + uploadUri.getLastPathSegment());
             UploadTask uploadTask = storageReference.putFile(uploadUri);
 
             uploadTask.addOnCanceledListener(new OnCanceledListener() {
