@@ -24,6 +24,9 @@ import com.algolia.instantsearch.ui.helpers.InstantSearch;
 import com.algolia.instantsearch.ui.utils.ItemClickSupport;
 import com.algolia.instantsearch.ui.views.Hits;
 import com.algolia.instantsearch.ui.views.SearchBox;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONException;
 
@@ -33,7 +36,6 @@ import models.DishFeedback;
 import models.RestaurantFeedback;
 import models.SelectedPerson;
 import myapp.utils.AlgoliaAttributeNames;
-import myapp.utils.AlgoliaCredentials;
 import myapp.utils.AlgoliaIndexNames;
 import myapp.utils.SearchHitBinder;
 
@@ -84,12 +86,13 @@ public class CreatePostAddPeople extends AppCompatActivity {
         hits = findViewById(R.id.search_hits);
         selectedPeopleLayout = findViewById(R.id.selected_people_layout);
 
-        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY,
-                AlgoliaIndexNames.INDEX_MAIN);
-        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 0));
-        instantSearch = new InstantSearch(this, searcher);
-        // instantSearch.search();
-        instantSearch.setSearchOnEmptyString(false);
+//        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY,
+//                AlgoliaIndexNames.INDEX_MAIN);
+//        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 0));
+//        instantSearch = new InstantSearch(this, searcher);
+//        // instantSearch.search();
+//        instantSearch.setSearchOnEmptyString(false);
+        initiateSearch();
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         hits.addItemDecoration(dividerItemDecoration);
@@ -157,7 +160,9 @@ public class CreatePostAddPeople extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        searcher.destroy();
+        if(searcher!=null){
+            searcher.destroy();
+        }
         super.onDestroy();
     }
 
@@ -198,5 +203,22 @@ public class CreatePostAddPeople extends AppCompatActivity {
             Log.i("Person "+Integer.toString(i), person);
             i++;
         }
+    }
+
+    private void initiateSearch(){
+        FirebaseFirestore.getInstance().collection("acr")
+                .document("a").get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        searcher = Searcher.create(documentSnapshot.getString("id"),
+                                documentSnapshot.getString("k"),
+                                AlgoliaIndexNames.INDEX_RATING_DESC);
+                        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 0));
+                        instantSearch = new InstantSearch(CreatePostAddPeople.this, searcher);
+                        // instantSearch.search();
+                        instantSearch.setSearchOnEmptyString(false);
+                    }
+                });
     }
 }

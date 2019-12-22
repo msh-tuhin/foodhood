@@ -10,7 +10,6 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import myapp.utils.AlgoliaAttributeNames;
-import myapp.utils.AlgoliaCredentials;
 import myapp.utils.AlgoliaIndexNames;
 import myapp.utils.AnimationUtils;
 import myapp.utils.NullStrings;
@@ -65,16 +64,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class AdvancedSearchDish extends AppCompatActivity{
 
@@ -134,12 +130,11 @@ public class AdvancedSearchDish extends AppCompatActivity{
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         hits.addItemDecoration(dividerItemDecoration);
 
-        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY,
-                AlgoliaIndexNames.INDEX_RATING_DESC);
-        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 1));
-        instantSearch = new InstantSearch(this, searcher);
-
-        // TODO handle clicking on a search hit item
+        //searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY,
+          //      AlgoliaIndexNames.INDEX_RATING_DESC);
+        //searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 1));
+        //instantSearch = new InstantSearch(this, searcher);
+        initiateSearch();
 
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -247,6 +242,14 @@ public class AdvancedSearchDish extends AppCompatActivity{
         }
 
         checkAskLocationPermissions();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(searcher!=null){
+            searcher.destroy();
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -516,6 +519,7 @@ public class AdvancedSearchDish extends AppCompatActivity{
     }
 
     private void clearRefinements(){
+        if(searcher==null) return;
         searcher.clearFacetRefinements();
         searcher.removeNumericRefinement(AlgoliaAttributeNames.PRICE);
         searcher.removeNumericRefinement(AlgoliaAttributeNames.RATING);
@@ -567,6 +571,7 @@ public class AdvancedSearchDish extends AppCompatActivity{
     }
 
     private void addRefinements(){
+        if(searcher==null) return;
         if (minPrice > 0.0) {
             minPriceFilter = new NumericRefinement(AlgoliaAttributeNames.PRICE, 4, minPrice);
             searcher.addNumericRefinement(minPriceFilter);
@@ -637,16 +642,22 @@ public class AdvancedSearchDish extends AppCompatActivity{
             if(!previousSelectedDistrict.equals(selectedDistrict)){
                 previousSelectedDistrict = selectedDistrict;
                 Log.i("search", "yes");
-                instantSearch.search();
+                if(instantSearch!=null){
+                    instantSearch.search();
+                }
             } else if(shouldSearch){
                 Log.i("search", "yes");
-                instantSearch.search();
+                if(instantSearch!=null){
+                    instantSearch.search();
+                }
             }
         } else{
             previousCheckboxChecked = true;
             previousSelectedDistrict = selectedDistrict;
             Log.i("search", "yes");
-            instantSearch.search();
+            if(instantSearch!=null){
+                instantSearch.search();
+            }
         }
     }
 
@@ -658,20 +669,28 @@ public class AdvancedSearchDish extends AppCompatActivity{
         Log.i("Longitude", String.valueOf(location.getLongitude()));
         AbstractQuery.LatLng userLocation = new AbstractQuery.LatLng(location.getLatitude(), location.getLongitude());
 //        AbstractQuery.LatLng userLocation = new AbstractQuery.LatLng(40.71, -74.01);
-        searcher.getQuery().setAroundLatLng(userLocation).setAroundRadius(1000000);
+        if(searcher!=null){
+            searcher.getQuery().setAroundLatLng(userLocation).setAroundRadius(1000000);
+        }
         if(!(previousLatitude.equals(location.getLatitude())
                 && previousLongitude.equals(location.getLongitude()))){
             Log.i("location", "new");
             previousLatitude = location.getLatitude();
             previousLongitude = location.getLongitude();
             Log.i("search", "yes");
-            instantSearch.search();
+            if(instantSearch!=null){
+                instantSearch.search();
+            }
         } else if(shouldSearch){
             Log.i("search", "yes");
-            instantSearch.search();
+            if(instantSearch!=null){
+                instantSearch.search();
+            }
         } else if(previousCheckboxChecked){
             Log.i("search", "yes");
-            instantSearch.search();
+            if(instantSearch!=null){
+                instantSearch.search();
+            }
         }
         previousCheckboxChecked = false;
     }
@@ -731,5 +750,20 @@ public class AdvancedSearchDish extends AppCompatActivity{
         MyInvalidInputException(String message){
             super(message);
         }
+    }
+
+    private void initiateSearch(){
+        FirebaseFirestore.getInstance().collection("acr")
+                .document("a").get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        searcher = Searcher.create(documentSnapshot.getString("id"),
+                                documentSnapshot.getString("k"),
+                                AlgoliaIndexNames.INDEX_RATING_DESC);
+                        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 1));
+                        instantSearch = new InstantSearch(AdvancedSearchDish.this, searcher);
+                    }
+                });
     }
 }

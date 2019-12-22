@@ -24,6 +24,9 @@ import com.algolia.instantsearch.core.model.NumericRefinement;
 import com.algolia.instantsearch.ui.helpers.InstantSearch;
 import com.algolia.instantsearch.ui.utils.ItemClickSupport;
 import com.algolia.instantsearch.ui.views.Hits;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONException;
 
@@ -83,12 +86,13 @@ public class CreatePostDishSelectReview extends AppCompatActivity {
         hits.addItemDecoration(dividerItemDecoration);
 
         String restaurantLink = getIntent().getStringExtra("restaurantLink");
-        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY,
-                AlgoliaIndexNames.INDEX_MAIN);
-        searcher.addFacetRefinement(AlgoliaAttributeNames.DISH_PARENT_RESTAURANT_LINK, restaurantLink);
-        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 1));
-        instantSearch = new InstantSearch(this, searcher);
-        instantSearch.search();
+//        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY,
+//                AlgoliaIndexNames.INDEX_MAIN);
+//        searcher.addFacetRefinement(AlgoliaAttributeNames.DISH_PARENT_RESTAURANT_LINK, restaurantLink);
+//        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 1));
+//        instantSearch = new InstantSearch(this, searcher);
+//        instantSearch.search();
+        initiateSearch();
 
         hits.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
@@ -172,7 +176,27 @@ public class CreatePostDishSelectReview extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        searcher.destroy();
+        if(searcher!=null){
+            searcher.destroy();
+        }
         super.onDestroy();
+    }
+
+    private void initiateSearch(){
+        final String restaurantLink = getIntent().getStringExtra("restaurantLink");
+        FirebaseFirestore.getInstance().collection("acr")
+                .document("a").get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        searcher = Searcher.create(documentSnapshot.getString("id"),
+                                documentSnapshot.getString("k"),
+                                AlgoliaIndexNames.INDEX_MAIN);
+                        searcher.addFacetRefinement(AlgoliaAttributeNames.DISH_PARENT_RESTAURANT_LINK, restaurantLink);
+                        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 1));
+                        instantSearch = new InstantSearch(CreatePostDishSelectReview.this, searcher);
+                        instantSearch.search();
+                    }
+                });
     }
 }

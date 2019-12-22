@@ -27,6 +27,9 @@ import com.algolia.instantsearch.ui.helpers.InstantSearch;
 import com.algolia.instantsearch.ui.utils.ItemClickSupport;
 import com.algolia.instantsearch.ui.views.Hits;
 import com.algolia.instantsearch.ui.views.SearchBox;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -105,12 +108,13 @@ public class CreatePostSelectPlace extends AppCompatActivity {
         // not sure about this
         // actionBar.setDisplayShowHomeEnabled(true);
 
-        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY,
-                AlgoliaIndexNames.INDEX_MAIN);
-        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 2));
-        instantSearch = new InstantSearch(this, searcher);
-        instantSearch.setSearchOnEmptyString(false);
+//        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID, AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY,
+//                AlgoliaIndexNames.INDEX_MAIN);
+//        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 2));
+//        instantSearch = new InstantSearch(this, searcher);
+//        instantSearch.setSearchOnEmptyString(false);
         // instantSearch.search();
+        initiateSearch();
         // because data binding doesn't work
         hits.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
@@ -195,7 +199,9 @@ public class CreatePostSelectPlace extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        searcher.destroy();
+        if(searcher!=null){
+            searcher.destroy();
+        }
         super.onDestroy();
     }
 
@@ -222,4 +228,20 @@ public class CreatePostSelectPlace extends AppCompatActivity {
         }
     }
 
+    private void initiateSearch(){
+        FirebaseFirestore.getInstance().collection("acr")
+                .document("a").get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        searcher = Searcher.create(documentSnapshot.getString("id"),
+                                documentSnapshot.getString("k"),
+                                AlgoliaIndexNames.INDEX_MAIN);
+                        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 2));
+                        instantSearch = new InstantSearch(CreatePostSelectPlace.this, searcher);
+                        instantSearch.setSearchOnEmptyString(false);
+                        // instantSearch.search();
+                    }
+                });
+    }
 }

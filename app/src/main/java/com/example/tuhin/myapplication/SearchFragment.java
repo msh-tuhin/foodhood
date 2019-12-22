@@ -39,12 +39,16 @@ import android.widget.TextView;
 import com.algolia.instantsearch.core.events.QueryTextChangeEvent;
 import com.algolia.instantsearch.core.helpers.Highlighter;
 import com.algolia.instantsearch.core.helpers.Searcher;
+import com.algolia.instantsearch.core.model.NumericRefinement;
 import com.algolia.instantsearch.ui.databinding.BindingHelper;
 import com.algolia.instantsearch.ui.databinding.RenderingHelper;
 import com.algolia.instantsearch.ui.helpers.InstantSearch;
 import com.algolia.instantsearch.ui.utils.ItemClickSupport;
 import com.algolia.instantsearch.ui.views.Hits;
 import com.algolia.instantsearch.ui.views.SearchBox;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,12 +89,13 @@ public class SearchFragment extends Fragment {
         searchBox = view.findViewById(R.id.searchBox);
         hits = view.findViewById(R.id.search_hits);
 
-        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID,
-                AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, AlgoliaIndexNames.INDEX_MAIN);
-
-        instantSearch = new InstantSearch(getActivity(), searcher);
-        instantSearch.search();
-        // instantSearch.setSearchOnEmptyString(false);
+//        searcher = Searcher.create(AlgoliaCredentials.ALGOLIA_APP_ID,
+//                AlgoliaCredentials.ALGOLIA_SEARCH_API_KEY, AlgoliaIndexNames.INDEX_MAIN);
+//
+//        instantSearch = new InstantSearch(getActivity(), searcher);
+//        instantSearch.search();
+//        // instantSearch.setSearchOnEmptyString(false);
+        initiateSearch();
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getActivity(),
                 DividerItemDecoration.VERTICAL);
@@ -148,6 +153,14 @@ public class SearchFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        if(searcher!=null){
+            searcher.destroy();
+        }
+        super.onDestroy();
+    }
+
+    @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.findItem(R.id.alter_timeline).setVisible(false);
@@ -184,5 +197,21 @@ public class SearchFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void initiateSearch(){
+        FirebaseFirestore.getInstance().collection("acr")
+                .document("a").get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        searcher = Searcher.create(documentSnapshot.getString("id"),
+                                documentSnapshot.getString("k"),
+                                AlgoliaIndexNames.INDEX_MAIN);
+                        instantSearch = new InstantSearch(getActivity(), searcher);
+                        // instantSearch.search();
+                        // instantSearch.setSearchOnEmptyString(false);
+                    }
+                });
     }
 }
