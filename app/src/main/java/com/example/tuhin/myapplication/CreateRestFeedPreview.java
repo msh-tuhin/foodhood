@@ -3,6 +3,7 @@ package com.example.tuhin.myapplication;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import id.zelory.compressor.Compressor;
+import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.SourceHomePage;
 
 import android.content.Intent;
@@ -66,6 +67,7 @@ public class CreateRestFeedPreview extends AppCompatActivity {
         final Map<String, Object> restFeedMap = new HashMap<>();
         Map<String, String> who = new HashMap<>();
         who.put("l", currentUserLink);
+        who.put("n", OrphanUtilityMethods.getCurrentUserName(this));
 
         restFeedMap.put("ts", new Timestamp(new Date()));
         restFeedMap.put("w", who);
