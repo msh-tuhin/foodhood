@@ -105,6 +105,7 @@ public class SignUp extends AppCompatActivity {
     @Override
     protected void onStart() {
         OrphanUtilityMethods.checkUpdateMust(this);
+        OrphanUtilityMethods.checkMaintenanceBreak(this);
         super.onStart();
     }
 

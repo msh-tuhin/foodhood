@@ -123,17 +123,17 @@ public class OrphanUtilityMethods {
                         if(documentSnapshot.exists()){
                             Long majorMinimum = documentSnapshot.getLong("major");
                             if(Long.valueOf(versions[0])<majorMinimum){
-                                startUpdateMustActivity(context);
+                                startUpdateMustActivity(context, SourceUpdateMustPage.UPDATE_MUST);
                                 return;
                             }
                             Long minorMinimum = documentSnapshot.getLong("minor");
                             if(Long.valueOf(versions[1])<minorMinimum){
-                                startUpdateMustActivity(context);
+                                startUpdateMustActivity(context, SourceUpdateMustPage.UPDATE_MUST);
                                 return;
                             }
                             Long fixMinimum = documentSnapshot.getLong("fix");
                             if(Long.valueOf(versions[2])<fixMinimum){
-                                startUpdateMustActivity(context);
+                                startUpdateMustActivity(context, SourceUpdateMustPage.UPDATE_MUST);
                             }
                         }
                     }
@@ -169,8 +169,25 @@ public class OrphanUtilityMethods {
                 });
     }
 
-    private static void startUpdateMustActivity(Context context){
+    public static void checkMaintenanceBreak(final Context context){
+        db.collection("acr").document("mb")
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            boolean isMaintenanceBreak = documentSnapshot.getBoolean("a");
+                            if(isMaintenanceBreak){
+                                startUpdateMustActivity(context, SourceUpdateMustPage.MAINTENANCE_BREAK);
+                            }
+                        }
+                    }
+                });
+    }
+
+    private static void startUpdateMustActivity(Context context, int source){
         Intent intent = new Intent(context, UpdateMust.class);
+        intent.putExtra("entry_point", source);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }

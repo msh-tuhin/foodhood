@@ -92,6 +92,7 @@ public class RestaurantHome extends AppCompatActivity {
     @Override
     protected void onStart() {
         OrphanUtilityMethods.checkUpdateMust(this);
+        OrphanUtilityMethods.checkMaintenanceBreak(this);
         // OrphanUtilityMethods.checkUpdateOptional(this);
         super.onStart();
         mAuth.addAuthStateListener(mAuthStateListener);
