@@ -234,13 +234,15 @@ public class CreatePostSelectPlace extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        searcher = Searcher.create(documentSnapshot.getString("id"),
-                                documentSnapshot.getString("k"),
-                                AlgoliaIndexNames.INDEX_MAIN);
-                        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 2));
-                        instantSearch = new InstantSearch(CreatePostSelectPlace.this, searcher);
-                        instantSearch.setSearchOnEmptyString(false);
-                        // instantSearch.search();
+                        if(documentSnapshot.exists()){
+                            searcher = Searcher.create(documentSnapshot.getString("id"),
+                                    documentSnapshot.getString("k"),
+                                    AlgoliaIndexNames.INDEX_MAIN);
+                            searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 2));
+                            instantSearch = new InstantSearch(CreatePostSelectPlace.this, searcher);
+                            instantSearch.setSearchOnEmptyString(false);
+                            // instantSearch.search();
+                        }
                     }
                 });
     }

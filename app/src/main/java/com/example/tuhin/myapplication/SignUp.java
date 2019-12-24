@@ -3,6 +3,7 @@ package com.example.tuhin.myapplication;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import myapp.utils.InputValidator;
+import myapp.utils.OrphanUtilityMethods;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -103,6 +104,7 @@ public class SignUp extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        OrphanUtilityMethods.checkUpdateMust(this);
         super.onStart();
     }
 

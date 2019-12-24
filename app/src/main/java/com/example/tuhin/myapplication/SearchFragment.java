@@ -202,15 +202,17 @@ public class SearchFragment extends Fragment {
     private void initiateSearch(){
         FirebaseFirestore.getInstance().collection("acr")
                 .document("a").get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                .addOnSuccessListener(getActivity(), new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        searcher = Searcher.create(documentSnapshot.getString("id"),
-                                documentSnapshot.getString("k"),
-                                AlgoliaIndexNames.INDEX_MAIN);
-                        instantSearch = new InstantSearch(getActivity(), searcher);
-                        // instantSearch.search();
-                        // instantSearch.setSearchOnEmptyString(false);
+                        if(documentSnapshot.exists()){
+                            searcher = Searcher.create(documentSnapshot.getString("id"),
+                                    documentSnapshot.getString("k"),
+                                    AlgoliaIndexNames.INDEX_MAIN);
+                            instantSearch = new InstantSearch(getActivity(), searcher);
+                            // instantSearch.search();
+                            // instantSearch.setSearchOnEmptyString(false);
+                        }
                     }
                 });
     }

@@ -211,13 +211,15 @@ public class CreatePostAddPeople extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        searcher = Searcher.create(documentSnapshot.getString("id"),
-                                documentSnapshot.getString("k"),
-                                AlgoliaIndexNames.INDEX_RATING_DESC);
-                        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 0));
-                        instantSearch = new InstantSearch(CreatePostAddPeople.this, searcher);
-                        // instantSearch.search();
-                        instantSearch.setSearchOnEmptyString(false);
+                        if(documentSnapshot.exists()){
+                            searcher = Searcher.create(documentSnapshot.getString("id"),
+                                    documentSnapshot.getString("k"),
+                                    AlgoliaIndexNames.INDEX_RATING_DESC);
+                            searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 0));
+                            instantSearch = new InstantSearch(CreatePostAddPeople.this, searcher);
+                            // instantSearch.search();
+                            instantSearch.setSearchOnEmptyString(false);
+                        }
                     }
                 });
     }

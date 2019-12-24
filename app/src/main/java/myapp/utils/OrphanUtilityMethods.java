@@ -1,10 +1,16 @@
 package myapp.utils;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.example.tuhin.myapplication.BuildConfig;
 import com.example.tuhin.myapplication.R;
+import com.example.tuhin.myapplication.UpdateMust;
+import com.example.tuhin.myapplication.home;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -19,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
 public class OrphanUtilityMethods {
 
@@ -99,5 +106,85 @@ public class OrphanUtilityMethods {
                         }
                     }
                 });
+    }
+
+    public static void checkUpdateMust(final Context context){
+        String versionName = BuildConfig.VERSION_NAME;
+        Log.i("version_name", versionName);
+        final String[] versions = versionName.split("\\.");
+        Log.i("version_major", versions[0]);
+        Log.i("version_minor", versions[1]);
+        Log.i("version_fix", versions[2]);
+        db.collection("acr").document("mv")
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            Long majorMinimum = documentSnapshot.getLong("major");
+                            if(Long.valueOf(versions[0])<majorMinimum){
+                                startUpdateMustActivity(context);
+                                return;
+                            }
+                            Long minorMinimum = documentSnapshot.getLong("minor");
+                            if(Long.valueOf(versions[1])<minorMinimum){
+                                startUpdateMustActivity(context);
+                                return;
+                            }
+                            Long fixMinimum = documentSnapshot.getLong("fix");
+                            if(Long.valueOf(versions[2])<fixMinimum){
+                                startUpdateMustActivity(context);
+                            }
+                        }
+                    }
+                });
+    }
+
+    public static void checkUpdateOptional(final Context context){
+        String versionName = BuildConfig.VERSION_NAME;
+        Log.i("version_name", versionName);
+        final String[] versions = versionName.split("\\.");
+        db.collection("acr").document("cv")
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()){
+                            Long majorCurrent = documentSnapshot.getLong("major");
+                            if(Long.valueOf(versions[0])<majorCurrent){
+                                showUpdateDialog(context);
+                                return;
+                            }
+                            Long minorCurrent = documentSnapshot.getLong("minor");
+                            if(Long.valueOf(versions[1])<minorCurrent){
+                                showUpdateDialog(context);
+                                return;
+                            }
+                            Long fixCurrent = documentSnapshot.getLong("fix");
+                            if(Long.valueOf(versions[2])<fixCurrent){
+                                showUpdateDialog(context);
+                            }
+                        }
+                    }
+                });
+    }
+
+    private static void startUpdateMustActivity(Context context){
+        Intent intent = new Intent(context, UpdateMust.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    private static void showUpdateDialog(Context context){
+        String message = "An update is available in the playstore.";
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        dialogBuilder.setMessage(message);
+        dialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        dialogBuilder.create().show();
     }
 }

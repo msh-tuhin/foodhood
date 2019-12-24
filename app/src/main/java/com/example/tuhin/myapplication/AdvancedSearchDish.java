@@ -758,11 +758,13 @@ public class AdvancedSearchDish extends AppCompatActivity{
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        searcher = Searcher.create(documentSnapshot.getString("id"),
-                                documentSnapshot.getString("k"),
-                                AlgoliaIndexNames.INDEX_RATING_DESC);
-                        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 1));
-                        instantSearch = new InstantSearch(AdvancedSearchDish.this, searcher);
+                        if(documentSnapshot.exists()){
+                            searcher = Searcher.create(documentSnapshot.getString("id"),
+                                    documentSnapshot.getString("k"),
+                                    AlgoliaIndexNames.INDEX_RATING_DESC);
+                            searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 1));
+                            instantSearch = new InstantSearch(AdvancedSearchDish.this, searcher);
+                        }
                     }
                 });
     }

@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
+import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.SourceHomePage;
 
 import android.content.Context;
@@ -52,6 +53,8 @@ public class home extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        OrphanUtilityMethods.checkUpdateOptional(this);
 
         source = getIntent().getIntExtra("source", SourceHomePage.UNKNOWN);
 
@@ -92,6 +95,8 @@ public class home extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        OrphanUtilityMethods.checkUpdateMust(this);
+        // OrphanUtilityMethods.checkUpdateOptional(this);
         super.onStart();
         mAuth.addAuthStateListener(mAuthStateListener);
     }

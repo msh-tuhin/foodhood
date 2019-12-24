@@ -189,13 +189,15 @@ public class CreatePostDishSelectReview extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        searcher = Searcher.create(documentSnapshot.getString("id"),
-                                documentSnapshot.getString("k"),
-                                AlgoliaIndexNames.INDEX_MAIN);
-                        searcher.addFacetRefinement(AlgoliaAttributeNames.DISH_PARENT_RESTAURANT_LINK, restaurantLink);
-                        searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 1));
-                        instantSearch = new InstantSearch(CreatePostDishSelectReview.this, searcher);
-                        instantSearch.search();
+                        if(documentSnapshot.exists()){
+                            searcher = Searcher.create(documentSnapshot.getString("id"),
+                                    documentSnapshot.getString("k"),
+                                    AlgoliaIndexNames.INDEX_MAIN);
+                            searcher.addFacetRefinement(AlgoliaAttributeNames.DISH_PARENT_RESTAURANT_LINK, restaurantLink);
+                            searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 1));
+                            instantSearch = new InstantSearch(CreatePostDishSelectReview.this, searcher);
+                            instantSearch.search();
+                        }
                     }
                 });
     }

@@ -3,6 +3,7 @@ package com.example.tuhin.myapplication;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import myapp.utils.OrphanUtilityMethods;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -140,6 +141,7 @@ public class EmailVerification extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        OrphanUtilityMethods.checkUpdateMust(this);
         super.onStart();
     }
 
@@ -196,6 +198,8 @@ public class EmailVerification extends AppCompatActivity {
                     }
                 });
     }
+
+
 
     private void showDialog(){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
