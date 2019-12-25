@@ -24,6 +24,7 @@ import android.widget.ProgressBar;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
@@ -349,6 +350,7 @@ public class WriteComment extends AppCompatActivity {
         // return an appropriate CommentModel(comment/ reply to comment/ reply to reply)
         // based on the entryPoint
         CommentModel commentModel = new CommentModel(comment, postLink);
+        commentModel.setTs(new Timestamp(new Date()));
         Map<String, Object> who = new HashMap<>();
         who.put("l", FirebaseAuth.getInstance().getCurrentUser().getUid());
         who.put("n", OrphanUtilityMethods.getCurrentUserName(this));

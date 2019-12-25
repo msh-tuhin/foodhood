@@ -1,5 +1,6 @@
 package models;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 import com.google.firebase.firestore.PropertyName;
@@ -27,6 +28,7 @@ public class CommentModel {
     // replylink for reply to reply, empty for others
     private String replyLink;
     private  int type;
+    private Timestamp ts;
 
     public CommentModel(){
 
@@ -118,5 +120,13 @@ public class CommentModel {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public Timestamp getTs() {
+        return ts;
+    }
+
+    public void setTs(Timestamp ts) {
+        this.ts = ts;
     }
 }
