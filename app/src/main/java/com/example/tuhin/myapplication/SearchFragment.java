@@ -210,7 +210,7 @@ public class SearchFragment extends Fragment {
                                     documentSnapshot.getString("k"),
                                     AlgoliaIndexNames.INDEX_MAIN);
                             instantSearch = new InstantSearch(getActivity(), searcher);
-                            // instantSearch.search();
+                            instantSearch.search();
                             // instantSearch.setSearchOnEmptyString(false);
                         }
                     }
