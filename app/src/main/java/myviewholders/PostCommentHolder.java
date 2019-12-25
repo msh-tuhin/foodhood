@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.ActivityResponse;
 import com.example.tuhin.myapplication.CommentDetail;
 import com.example.tuhin.myapplication.PersonDetail;
 import com.example.tuhin.myapplication.R;

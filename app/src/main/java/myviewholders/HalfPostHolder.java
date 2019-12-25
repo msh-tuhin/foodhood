@@ -6,17 +6,13 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
-import android.text.SpannableStringBuilder;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.ActivityResponse;
-import com.example.tuhin.myapplication.ActualActivity;
-import com.example.tuhin.myapplication.AllDishes;
+import models.ActualActivity;
 import com.example.tuhin.myapplication.FullPost;
 import com.example.tuhin.myapplication.MorePeole;
 import com.example.tuhin.myapplication.PersonDetail;
@@ -41,7 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.CommentIntentExtra;
@@ -50,7 +45,6 @@ import myapp.utils.EntryPoints;
 import myapp.utils.PictureBinder;
 import myapp.utils.PostBuilder;
 import myapp.utils.PostImagesAdapter;
-import myapp.utils.SourceAllDishes;
 import myapp.utils.SourceMorePeople;
 
 public class HalfPostHolder extends BaseHomeFeedHolder

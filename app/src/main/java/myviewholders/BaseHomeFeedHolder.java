@@ -6,14 +6,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.example.tuhin.myapplication.ActivityResponse;
-import com.example.tuhin.myapplication.R;
 import com.google.firebase.firestore.DocumentSnapshot;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 
 //  acts as a parent for all viewholders

@@ -1,6 +1,5 @@
 package com.example.tuhin.myapplication;
 
-import androidx.paging.PagedList;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -15,8 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,12 +22,10 @@ import android.widget.Toast;
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import models.ActivityResponse;
 import models.PostModel;
 import myapp.utils.AdapterCreator;
 import myapp.utils.CityMapping;

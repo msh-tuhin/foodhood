@@ -1,4 +1,4 @@
-package com.example.tuhin.myapplication;
+package models;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;

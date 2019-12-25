@@ -12,9 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.ActualActivity;
-import com.example.tuhin.myapplication.AllDishes;
-import com.example.tuhin.myapplication.CreatePostAddDishes;
+import models.ActualActivity;
+
 import com.example.tuhin.myapplication.FullPost;
 import com.example.tuhin.myapplication.MorePeole;
 import com.example.tuhin.myapplication.PersonDetail;
@@ -50,7 +49,6 @@ import myapp.utils.EntryPoints;
 import myapp.utils.PictureBinder;
 import myapp.utils.PostBuilder;
 import myapp.utils.PostImagesAdapter;
-import myapp.utils.SourceAllDishes;
 import myapp.utils.SourceMorePeople;
 
 public class FullPostHeaderHolder extends RecyclerView.ViewHolder

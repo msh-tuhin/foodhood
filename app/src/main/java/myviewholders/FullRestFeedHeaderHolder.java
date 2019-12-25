@@ -8,8 +8,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.ActualActivity;
-import com.example.tuhin.myapplication.FullPost;
+import models.ActualActivity;
+
 import com.example.tuhin.myapplication.FullRestFeed;
 import com.example.tuhin.myapplication.MorePeole;
 import com.example.tuhin.myapplication.R;

@@ -3,9 +3,7 @@ package myviewholders;
 import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.AccountTypes;
@@ -24,8 +22,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.ActualActivity;
-import com.example.tuhin.myapplication.FullPost;
+import models.ActualActivity;
+
 import com.example.tuhin.myapplication.FullRestFeed;
 import com.example.tuhin.myapplication.MorePeole;
 import com.example.tuhin.myapplication.R;
@@ -42,7 +40,6 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
-import com.google.firestore.v1.Document;
 
 import java.util.ArrayList;
 import java.util.HashMap;

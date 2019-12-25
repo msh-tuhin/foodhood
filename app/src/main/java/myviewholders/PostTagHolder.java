@@ -5,7 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.ActivityResponse;
+import models.ActivityResponse;
 import com.example.tuhin.myapplication.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 
