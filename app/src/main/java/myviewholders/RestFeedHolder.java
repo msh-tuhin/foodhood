@@ -51,6 +51,7 @@ public class RestFeedHolder extends BaseHomeFeedHolder
 
     final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private Context mContext;
     private String mRestFeedLink;
@@ -300,7 +301,7 @@ public class RestFeedHolder extends BaseHomeFeedHolder
 
     @Override
     public void bindLikeIcon() {
-        String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String likedBy = mAuth.getCurrentUser().getUid();
         List<String> likers = (List<String>) mRestFeedSnapshot.get("l");
         // find if current user has already liked this post
         if(likers.contains(likedBy)){
@@ -343,7 +344,7 @@ public class RestFeedHolder extends BaseHomeFeedHolder
     }
 
     private void addLikeToPost(){
-        String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String likedBy = mAuth.getCurrentUser().getUid();
         DocumentReference restFeedReference = FirebaseFirestore.getInstance()
                 .collection("rest_feed")
                 .document(mRestFeedLink);
@@ -362,7 +363,7 @@ public class RestFeedHolder extends BaseHomeFeedHolder
     }
 
     private void removeLikeFromPost(){
-        String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String likedBy = mAuth.getCurrentUser().getUid();
         DocumentReference restFeedReference = FirebaseFirestore.getInstance()
                 .collection("rest_feed")
                 .document(mRestFeedLink);
@@ -386,7 +387,7 @@ public class RestFeedHolder extends BaseHomeFeedHolder
             return;
         }
         Log.i("account", "for person");
-        final String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final String likedBy = mAuth.getCurrentUser().getUid();
         final DocumentReference postsLikedByUserRef = db.collection("liked_once").document(likedBy);
         postsLikedByUserRef.get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -443,6 +444,16 @@ public class RestFeedHolder extends BaseHomeFeedHolder
             public void onClick(View v) {
                 Log.i("clicked", "no of likes");
                 ArrayList<String> likes = (ArrayList<String>) mRestFeedSnapshot.get("l");
+                boolean isLikeFilled = like.getDrawable().getConstantState().
+                        equals(ContextCompat.getDrawable(mContext,
+                                R.drawable.baseline_favorite_black_24dp).getConstantState());
+                if(isLikeFilled){
+                    if(!likes.contains(mAuth.getCurrentUser().getUid())){
+                        likes.add(mAuth.getCurrentUser().getUid());
+                    }
+                }else{
+                    likes.remove(mAuth.getCurrentUser().getUid());
+                }
                 Intent intent = new Intent(mContext, MorePeole.class);
                 intent.putExtra("source", SourceMorePeople.LIKERS_RF);
                 intent.putExtra("postLink", mRestFeedLink);

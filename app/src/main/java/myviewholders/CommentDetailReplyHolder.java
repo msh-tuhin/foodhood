@@ -400,6 +400,16 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
             public void onClick(View v) {
                 Log.i("clicked", "no of likes");
                 ArrayList<String> likes = (ArrayList<String>) mReplySnapshot.get("l");
+                boolean isLikeFilled = likeReply.getDrawable().getConstantState().
+                        equals(ContextCompat.getDrawable(mContext,
+                                R.drawable.baseline_favorite_black_24dp).getConstantState());
+                if(isLikeFilled){
+                    if(!likes.contains(mAuth.getCurrentUser().getUid())){
+                        likes.add(mAuth.getCurrentUser().getUid());
+                    }
+                }else{
+                    likes.remove(mAuth.getCurrentUser().getUid());
+                }
                 Intent intent = new Intent(mContext, MorePeole.class);
                 intent.putExtra("source", SourceMorePeople.LIKERS_COMMENT_REPLY);
                 intent.putExtra("commentLOrReplyLink", mReplyLink);

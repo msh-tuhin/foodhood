@@ -55,7 +55,8 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         implements PostHolderInterface{
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    public FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public Context mContext;
     public DocumentReference mPostReference;
@@ -395,7 +396,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindLikeIcon() {
-        String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String likedBy = mAuth.getCurrentUser().getUid();
         List<String> likers = (List<String>) mPostSnapShot.get("l");
         // find if current user has already liked this post
         if(likers.contains(likedBy)){
@@ -454,6 +455,16 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
             public void onClick(View v) {
                 Log.i("clicked", "no of likes");
                 ArrayList<String> likes = (ArrayList<String>) mPostSnapShot.get("l");
+                boolean isLikeFilled = like.getDrawable().getConstantState().
+                        equals(ContextCompat.getDrawable(mContext,
+                                R.drawable.baseline_favorite_black_24dp).getConstantState());
+                if(isLikeFilled){
+                    if(!likes.contains(mAuth.getCurrentUser().getUid())){
+                        likes.add(mAuth.getCurrentUser().getUid());
+                    }
+                }else{
+                    likes.remove(mAuth.getCurrentUser().getUid());
+                }
                 Intent intent = new Intent(mContext, MorePeole.class);
                 intent.putExtra("source", SourceMorePeople.LIKERS_POST);
                 intent.putExtra("postLink", mPostLink);
@@ -501,7 +512,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
     }
 
     public void addLikeToPost(){
-        String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String likedBy = mAuth.getCurrentUser().getUid();
         mPostReference.update("l", FieldValue.arrayUnion(likedBy))
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -517,7 +528,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
     }
 
     public void removeLikeFromPost(){
-        String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String likedBy = mAuth.getCurrentUser().getUid();
         mPostReference.update("l", FieldValue.arrayRemove(likedBy))
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -533,7 +544,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
     }
 
     public void createActivityForLike(){
-        final String likedBy = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final String likedBy = mAuth.getCurrentUser().getUid();
         final DocumentReference postsLikedByUserRef = db.collection("liked_once").document(likedBy);
         postsLikedByUserRef.get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
