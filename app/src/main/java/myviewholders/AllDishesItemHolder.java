@@ -161,6 +161,9 @@ public class AllDishesItemHolder extends RecyclerView.ViewHolder {
         if(restaurant==null) return;
         final String restaurantLink = restaurant.get("l");
         if(restaurantLink==null || restaurantLink.equals("")) return;
+        if(restaurantLink.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         restaurantNameTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

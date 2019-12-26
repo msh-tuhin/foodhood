@@ -209,6 +209,9 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
 
     @Override
     public void setReplyByAvatarOnClickListener() {
+        if(mReplierLink.equals(mAuth.getCurrentUser().getUid())) {
+            return;
+        }
         imageReplyBy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -234,6 +237,9 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
 
     @Override
     public void setNameReplyByOnClickListener() {
+        if(mReplierLink.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         nameReplyByTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

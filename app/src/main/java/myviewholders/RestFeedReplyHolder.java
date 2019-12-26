@@ -315,6 +315,9 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void setCommentByAvatarOnClickListener() {
+        if(mLinkCommentBy.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         commenterImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -332,6 +335,9 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void setNameCommentByOnClickListener() {
+        if(mLinkCommentBy.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         commenterNameTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -588,6 +594,9 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void setReplyByAvatarOnClickListener() {
+        if(mLinkReplyBy.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         replierImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -605,6 +614,9 @@ public class RestFeedReplyHolder extends RestFeedHolder
 
     @Override
     public void setNameReplyByOnClickListener() {
+        if(mLinkReplyBy.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         replierNameTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

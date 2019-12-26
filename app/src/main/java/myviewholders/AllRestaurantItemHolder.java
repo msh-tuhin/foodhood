@@ -95,6 +95,7 @@ public class AllRestaurantItemHolder extends RecyclerView.ViewHolder {
     }
 
     private void setAvatarOnClickListener(final Context context, final String restaurantLink){
+        if(restaurantLink.equals(mCurrentUserUid)) return;
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,6 +113,7 @@ public class AllRestaurantItemHolder extends RecyclerView.ViewHolder {
     }
 
     private void setNameOnClickListener(final Context context, final String restaurantLink){
+        if(restaurantLink.equals(mCurrentUserUid)) return;
         nameTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

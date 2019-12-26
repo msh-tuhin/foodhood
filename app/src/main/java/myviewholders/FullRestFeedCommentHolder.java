@@ -169,7 +169,25 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
 
     @Override
     public void setCommentByAvatarOnClickListener() {
-
+        commenterImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mLinkCommentBy.equals(mAuth.getCurrentUser().getUid())){
+                    return;
+                }
+                Intent intent;
+                if(isCommenterAPerson()){
+                    Log.i("clicked", "commenter(person) avatar from full rf");
+                    intent = new Intent(mContext, PersonDetail.class);
+                    intent.putExtra("personLink", mLinkCommentBy);
+                } else{
+                    Log.i("clicked", "commenter(restaurant) avatar from full rf");
+                    intent = new Intent(mContext, RestDetail.class);
+                    intent.putExtra("restaurantLink", mLinkCommentBy);
+                }
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -179,6 +197,9 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
 
     @Override
     public void setNameCommentByOnClickListener() {
+        if(mLinkCommentBy.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         commenterNameTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

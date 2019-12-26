@@ -220,6 +220,9 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
 
     @Override
     public void setAvatarOnClickListener() {
+        if(mRestaurantLink.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -237,6 +240,9 @@ public class FullRestFeedHeaderHolder extends RecyclerView.ViewHolder
 
     @Override
     public void setRestaurantNameOnClickListener() {
+        if(mRestaurantLink.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         restaurantNameTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

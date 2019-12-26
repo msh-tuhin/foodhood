@@ -314,6 +314,9 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void setCommentByAvatarOnClickListener() {
+        if(mLinkCommentBy.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         commenterImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -331,6 +334,9 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void setNameCommentByOnClickListener() {
+        if(mLinkCommentBy.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         commenterName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -574,6 +580,9 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void setReplyByAvatarOnClickListener() {
+        if(mLinkReplyBy.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         replierImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -591,6 +600,9 @@ public class PostReplyHolder extends HalfPostHolder
 
     @Override
     public void setNameReplyByOnClickListener() {
+        if(mLinkReplyBy.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         replierName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

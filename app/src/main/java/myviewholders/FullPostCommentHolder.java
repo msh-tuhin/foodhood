@@ -179,6 +179,9 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
         commenterImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(mLinkCommentBy.equals(mAuth.getCurrentUser().getUid())) {
+                    return;
+                }
                 Intent intent = new Intent(mContext, PersonDetail.class);
                 intent.putExtra("personLink", mLinkCommentBy);
                 mContext.startActivity(intent);
@@ -193,6 +196,9 @@ public class FullPostCommentHolder extends RecyclerView.ViewHolder
 
     @Override
     public void setNameCommentByOnClickListener() {
+        if(mLinkCommentBy.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         commenterNameTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

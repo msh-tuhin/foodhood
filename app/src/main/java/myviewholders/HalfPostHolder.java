@@ -219,6 +219,9 @@ public class HalfPostHolder extends BaseHomeFeedHolder
     public void setAvatarOnClickListener() {
         final String personLink = mPostBuilder.getLinkToPostedBy();
         if(personLink==null || personLink.equals("")) return;
+        if(personLink.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -236,6 +239,9 @@ public class HalfPostHolder extends BaseHomeFeedHolder
 
     @Override
     public void setNamePostedByOnClickListener() {
+        if(mPostBuilder.getLinkToPostedBy().equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         namePostedBy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

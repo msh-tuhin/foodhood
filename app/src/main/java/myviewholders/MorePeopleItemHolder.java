@@ -75,6 +75,9 @@ public class MorePeopleItemHolder extends RecyclerView.ViewHolder {
     }
 
     private void setAvatarOnClickListener(final Context context, final String personLink){
+        if(personLink.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,6 +95,9 @@ public class MorePeopleItemHolder extends RecyclerView.ViewHolder {
     }
 
     private void setNameOnClickListener(final Context context, final String personLink){
+        if(personLink.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         nameTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

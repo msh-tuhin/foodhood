@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
@@ -34,6 +35,7 @@ public class FeedbackHolderCommon extends RecyclerView.ViewHolder {
     private String[] months = {"Jan", "Feb", "March", "April", "May", "June",
             "July", "Aug", "Sep", "Oct", "Nov", "Dec"};
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private Context mContext;
 
     CircleImageView avatar;
@@ -93,6 +95,9 @@ public class FeedbackHolderCommon extends RecyclerView.ViewHolder {
     }
 
     private void setAvatarOnClickListener(final String personLink){
+        if(personLink.equals(mAuth.getCurrentUser().getUid())) {
+            return;
+        }
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,6 +115,9 @@ public class FeedbackHolderCommon extends RecyclerView.ViewHolder {
     }
 
     private void setNameOnClickListener(final String personLink){
+        if(personLink.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         personNameTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

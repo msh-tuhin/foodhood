@@ -219,6 +219,9 @@ public class RestFeedHolder extends BaseHomeFeedHolder
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(mRestaurantLink.equals(mAuth.getCurrentUser().getUid())){
+                    return;
+                }
                 Intent intent = new Intent(mContext, RestDetail.class);
                 intent.putExtra("restaurantLink", mRestaurantLink);
                 mContext.startActivity(intent);
@@ -233,6 +236,9 @@ public class RestFeedHolder extends BaseHomeFeedHolder
 
     @Override
     public void setRestaurantNameOnClickListener() {
+        if(mRestaurantLink.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         restaurantNameTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

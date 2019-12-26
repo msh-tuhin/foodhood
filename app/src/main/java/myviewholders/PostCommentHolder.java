@@ -210,6 +210,9 @@ public class PostCommentHolder extends HalfPostHolder
 
     @Override
     public void setCommentByAvatarOnClickListener() {
+        if(mLinkCommentBy.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         commenterImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -227,6 +230,9 @@ public class PostCommentHolder extends HalfPostHolder
 
     @Override
     public void setNameCommentByOnClickListener() {
+        if(mLinkCommentBy.equals(mAuth.getCurrentUser().getUid())){
+            return;
+        }
         commenterName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

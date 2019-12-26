@@ -222,6 +222,9 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
 
     @Override
     public void setCommentByAvatarOnClickListener() {
+        if(mCommenterLink.equals(mAuth.getCurrentUser().getUid())) {
+            return;
+        }
         commenterImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -247,6 +250,9 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
 
     @Override
     public void setNameCommentByOnClickListener() {
+        if(mCommenterLink.equals(mAuth.getCurrentUser().getUid())) {
+            return;
+        }
         commenterNameTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
