@@ -215,6 +215,7 @@ public class EditPersonProfileHeaderHolder extends RecyclerView.ViewHolder {
         numFollowingTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((EditPersonProfile)context).shouldBindProfileInfo = true;
                 Intent intent = new Intent(context, MorePeole.class);
                 intent.putExtra("source", SourceMorePeople.FOLLOWINGS);
                 intent.putExtra("personLink", personLink);
@@ -237,6 +238,7 @@ public class EditPersonProfileHeaderHolder extends RecyclerView.ViewHolder {
         numFollowerTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((EditPersonProfile)context).shouldBindProfileInfo = true;
                 Intent intent = new Intent(context, MorePeole.class);
                 intent.putExtra("source", SourceMorePeople.FOLLOWERS);
                 intent.putExtra("personLink", personLink);
@@ -259,6 +261,7 @@ public class EditPersonProfileHeaderHolder extends RecyclerView.ViewHolder {
         numFollowedRestaurantTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ((EditPersonProfile)context).shouldBindProfileInfo = true;
                 Intent intent = new Intent(context, AllRestaurants.class);
                 intent.putExtra("personLink", personLink);
                 context.startActivity(intent);

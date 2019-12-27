@@ -32,6 +32,7 @@ import com.google.firebase.firestore.Query;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import androidx.viewpager.widget.ViewPager;
 import models.FeedbackModel;
@@ -97,6 +98,7 @@ public class RestDetail extends AppCompatActivity {
                         if(feedbacksArraySnapshot.exists()){
                             try{
                                 ArrayList<String> feedbacksList = (ArrayList<String>)feedbacksArraySnapshot.get("a");
+                                Collections.reverse(feedbacksList);
                                 adapter.feedbacksLinks.addAll(feedbacksList);
                                 adapter.notifyDataSetChanged();
                             }catch (NullPointerException e){

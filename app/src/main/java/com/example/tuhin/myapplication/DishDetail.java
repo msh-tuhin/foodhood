@@ -30,6 +30,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import models.DishFeedback;
 import models.FeedbackModel;
@@ -87,6 +88,7 @@ public class DishDetail extends AppCompatActivity {
                         if(feedbacksArraySnapshot.exists()){
                             try{
                                 ArrayList<String> feedbacksList = (ArrayList<String>)feedbacksArraySnapshot.get("a");
+                                Collections.reverse(feedbacksList);
                                 adapter.feedbacksLinks.addAll(feedbacksList);
                                 adapter.notifyDataSetChanged();
                             }catch (NullPointerException e){
