@@ -45,7 +45,7 @@ public class home extends AppCompatActivity {
             R.drawable.outline_home_black_24dp,
             R.drawable.baseline_notifications_none_black_24dp,
             R.drawable.outline_search_black_24dp,
-            R.drawable.outline_insert_invitation_black_24dp,
+            //R.drawable.outline_insert_invitation_black_24dp,
             R.drawable.outline_menu_black_24dp
     };
 
@@ -69,7 +69,7 @@ public class home extends AppCompatActivity {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         // maybe not needed: IDK
         adapter.notifyDataSetChanged();
-        viewPager.setOffscreenPageLimit(4);
+        viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
 
@@ -146,8 +146,8 @@ public class home extends AppCompatActivity {
                     return new AllNotificationsFragment();
                 case 2:
                     return new SearchFragment();
-                case 3:
-                    return new InvitationsFragment();
+                //case 3:
+                //    return new InvitationsFragment();
                 default:
                     return new MoreOptionsFragment();
 
@@ -156,7 +156,7 @@ public class home extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 5;
+            return 4;
         }
 
         @Nullable

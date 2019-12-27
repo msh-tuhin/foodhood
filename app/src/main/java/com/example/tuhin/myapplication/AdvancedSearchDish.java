@@ -2,6 +2,7 @@ package com.example.tuhin.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -112,6 +113,11 @@ public class AdvancedSearchDish extends AppCompatActivity{
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Food Frenzy");
         setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        // not sure about this
+        // actionBar.setDisplayShowHomeEnabled(true);
 
         filterLayout = findViewById(R.id.filter_layout);
         searchLayout = findViewById(R.id.search_layout);
@@ -242,6 +248,12 @@ public class AdvancedSearchDish extends AppCompatActivity{
         }
 
         checkAskLocationPermissions();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override
