@@ -682,7 +682,7 @@ public class AdvancedSearchDish extends AppCompatActivity{
         AbstractQuery.LatLng userLocation = new AbstractQuery.LatLng(location.getLatitude(), location.getLongitude());
 //        AbstractQuery.LatLng userLocation = new AbstractQuery.LatLng(40.71, -74.01);
         if(searcher!=null){
-            searcher.getQuery().setAroundLatLng(userLocation).setAroundRadius(1000000);
+            searcher.getQuery().setAroundLatLng(userLocation).setAroundRadius(2000); // 2km
         }
         if(!(previousLatitude.equals(location.getLatitude())
                 && previousLongitude.equals(location.getLongitude()))){
