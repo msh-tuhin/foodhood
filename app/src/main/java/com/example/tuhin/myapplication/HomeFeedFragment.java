@@ -157,7 +157,7 @@ public class HomeFeedFragment extends Fragment {
                                         String currentTown = documentSnapshot.getString("ct");
                                         if(currentTown==null || currentTown.equals("")) {
                                             Toast.makeText(getActivity(),
-                                                    "You need to set your hometown/upozilla",
+                                                    "You need to set your current town/upazila",
                                                     Toast.LENGTH_LONG).show();
                                             return;
                                         }
