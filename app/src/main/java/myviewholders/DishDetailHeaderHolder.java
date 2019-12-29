@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import myapp.utils.AccountTypes;
+import myapp.utils.FirestoreFieldNames;
 import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PictureBinder;
 
@@ -248,14 +249,14 @@ public class DishDetailHeaderHolder extends RecyclerView.ViewHolder {
                         addToWishlist.setText("ADDED TO WISHLIST");
                         wishlistRef.update("a", FieldValue.arrayUnion(dishLink));
                         inWishlistRef.update("a", FieldValue.arrayUnion(personLink));
-                        dishVitalRef.update("num_wishlist", FieldValue.increment(1));
+                        dishVitalRef.update(FirestoreFieldNames.DISH_VITAL_NUMBER_OF_WISHERS, FieldValue.increment(1));
                         break;
                     case "ADDED TO WISHLIST":
                         // TODO: this should be done if and only if the updates are successful
                         addToWishlist.setText("ADD TO WISHLIST");
                         wishlistRef.update("a", FieldValue.arrayRemove(dishLink));
                         inWishlistRef.update("a", FieldValue.arrayRemove(personLink));
-                        dishVitalRef.update("num_wishlist", FieldValue.increment(-1));
+                        dishVitalRef.update(FirestoreFieldNames.DISH_VITAL_NUMBER_OF_WISHERS, FieldValue.increment(-1));
                         break;
                 }
             }

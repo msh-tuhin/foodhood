@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import myapp.utils.AccountTypes;
+import myapp.utils.FirestoreFieldNames;
 import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PictureBinder;
 
@@ -224,14 +225,14 @@ public class AllDishesItemHolder extends RecyclerView.ViewHolder {
                     addToWishlistIB.setImageResource(R.drawable.outline_add_black_24dp);
                     wishlistRef.update("a", FieldValue.arrayRemove(dishLink));
                     inWishlistRef.update("a", FieldValue.arrayRemove(currentUserUid));
-                    dishVitalRef.update("num_wishlist", FieldValue.increment(-1));
+                    dishVitalRef.update(FirestoreFieldNames.DISH_VITAL_NUMBER_OF_WISHERS, FieldValue.increment(-1));
                 } else{
                     // TODO: this should be done if and only if the updates are successful
                     isInWishlist = true;
                     addToWishlistIB.setImageResource(R.drawable.outline_done_black_24dp);
                     wishlistRef.update("a", FieldValue.arrayUnion(dishLink));
                     inWishlistRef.update("a", FieldValue.arrayUnion(currentUserUid));
-                    dishVitalRef.update("num_wishlist", FieldValue.increment(1));
+                    dishVitalRef.update(FirestoreFieldNames.DISH_VITAL_NUMBER_OF_WISHERS, FieldValue.increment(1));
                 }
             }
         };

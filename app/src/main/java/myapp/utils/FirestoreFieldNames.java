@@ -33,7 +33,6 @@ public class FirestoreFieldNames {
 
     public static final String DISH_VITAL_NAME = "n";
     public static final String DISH_VITAL_NUMBER_OF_RATING = "npr";
-    // public static final String DISH_VITAL_NUMBER_OF_WISHERS = "num_wishlist";
     public static final String DISH_VITAL_NUMBER_OF_WISHERS = "nw";
     public static final String DISH_VITAL_PRICE = "p";
     public static final String DISH_VITAL_COVER_PICTURE = "cp";

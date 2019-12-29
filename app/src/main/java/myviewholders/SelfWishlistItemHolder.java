@@ -28,6 +28,7 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import myapp.utils.FirestoreFieldNames;
 import myapp.utils.PictureBinder;
 
 public class SelfWishlistItemHolder extends RecyclerView.ViewHolder {
@@ -92,7 +93,7 @@ public class SelfWishlistItemHolder extends RecyclerView.ViewHolder {
                         .document(dishLink);
                 wishlistRef.update("a", FieldValue.arrayRemove(dishLink));
                 inWishlistRef.update("a", FieldValue.arrayRemove(currentUserUid));
-                dishVitalRef.update("num_wishlist", FieldValue.increment(-1));
+                dishVitalRef.update(FirestoreFieldNames.DISH_VITAL_NUMBER_OF_WISHERS, FieldValue.increment(-1));
             }
         });
     }
