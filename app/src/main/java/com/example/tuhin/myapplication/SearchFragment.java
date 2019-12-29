@@ -110,7 +110,7 @@ public class SearchFragment extends Fragment {
 
                 SearchHitBinder searchHitBinder = new SearchHitBinder(hits, position, view);
                 searchHitBinder.bind(true, true, true, true, true,
-                        true, true);
+                        true, true, true);
                 // setParentLayoutOnClickListener(hits, position, view);
             }
 

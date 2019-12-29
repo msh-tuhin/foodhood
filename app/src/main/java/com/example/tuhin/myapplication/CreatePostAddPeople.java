@@ -105,7 +105,7 @@ public class CreatePostAddPeople extends AppCompatActivity {
                 Log.i("position", Integer.toString(position));
                 SearchHitBinder searchHitBinder = new SearchHitBinder(hits, position, view);
                 searchHitBinder.bind(true, true, false, false,
-                        false, false, false);
+                        false, false, false, false);
             }
 
             @Override

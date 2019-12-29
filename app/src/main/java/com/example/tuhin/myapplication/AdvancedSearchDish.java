@@ -209,8 +209,8 @@ public class AdvancedSearchDish extends AppCompatActivity{
 
                 SearchHitBinder searchHitBinder = new SearchHitBinder(hits, position, view);
                 searchHitBinder.bind(true, true, true, true,
-                        true, false, false,
-                        false, true);
+                        true, false, false, false,
+                        false, false, true);
             }
 
             @Override

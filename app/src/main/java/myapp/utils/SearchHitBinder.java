@@ -157,6 +157,25 @@ public class SearchHitBinder {
         }
     }
 
+    public void bindCity(boolean onlyHighlighted){
+        try{
+            String city = hits.get(position).getString(AlgoliaAttributeNames.CITY);
+            SpannableStringBuilder builder = new SpannableStringBuilder();
+            builder.append(city);
+            boolean isCityHighlighted = getHighlight(hits.get(position),
+                    AlgoliaAttributeNames.CITY, builder);
+            SpannableStringBuilder newBuilder = new SpannableStringBuilder("City: ");
+            newBuilder.append(builder);
+            if(!(onlyHighlighted && !isCityHighlighted)){
+                TextView cityTV = view.findViewById(R.id.city);
+                cityTV.setText(newBuilder);
+                cityTV.setVisibility(View.VISIBLE);
+            }
+        }catch (JSONException e){
+            Log.i("district", "no value found");
+        }
+    }
+
     public void bindDistrict(boolean onlyHighlighted){
         try{
             String district = hits.get(position).getString(AlgoliaAttributeNames.DISTRICT);
@@ -209,6 +228,7 @@ public class SearchHitBinder {
                      boolean bindRating,
                      boolean bindPrice,
                      boolean bindAddress,
+                     boolean bindCityOnlyHighlighted,
                      boolean bindDistrictOnlyHighlighted,
                      boolean bindCategoryOnlyHighlighted){
         if(bindPicture) bindPicture();
@@ -216,6 +236,7 @@ public class SearchHitBinder {
         if(bindRating) bindRating();
         if(bindPrice) bindPrice();
         if(bindAddress) bindAddress();
+        if(bindCityOnlyHighlighted) bindCity(true);
         if(bindDistrictOnlyHighlighted) bindDistrict(true);
         if(bindCategoryOnlyHighlighted) bindCategory(true);
     }
@@ -225,6 +246,8 @@ public class SearchHitBinder {
                      boolean bindRating,
                      boolean bindPrice,
                      boolean bindAddress,
+                     boolean bindCityOnlyHighlighted,
+                     boolean bindCity,
                      boolean bindDistrictOnlyHighlighted,
                      boolean bindDistrict,
                      boolean bindCategoryOnlyHighlighted,
@@ -234,6 +257,8 @@ public class SearchHitBinder {
         if(bindRating) bindRating();
         if(bindPrice) bindPrice();
         if(bindAddress) bindAddress();
+        if(bindCityOnlyHighlighted) bindCity(true);
+        if(bindCity) bindCity(false);
         if(bindDistrictOnlyHighlighted) bindDistrict(true);
         if(bindDistrict) bindDistrict(false);
         if(bindCategoryOnlyHighlighted) bindCategory(true);
@@ -250,6 +275,7 @@ public class SearchHitBinder {
         TextView priceTV = view.findViewById(R.id.price);
         LinearLayout addressLayout = view.findViewById(R.id.address_layout);
         TextView addressTV = view.findViewById(R.id.address);
+        TextView cityTV = view.findViewById(R.id.city);
         TextView districtTV = view.findViewById(R.id.district);
         TextView categoryTV = view.findViewById(R.id.category);
 
@@ -258,7 +284,7 @@ public class SearchHitBinder {
         ratingTV.setText("");
         priceTV.setText("");
         addressTV.setText("");
-        districtTV.setText("");
+        cityTV.setText("");
         districtTV.setVisibility(View.GONE);
         categoryTV.setText("");
         categoryTV.setVisibility(View.GONE);

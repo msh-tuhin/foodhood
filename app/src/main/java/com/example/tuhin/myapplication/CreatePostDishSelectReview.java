@@ -103,7 +103,7 @@ public class CreatePostDishSelectReview extends AppCompatActivity {
 
                 SearchHitBinder searchHitBinder = new SearchHitBinder(hits, position, view);
                 searchHitBinder.bind(true, true, true, true,
-                        false, false, false);
+                        false, false, false, false);
             }
 
             @Override

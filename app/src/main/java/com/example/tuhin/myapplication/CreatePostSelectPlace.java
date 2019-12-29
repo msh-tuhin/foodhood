@@ -124,7 +124,7 @@ public class CreatePostSelectPlace extends AppCompatActivity {
                 Log.i("position", Integer.toString(position));
                 SearchHitBinder searchHitBinder = new SearchHitBinder(hits, position, view);
                 searchHitBinder.bind(true, true, true, false,
-                        true, false, false);
+                        true, false, false, false);
             }
 
             @Override

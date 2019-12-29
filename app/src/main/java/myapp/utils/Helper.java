@@ -1,4 +1,4 @@
-package com.example.tuhin.myapplication;
+package myapp.utils;
 
 import android.graphics.Typeface;
 import androidx.annotation.NonNull;
