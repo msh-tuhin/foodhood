@@ -23,6 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -140,7 +141,7 @@ public class OrphanUtilityMethods {
                 });
     }
 
-    public static void checkUpdateOptional(final Context context){
+    private static void checkUpdateOptional(final Context context){
         String versionName = BuildConfig.VERSION_NAME;
         Log.i("version_name", versionName);
         final String[] versions = versionName.split("\\.");
@@ -183,6 +184,23 @@ public class OrphanUtilityMethods {
                         }
                     }
                 });
+    }
+
+    public static void shouldCheckUpdateOptional(Context context){
+        SharedPreferences sPref = context.getSharedPreferences(
+                context.getString(R.string.misc_spref),
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sPref.edit();
+        long lastTime = sPref.getLong("update_last_checked", 0L);
+        Date now = new Date();
+        long diffInMillis = Math.abs(now.getTime() - lastTime);
+        long diffInDays = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+        // check update availability once every 2 days
+        if(diffInDays>=2){
+            editor.putLong("update_last_checked", now.getTime());
+            editor.apply();
+            checkUpdateOptional(context);
+        }
     }
 
     private static void startUpdateMustActivity(Context context, int source){

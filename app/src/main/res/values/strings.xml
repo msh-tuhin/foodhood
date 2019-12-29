@@ -81,4 +81,8 @@
     <string name="vital_info">
         com.example.tuhin.myapplication.VITAL_INFO
     </string>
+
+    <string name="misc_spref">
+        com.example.tuhin.myapplication.MISC_SPREF
+    </string>
 </resources>

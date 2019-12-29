@@ -54,7 +54,7 @@ public class home extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        OrphanUtilityMethods.checkUpdateOptional(this);
+        OrphanUtilityMethods.shouldCheckUpdateOptional(this);
 
         source = getIntent().getIntExtra("source", SourceHomePage.UNKNOWN);
 
@@ -97,7 +97,7 @@ public class home extends AppCompatActivity {
     protected void onStart() {
         OrphanUtilityMethods.checkUpdateMust(this);
         OrphanUtilityMethods.checkMaintenanceBreak(this);
-        // OrphanUtilityMethods.checkUpdateOptional(this);
+        // OrphanUtilityMethods.shouldCheckUpdateOptional(this);
         super.onStart();
         mAuth.addAuthStateListener(mAuthStateListener);
     }
