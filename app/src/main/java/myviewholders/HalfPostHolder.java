@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -351,6 +352,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
         ArrayList<String> imageUris = (ArrayList) mPostSnapShot.get("i");
         if(imageUris==null || imageUris.size() == 0) return;
         postImagesViewPager.setVisibility(View.VISIBLE);
+        postImagesViewPager.setOffscreenPageLimit(2);
         final PostImagesAdapter adapter = new PostImagesAdapter(mContext, imageUris);
         postImagesViewPager.setAdapter(adapter);
         viewPagerCurrentPositionTV.setText("1" + "/" + Integer.toString(adapter.imageUris.size()));

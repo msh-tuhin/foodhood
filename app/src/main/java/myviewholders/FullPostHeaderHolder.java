@@ -362,6 +362,7 @@ public class FullPostHeaderHolder extends RecyclerView.ViewHolder
         ArrayList<String> imageUris = (ArrayList) mPostSnapShot.get("i");
         if(imageUris==null || imageUris.size() == 0) return;
         postImagesViewPager.setVisibility(View.VISIBLE);
+        postImagesViewPager.setOffscreenPageLimit(2);
         final PostImagesAdapter adapter = new PostImagesAdapter(mContext, imageUris);
         postImagesViewPager.setAdapter(adapter);
         viewPagerCurrentPositionTV.setText("1" + "/" + Integer.toString(adapter.imageUris.size()));

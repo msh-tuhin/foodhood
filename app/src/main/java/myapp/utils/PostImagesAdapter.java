@@ -1,12 +1,15 @@
 package myapp.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.tuhin.myapplication.ImageFull;
 import com.example.tuhin.myapplication.R;
 import com.squareup.picasso.Picasso;
 
@@ -32,6 +35,17 @@ public class PostImagesAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(@NonNull final ViewGroup container, final int position) {
         final ViewGroup layout = (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.post_images_iv, container, false);
+        layout.findViewById(R.id.parent_layout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mContext instanceof ImageFull) return;
+                Log.i("post_image", "clicked");
+                Intent intent = new Intent(mContext, ImageFull.class);
+                intent.putExtra("position", position);
+                intent.putStringArrayListExtra("imageUris", imageUris);
+                mContext.startActivity(intent);
+            }
+        });
         ImageView imageView = layout.findViewById(R.id.imageView);
         //imageView.setImageURI(imageUris.get(position));
         Picasso.get().load(imageUris.get(position))

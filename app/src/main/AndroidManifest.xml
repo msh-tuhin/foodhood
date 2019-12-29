@@ -14,6 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ImageFull"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -97,7 +98,7 @@
         <activity android:name=".CreateRestFeedPreview" />
         <activity android:name=".EditDishForm" />
         <activity android:name=".SplashScreen" />
-        <activity android:name=".UpdateMust"></activity>
+        <activity android:name=".UpdateMust" />
     </application>
 
 </manifest>
