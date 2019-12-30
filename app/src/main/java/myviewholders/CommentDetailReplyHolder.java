@@ -274,7 +274,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
 
     @Override
     public void bindReplyingToLink() {
-        Map<String, Object> replyTo = (Map<String, Object>) mReplySnapshot.get("replyTo");
+        Map<String, Object> replyTo = (Map<String, Object>) mReplySnapshot.get(FirestoreFieldNames.COMMENTS_REPLY_TO);
         if(replyTo != null){
             String name = (String) replyTo.get("n");
             String text = "Replying To " + name;
@@ -288,7 +288,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
         replyingToTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Map<String, Object> replyTo = (Map<String, Object>) mReplySnapshot.get("replyTo");
+                Map<String, Object> replyTo = (Map<String, Object>) mReplySnapshot.get(FirestoreFieldNames.COMMENTS_REPLY_TO);
                 if(replyTo != null){
                     String link = (String) replyTo.get("l");
                     Long type = (Long) replyTo.get("t");
