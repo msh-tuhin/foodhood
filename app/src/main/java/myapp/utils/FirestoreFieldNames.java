@@ -83,6 +83,9 @@ public class FirestoreFieldNames {
     public static final String NOTIFICATIONS_REPLY_LINK = "replyLink";
     public static final String NOTIFICATIONS_OLD_REPLY_LINK = "oldReplyLink";
     public static final String NOTIFICATIONS_NEW_REPLY_LINK = "newReplyLink";
+    public static final String NOTIFICATIONS_POST_OWNER_NAME = "postOwnerName";
+    public static final String NOTIFICATIONS_COMMENT_OWNER_NAME = "commentOwnerName";
+    public static final String NOTIFICATIONS_REPLY_OWNER_NAME = "replyOwnerName";
 
     public static final String OWN_ACTIVITIES_ACTIVITY_LINK = "l";
     public static final String OWN_ACTIVITIES_TYPE = "t";

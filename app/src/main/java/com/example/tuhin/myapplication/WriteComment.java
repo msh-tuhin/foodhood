@@ -8,6 +8,7 @@ import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.CommentTypes;
 import myapp.utils.EntryPoints;
+import myapp.utils.FirestoreFieldNames;
 import myapp.utils.NotificationTypes;
 import myapp.utils.OrphanUtilityMethods;
 
@@ -623,11 +624,11 @@ public class WriteComment extends AppCompatActivity {
         who.put("l", currentUserLink);
 
         Map<String, Object> notification = new HashMap<>();
-        notification.put("w", who);
-        notification.put("postLink", postLink);
-        notification.put("commentLink", commentLink);
-        notification.put("oldReplyLink", parentReplyLink);
-        notification.put("newReplyLink", newReplyLink);
+        notification.put(FirestoreFieldNames.ACTIVITIES_CREATOR_MAP, who);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_POST_LINK, postLink);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_COMMENT_LINK, commentLink);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_OLD_REPLY_LINK, parentReplyLink);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_NEW_REPLY_LINK, newReplyLink);
 
         FirebaseFunctions.getInstance().getHttpsCallable(cloudFunctionName)
                 .call(notification).addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
@@ -651,10 +652,10 @@ public class WriteComment extends AppCompatActivity {
         who.put("l", currentUserLink);
 
         Map<String, Object> notification = new HashMap<>();
-        notification.put("w", who);
-        notification.put("postLink", postLink);
-        notification.put("commentLink", commentLink);
-        notification.put("t", NotificationTypes.NOTIF_COMMENT_ALSO_RF);
+        notification.put(FirestoreFieldNames.ACTIVITIES_CREATOR_MAP, who);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_POST_LINK, postLink);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_COMMENT_LINK, commentLink);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_TYPE, NotificationTypes.NOTIF_COMMENT_ALSO_RF);
 
         FirebaseFunctions.getInstance().getHttpsCallable("sendCommentByRFNotification")
                 .call(notification).addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
@@ -679,11 +680,11 @@ public class WriteComment extends AppCompatActivity {
         who.put("l", currentUserLink);
 
         Map<String, Object> notification = new HashMap<>();
-        notification.put("w", who);
-        notification.put("postLink", postLink);
-        notification.put("commentLink", commentLink);
-        notification.put("replyLink", replyLink);
-        notification.put("t", NotificationTypes.NOTIF_COMMENT_ALSO_RF);
+        notification.put(FirestoreFieldNames.ACTIVITIES_CREATOR_MAP, who);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_POST_LINK, postLink);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_COMMENT_LINK, commentLink);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_REPLY_LINK, replyLink);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_TYPE, NotificationTypes.NOTIF_COMMENT_ALSO_RF);
 
         FirebaseFunctions.getInstance().getHttpsCallable("sendReplyToCommentByRFNotification")
                 .call(notification).addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {

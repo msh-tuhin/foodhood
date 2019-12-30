@@ -45,6 +45,7 @@ import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
+import myapp.utils.FirestoreFieldNames;
 import myapp.utils.NotificationTypes;
 import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PictureBinder;
@@ -490,10 +491,10 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
         who.put("l", currentUserLink);
 
         final Map<String, Object> notification = new HashMap<>();
-        notification.put("t", 6);
-        notification.put("postLink", postLink);
-        notification.put("commentLink", commentLink);
-        notification.put("ts", new Timestamp(new Date()));
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_TYPE, 6);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_POST_LINK, postLink);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_COMMENT_LINK, commentLink);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_TIMESTAMP, new Timestamp(new Date()));
 
         FirebaseFirestore.getInstance().collection("person_vital").document(currentUserLink).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -504,7 +505,7 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
                             if(personVital.exists()){
                                 String personName = personVital.getString("n");
                                 who.put("n", personName);
-                                notification.put("w", who);
+                                notification.put(FirestoreFieldNames.ACTIVITIES_CREATOR_MAP, who);
                                 FirebaseFirestore.getInstance().collection("notifications").document(commenterLink)
                                         .collection("n").add(notification);
                             }
@@ -519,13 +520,13 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
         who.put("l", currentUserLink);
 
         final Map<String, Object> notification = new HashMap<>();
-        notification.put("postLink", mPostLink);
-        notification.put("commentLink", mCommentLink);
-        notification.put("w", who);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_POST_LINK, mPostLink);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_COMMENT_LINK, mCommentLink);
+        notification.put(FirestoreFieldNames.ACTIVITIES_CREATOR_MAP, who);
         if(isCommentInRF()){
-            notification.put("t", NotificationTypes.NOTIF_LIKE_COMMENT_RF);
+            notification.put(FirestoreFieldNames.NOTIFICATIONS_TYPE, NotificationTypes.NOTIF_LIKE_COMMENT_RF);
         } else{
-            notification.put("t", NotificationTypes.NOTIF_LIKE_COMMENT);
+            notification.put(FirestoreFieldNames.NOTIFICATIONS_TYPE, NotificationTypes.NOTIF_LIKE_COMMENT);
         }
 
         FirebaseFunctions.getInstance()

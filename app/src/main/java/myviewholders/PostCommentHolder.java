@@ -38,6 +38,7 @@ import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
+import myapp.utils.FirestoreFieldNames;
 import myapp.utils.NotificationTypes;
 import myapp.utils.PictureBinder;
 import myapp.utils.ResourceIds;
@@ -454,10 +455,10 @@ public class PostCommentHolder extends HalfPostHolder
         who.put("l", currentUserLink);
 
         final Map<String, Object> notification = new HashMap<>();
-        notification.put("postLink", mPostLink);
-        notification.put("commentLink", mCommentLink);
-        notification.put("w", who);
-        notification.put("t", NotificationTypes.NOTIF_LIKE_COMMENT);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_POST_LINK, mPostLink);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_COMMENT_LINK, mCommentLink);
+        notification.put(FirestoreFieldNames.ACTIVITIES_CREATOR_MAP, who);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_TYPE, NotificationTypes.NOTIF_LIKE_COMMENT);
 
         FirebaseFunctions.getInstance().getHttpsCallable("sendLikeCommentNotification").call(notification)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {

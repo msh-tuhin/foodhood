@@ -41,6 +41,7 @@ import myapp.utils.AccountTypes;
 import myapp.utils.CommentIntentExtra;
 import myapp.utils.DateTimeExtractor;
 import myapp.utils.EntryPoints;
+import myapp.utils.FirestoreFieldNames;
 import myapp.utils.NotificationTypes;
 import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.ResourceIds;
@@ -448,10 +449,10 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
         who.put("l", currentUserLink);
 
         final Map<String, Object> notification = new HashMap<>();
-        notification.put("postLink", mRestFeedLink);
-        notification.put("commentLink", mCommentLink);
-        notification.put("w", who);
-        notification.put("t", NotificationTypes.NOTIF_LIKE_COMMENT_RF);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_POST_LINK, mRestFeedLink);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_COMMENT_LINK, mCommentLink);
+        notification.put(FirestoreFieldNames.ACTIVITIES_CREATOR_MAP, who);
+        notification.put(FirestoreFieldNames.NOTIFICATIONS_TYPE, NotificationTypes.NOTIF_LIKE_COMMENT_RF);
 
         FirebaseFunctions.getInstance().getHttpsCallable(cloudFunctionName).call(notification)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
