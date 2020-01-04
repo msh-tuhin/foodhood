@@ -447,10 +447,12 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
             oldCoverPhotoLink = coverPhotoLink;
             imageCurrent = true;
             imagePrevious = true;
+            Log.i("cover_photo", coverPhotoLink);
             Picasso.get().load(coverPhotoLink)
                     .placeholder(R.drawable.gray)
                     .error(R.drawable.gray)
                     .into(coverPhotoIV);
+            Picasso.get().setLoggingEnabled(true);
             deleteImage.setVisibility(View.VISIBLE);
         }
     }

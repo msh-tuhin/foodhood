@@ -135,12 +135,14 @@ public class HalfPostHolder extends BaseHomeFeedHolder
         mPostReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                DocumentSnapshot post = task.getResult();
-                if(post.exists()){
-                    setmPostSnapshot(post);
-                    setmPostBuilder(mContext, post);
-                    bindValuesDependentOnPostDownload();
-                    setOnClickListenersDependentOnPostDownload();
+                if(task.isSuccessful()){
+                    DocumentSnapshot post = task.getResult();
+                    if(post.exists()){
+                        setmPostSnapshot(post);
+                        setmPostBuilder(mContext, post);
+                        bindValuesDependentOnPostDownload();
+                        setOnClickListenersDependentOnPostDownload();
+                    }
                 }
             }
         });
