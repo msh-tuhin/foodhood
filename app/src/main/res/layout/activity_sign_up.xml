@@ -86,6 +86,25 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="start|left">
+            <CheckBox
+                android:id="@+id/agree_to_policy"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="4dp"
+                android:gravity="top"/>
+            <TextView
+                android:id="@+id/policy_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+
         <Button
             android:id="@+id/sign_up_button"
             android:layout_width="wrap_content"

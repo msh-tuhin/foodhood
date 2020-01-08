@@ -4,14 +4,24 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import myapp.utils.InputValidator;
 import myapp.utils.OrphanUtilityMethods;
+import myapp.utils.PolicyType;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.SpannedString;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -51,6 +61,8 @@ public class SignUp extends AppCompatActivity {
     TextInputEditText passwordEditText;
     TextInputEditText passwordConfirmEditText;
     TextInputEditText nameEditText;
+    CheckBox agreeToPolicyCheckbox;
+    TextView askPolicyTV;
     Button signUp;
     FirebaseAuth mAuth;
 
@@ -77,6 +89,8 @@ public class SignUp extends AppCompatActivity {
         emailEditText = findViewById(R.id.email);
         passwordEditText = findViewById(R.id.password);
         passwordConfirmEditText = findViewById(R.id.password_confirm);
+        agreeToPolicyCheckbox = findViewById(R.id.agree_to_policy);
+        askPolicyTV = findViewById(R.id.policy_tv);
         signUp = findViewById(R.id.sign_up_button);
 
         signUpButtonController = new SignUpButtonController(signUp);
@@ -100,6 +114,16 @@ public class SignUp extends AppCompatActivity {
             }
         });
 
+        askPolicyTV.setText(getAskPolicyText());
+        askPolicyTV.setMovementMethod(LinkMovementMethod.getInstance());
+        //askPolicyTV.setHighlightColor(Color.TRANSPARENT);
+        agreeToPolicyCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                signUpButtonController.isPolicyChecked = isChecked;
+                signUpButtonController.enableOrDisableSignUpButton();
+            }
+        });
     }
 
     @Override
@@ -308,18 +332,32 @@ public class SignUp extends AppCompatActivity {
         signUpButtonController.enableOrDisableSignUpButton();
     }
 
+    private SpannableString getAskPolicyText(){
+        String text = "I agree to Food Frenzy's Terms of Use and I have read and I comply with " +
+                "Food Frenzy's Privacy Policy";
+        SpannableString sp = new SpannableString(text);
+        int start = text.indexOf("Terms of Use");
+        int end = start + "Terms of Use".length();
+        sp.setSpan(new MyClickableSpan("Terms of Use"), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        start = text.indexOf("Privacy Policy");
+        end = start + "Privacy Policy".length();
+        sp.setSpan(new MyClickableSpan("Privacy Policy"), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return sp;
+    }
+
     private class SignUpButtonController{
         boolean isNameValid = false;
         boolean isEmailValid = false;
         boolean isPasswordValid = false;
         boolean isPasswordConfirmed = false;
+        boolean isPolicyChecked = false;
         Button signUpButton;
 
         SignUpButtonController(Button signUpButton){
             this.signUpButton = signUpButton;
         }
         void enableOrDisableSignUpButton(){
-            if(isNameValid && isEmailValid && isPasswordValid && isPasswordConfirmed){
+            if(isNameValid && isEmailValid && isPasswordValid && isPasswordConfirmed && isPolicyChecked){
                 signUpButton.setEnabled(true);
             } else{
                 signUpButton.setEnabled(false);
@@ -377,6 +415,26 @@ public class SignUp extends AppCompatActivity {
                     }
                     break;
             }
+        }
+    }
+
+    private class MyClickableSpan extends ClickableSpan{
+        String link;
+        MyClickableSpan(String link){
+            super();
+            this.link = link;
+        }
+        @Override
+        public void onClick(@NonNull View widget) {
+            Intent intent = new Intent(SignUp.this, Policy.class);
+            if(link.equals("Terms of Use")){
+                Log.i("policy", "terms of use");
+                intent.putExtra("policy_type", PolicyType.TERMS_OF_USE);
+            }else{
+                Log.i("policy", "privacy");
+                intent.putExtra("policy_type", PolicyType.PRIVACY_POLICY);
+            }
+            startActivity(intent);
         }
     }
 }

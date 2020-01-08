@@ -116,7 +116,7 @@ public class OrphanUtilityMethods {
         Log.i("version_major", versions[0]);
         Log.i("version_minor", versions[1]);
         Log.i("version_fix", versions[2]);
-        db.collection("acr").document("mv")
+        db.collection("public").document("mv")
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -145,7 +145,7 @@ public class OrphanUtilityMethods {
         String versionName = BuildConfig.VERSION_NAME;
         Log.i("version_name", versionName);
         final String[] versions = versionName.split("\\.");
-        db.collection("acr").document("cv")
+        db.collection("public").document("cv")
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -171,7 +171,7 @@ public class OrphanUtilityMethods {
     }
 
     public static void checkMaintenanceBreak(final Context context){
-        db.collection("acr").document("mb")
+        db.collection("public").document("mb")
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override

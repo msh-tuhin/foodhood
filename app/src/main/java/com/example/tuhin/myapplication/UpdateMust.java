@@ -50,7 +50,7 @@ public class UpdateMust extends AppCompatActivity {
         Log.i("version_major", versions[0]);
         Log.i("version_minor", versions[1]);
         Log.i("version_fix", versions[2]);
-        db.collection("acr").document("mv")
+        db.collection("public").document("mv")
                 .get()
                 .addOnSuccessListener(UpdateMust.this, new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -77,7 +77,7 @@ public class UpdateMust extends AppCompatActivity {
     }
 
     private void checkMaintenanceBreak(final Context context){
-        db.collection("acr").document("mb")
+        db.collection("public").document("mb")
                 .get()
                 .addOnSuccessListener(UpdateMust.this, new OnSuccessListener<DocumentSnapshot>() {
                     @Override
