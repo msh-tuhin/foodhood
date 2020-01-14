@@ -47,7 +47,7 @@
             android:layout_marginTop="8dp"
             android:text="@string/post_caption"
             android:ellipsize="end"
-            android:maxLines="2"/>
+            android:maxLines="3"/>
 
         <TextView
             style="@style/TextClickableSimpleBlue"
