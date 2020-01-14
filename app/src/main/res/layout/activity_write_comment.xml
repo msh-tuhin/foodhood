@@ -9,6 +9,7 @@
         android:id="@+id/comment_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="8dp"
         tools:context=".WriteComment">
 
         <ImageView
@@ -26,14 +27,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Done"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/cancel"
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <EditText
             android:id="@+id/comment_editText"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:inputType="text"
+            android:layout_height="300dp"
+            android:inputType="textMultiLine"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/done"
             android:hint="Write a Comment"
