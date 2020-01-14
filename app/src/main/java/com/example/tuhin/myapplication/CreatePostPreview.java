@@ -85,6 +85,7 @@ public class CreatePostPreview extends AppCompatActivity {
     LinearLayout progressLayout;
     CircleImageView dishOrRestaurantAvatar;
     TextView captionTextView, dishOrRestaurantNameTextView, reviewTextView;
+    TextView viewPagerCurrentPositionTV;
     TextView captionHeaderTextView, imagesHeaderTextView, peopleHeaderTextView;
     RatingBar ratingBar;
     ViewPager viewPager;
@@ -120,6 +121,7 @@ public class CreatePostPreview extends AppCompatActivity {
         captionHeaderTextView = findViewById(R.id.caption_header);
         imagesHeaderTextView = findViewById(R.id.images_header);
         peopleHeaderTextView = findViewById(R.id.people_header);
+        viewPagerCurrentPositionTV = findViewById(R.id.current_image_position);
         viewPager = findViewById(R.id.viewPager);
         dishOrRestaurantAvatar = findViewById(R.id.dish_avatar);
         dishOrRestaurantNameTextView = findViewById(R.id.dish_name);
@@ -149,6 +151,8 @@ public class CreatePostPreview extends AppCompatActivity {
             mainLinearLayout.removeView(imagesHeaderTextView);
             mainLinearLayout.removeView(viewPager);
         }else{
+            viewPagerCurrentPositionTV.setText("1/" +
+                    Integer.toString(imagesUri.size()));
             adapter = new ImagesAdapter(this);
             for(String uriString : imagesUri){
                 //adapter.imageUris.add(Uri.parse(uriString));
@@ -163,6 +167,23 @@ public class CreatePostPreview extends AppCompatActivity {
                     Log.e("error", e.getMessage());
                 }
             }
+            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    viewPagerCurrentPositionTV.setText(Integer.toString(position+1)+"/" +
+                            Integer.toString(adapter.imageUris.size()));
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+
+                }
+            });
             viewPager.setAdapter(adapter);
         }
 
