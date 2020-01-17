@@ -72,8 +72,8 @@ public class EditRestProfileForm extends AppCompatActivity {
     private boolean isLocationSettingsEnabled = false;
     private boolean isGoogleApiAvailable = false;
 
-    private Double mLatitudeValue = 0.0;
-    private Double mLongitudeValue = 0.0;
+    private Double mLatitudeValue;
+    private Double mLongitudeValue;
     private String mAddress = "";
     private String mPhone = "";
     private String mWebsite = "";
@@ -484,7 +484,7 @@ public class EditRestProfileForm extends AppCompatActivity {
 
     private boolean shouldLocationBeSaved(Double latitude, Double longitude){
         if(latitude==null || longitude==null) return false;
-        if(oldLatitudeValue==null || oldLongitudeValue==null) return false;
+        if(oldLatitudeValue==null || oldLongitudeValue==null) return true;
         return (!latitude.equals(oldLatitudeValue) || !longitude.equals(oldLongitudeValue));
     }
 
