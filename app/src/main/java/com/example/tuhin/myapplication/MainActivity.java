@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout progressLayout;
     TextView errorMessageTextView, signUpTextView, forgotPasswordTextView;
     TextView createBusinessAccountTV;
-    EditText email, password;
+    EditText emailEditText, passwordEditText;
     Button signIn, signUp;
     FirebaseAuth mAuth;
 
@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
         forgotPasswordTextView = findViewById(R.id.forgot_password);
         signUpTextView = findViewById(R.id.sign_up_textview);
         createBusinessAccountTV = findViewById(R.id.create_business_account_tv);
-        email = findViewById(R.id.email);
-        password = findViewById(R.id.password);
+        emailEditText = findViewById(R.id.email);
+        passwordEditText = findViewById(R.id.password);
         signIn = findViewById(R.id.button);
         signUp = findViewById(R.id.sign_up_button);
 
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 signIn.setEnabled(false);
-                signInWithEmailAndPassword(email.getText().toString(), password.getText().toString());
+                signInWithEmailAndPassword(emailEditText.getText().toString(), passwordEditText.getText().toString());
                 mainLayout.setVisibility(View.INVISIBLE);
                 progressLayout.setVisibility(View.VISIBLE);
             }
@@ -156,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
                             errorMessageTextView.setText("Couldn't sign in!");
                         }
                         errorMessageTextView.setVisibility(View.VISIBLE);
+                        passwordEditText.setText("");
                     }
                 });
     }

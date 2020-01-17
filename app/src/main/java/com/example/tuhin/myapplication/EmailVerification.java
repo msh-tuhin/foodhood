@@ -164,6 +164,7 @@ public class EmailVerification extends AppCompatActivity {
                                 // showDialog();
                                 emailNotVerifiedTextView.setText("Sorry! Email is not verified!");
                                 emailNotVerifiedTextView.setVisibility(View.VISIBLE);
+                                passwordEditText.setText("");
                             }
                         }else{
                             // maybe this never happens
@@ -183,8 +184,6 @@ public class EmailVerification extends AppCompatActivity {
                         progressLayout.setVisibility(View.INVISIBLE);
                         mainLayout.setVisibility(View.VISIBLE);
                         signInButton.setEnabled(true);
-                        // the error message doesn't show in emailNotVerifiedTextView
-                        // don't know why
                         if(e instanceof FirebaseAuthInvalidUserException){
                             Log.i("error", "FirebaseAuthInvalidUserException");
                             emailNotVerifiedTextView.setText("The email is disabled or doesn't exist!");
@@ -196,6 +195,8 @@ public class EmailVerification extends AppCompatActivity {
                         else{
                             emailNotVerifiedTextView.setText("Couldn't sign in!");
                         }
+                        emailNotVerifiedTextView.setVisibility(View.VISIBLE);
+                        passwordEditText.setText("");
                     }
                 });
     }
