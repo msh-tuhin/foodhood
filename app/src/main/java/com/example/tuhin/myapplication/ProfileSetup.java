@@ -63,8 +63,8 @@ public class ProfileSetup extends AppCompatActivity {
         String newUserCurrentTown = personDatabundle.getString("current_town");
         String photoPath = personDatabundle.getString("photo_path");
 
-        Log.i("new_user_name", newUserName);
-        Log.i("new_user_email", newUserEmail);
+        if(newUserName != null) Log.i("new_user_name", newUserName);
+        if(newUserEmail != null) Log.i("new_user_email", newUserEmail);
         Log.i("new_user_uid", newUserUid);
         if(newUserPhone != null) Log.i("new_user_phone", newUserPhone);
         if(newUserCurrentTown != null) Log.i("new_user_town", newUserCurrentTown);
