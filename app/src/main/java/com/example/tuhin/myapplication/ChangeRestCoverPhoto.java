@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -117,6 +118,14 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
 
         mChangeable = getIntent().getStringExtra("changeable");
         mCollectonName = mChangeable.equals("restaurant_cover_pic") ? "rest_vital":"person_vital";
+
+        if(mChangeable.equals("person_profile_pic")){
+            float factor = getResources().getDisplayMetrics().density;
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) frameLayoutImage.getLayoutParams();
+            params.width = LinearLayout.LayoutParams.MATCH_PARENT;
+            params.height = (int) (300*factor);
+            frameLayoutImage.setLayoutParams(params);
+        }
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             Log.i("Permission", "External storage : denied");
