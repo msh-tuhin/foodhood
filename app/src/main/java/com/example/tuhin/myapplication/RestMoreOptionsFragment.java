@@ -33,10 +33,11 @@ public class RestMoreOptionsFragment extends Fragment {
 
     private int[] icons = {
             R.drawable.outline_info_black_24dp,
-            R.drawable.outline_people_outline_black_24dp
+            R.drawable.outline_people_outline_black_24dp,
+            R.drawable.logout_96
     };
 
-    private String[] items = {"View Profile", "Followers"};
+    private String[] items = {"View Profile", "Followers", "Logout"};
 
     public RestMoreOptionsFragment() {
         // Required empty public constructor
@@ -76,6 +77,8 @@ public class RestMoreOptionsFragment extends Fragment {
                         intent.putExtra("personLink", mAuth.getCurrentUser().getUid());
                         startActivity(intent);
                         break;
+                    case 2:
+                        mAuth.signOut();
                 }
             }
         });

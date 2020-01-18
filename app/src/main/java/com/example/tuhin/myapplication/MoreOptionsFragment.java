@@ -37,11 +37,10 @@ public class MoreOptionsFragment extends Fragment {
             R.drawable.outline_account_circle_black_24dp,
             R.drawable.outline_people_outline_black_24dp,
             // icon for wishlist,
-            R.drawable.outline_menu_black_24dp,
+            R.drawable.wishlist_96,
             R.drawable.outline_search_black_24dp,
-            R.drawable.outline_settings_applications_black_24dp,
-            // icon for logout,
-            R.drawable.logout
+            //R.drawable.outline_settings_applications_black_24dp,
+            R.drawable.logout_96
             // icon for favorite restaurants
     };
     public MoreOptionsFragment() {
@@ -94,6 +93,9 @@ public class MoreOptionsFragment extends Fragment {
                     case 3:
                         intent = new Intent(parentActivity, AdvancedSearchDish.class);
                         startActivity(intent);
+                        break;
+                    case 4:
+                        mAuth.signOut();
                         break;
                 }
             }
