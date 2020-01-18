@@ -39,7 +39,7 @@ public class EmailVerification extends AppCompatActivity {
     private String mEmail;
     LinearLayout mainLayout;
     LinearLayout progressLayout;
-    TextView emailVerifiedTextView, resendEmailTextView, emailNotVerifiedTextView;
+    TextView resendEmailTextView, emailNotVerifiedTextView;
     EditText emailEditText, passwordEditText;
     Button signInButton;
     FirebaseAuth mAuth;
@@ -57,7 +57,6 @@ public class EmailVerification extends AppCompatActivity {
 
         mainLayout = findViewById(R.id.main_layout);
         progressLayout = findViewById(R.id.progress_layout);
-        emailVerifiedTextView = findViewById(R.id.email_verified_textview);
         emailNotVerifiedTextView = findViewById(R.id.not_verified_text);
         emailNotVerifiedTextView.setVisibility(View.INVISIBLE);
         resendEmailTextView = findViewById(R.id.resend_email_textview);
@@ -86,34 +85,6 @@ public class EmailVerification extends AppCompatActivity {
                     signInButton.setEnabled(false);
                 }else{
                     signInButton.setEnabled(true);
-                }
-            }
-        });
-        emailVerifiedTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final FirebaseUser user = mAuth.getCurrentUser();
-                if(user != null){
-                    user.reload().addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()){
-                                if(user.isEmailVerified()){
-                                    Log.i(TAG+"email", "verified");
-                                    startActivity(new Intent(EmailVerification.this, ProfileSetup.class));
-                                    finish();
-                                }else{
-                                    Log.i(TAG+"email", "not verified");
-                                    emailNotVerifiedTextView.setVisibility(View.VISIBLE);
-                                }
-                            }else{
-                                Log.i(TAG+"error", task.getException().getMessage());
-                            }
-                        }
-                    });
-
-                }else{
-                    Log.i(TAG+"user", "null");
                 }
             }
         });

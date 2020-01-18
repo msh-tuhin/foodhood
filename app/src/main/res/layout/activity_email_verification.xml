@@ -28,17 +28,6 @@
             android:text="Oops! Email not verified"
             android:textColor="#ff0000"/>
 
-        <TextView
-            android:id="@+id/email_verified_textview"
-            style="@style/TextClickable"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="I have verified my email"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="gone"/>
-
         <EditText
             android:id="@+id/email"
             android:layout_width="match_parent"
