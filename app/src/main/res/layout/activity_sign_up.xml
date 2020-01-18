@@ -5,14 +5,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/logo_square"
+        android:layout_marginTop="48dp"
+        android:layout_gravity="center_horizontal"/>
     <LinearLayout
         android:id="@+id/form_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         style="@style/paddingRightLeft24"
+        android:layout_marginTop="144dp"
         tools:context=".MainActivity"
-        android:gravity="center">
+        android:gravity="center_horizontal">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_name"

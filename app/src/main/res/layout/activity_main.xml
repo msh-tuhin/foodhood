@@ -3,13 +3,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/logo_square"
+        android:layout_marginTop="48dp"
+        android:layout_gravity="center_horizontal"/>
     <LinearLayout
         android:id="@+id/main_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         style="@style/paddingRightLeft24"
-        android:gravity="center">
+        android:layout_marginTop="144dp"
+        android:gravity="center_horizontal">
         <TextView
             style="@style/EmailPasswordErrorMessage"
             android:id="@+id/error_message"
