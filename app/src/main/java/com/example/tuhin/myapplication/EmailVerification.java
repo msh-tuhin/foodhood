@@ -44,6 +44,7 @@ public class EmailVerification extends AppCompatActivity {
     Button signInButton;
     FirebaseAuth mAuth;
     private final String TAG = "EMAILVERIFICATION_";
+    SignInButtonController signInButtonController = new SignInButtonController();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,28 @@ public class EmailVerification extends AppCompatActivity {
 
         mAuth.signOut();
 
+        emailEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.toString().equals("")){
+                    signInButtonController.isEmailNotEmpty = false;
+                    signInButton.setEnabled(signInButtonController.shouldButtonBeEnabled());
+                }else{
+                    signInButtonController.isEmailNotEmpty = true;
+                    signInButton.setEnabled(signInButtonController.shouldButtonBeEnabled());
+                }
+            }
+        });
         passwordEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -82,9 +105,11 @@ public class EmailVerification extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 if(s.toString().equals("")){
-                    signInButton.setEnabled(false);
+                    signInButtonController.isPasswordNotEmpty = false;
+                    signInButton.setEnabled(signInButtonController.shouldButtonBeEnabled());
                 }else{
-                    signInButton.setEnabled(true);
+                    signInButtonController.isPasswordNotEmpty = true;
+                    signInButton.setEnabled(signInButtonController.shouldButtonBeEnabled());
                 }
             }
         });
@@ -247,6 +272,15 @@ public class EmailVerification extends AppCompatActivity {
             });
         }else{
             Log.i("user", "null");
+        }
+    }
+
+    private class SignInButtonController{
+        boolean isEmailNotEmpty = true;
+        boolean isPasswordNotEmpty = false;
+
+        boolean shouldButtonBeEnabled(){
+            return isEmailNotEmpty && isPasswordNotEmpty;
         }
     }
 

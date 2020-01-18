@@ -8,6 +8,8 @@ import myapp.utils.AccountTypes;
 import myapp.utils.OrphanUtilityMethods;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     EditText emailEditText, passwordEditText;
     Button signIn, signUp;
     FirebaseAuth mAuth;
+    SignInButtonController signInButtonController = new SignInButtonController();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +67,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 signIn.setEnabled(false);
-                signInWithEmailAndPassword(emailEditText.getText().toString(), passwordEditText.getText().toString());
                 mainLayout.setVisibility(View.INVISIBLE);
                 progressLayout.setVisibility(View.VISIBLE);
+                signInWithEmailAndPassword(emailEditText.getText().toString(), passwordEditText.getText().toString());
             }
         });
 
@@ -108,6 +111,52 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 OrphanUtilityMethods.hideKeyboard(MainActivity.this);
+            }
+        });
+
+        emailEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.toString().isEmpty()){
+                    signInButtonController.isEmailNotEmpty = false;
+                    signIn.setEnabled(signInButtonController.shouldButtonBeEnabled());
+                }else{
+                    signInButtonController.isEmailNotEmpty = true;
+                    signIn.setEnabled(signInButtonController.shouldButtonBeEnabled());
+                }
+            }
+        });
+
+        passwordEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.toString().isEmpty()){
+                    signInButtonController.isPasswordNotEmpty = false;
+                    signIn.setEnabled(signInButtonController.shouldButtonBeEnabled());
+                }else{
+                    signInButtonController.isPasswordNotEmpty = true;
+                    signIn.setEnabled(signInButtonController.shouldButtonBeEnabled());
+                }
             }
         });
 
@@ -169,4 +218,12 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    private class SignInButtonController{
+        boolean isEmailNotEmpty = false;
+        boolean isPasswordNotEmpty = false;
+
+        boolean shouldButtonBeEnabled(){
+            return isEmailNotEmpty && isPasswordNotEmpty;
+        }
+    }
 }
