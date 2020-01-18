@@ -5,6 +5,7 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import myapp.utils.AccountTypes;
+import myapp.utils.OrphanUtilityMethods;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -100,6 +101,13 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, SignUp.class);
                 intent.putExtra("entity", "business");
                 startActivity(intent);
+            }
+        });
+
+        mainLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OrphanUtilityMethods.hideKeyboard(MainActivity.this);
             }
         });
 

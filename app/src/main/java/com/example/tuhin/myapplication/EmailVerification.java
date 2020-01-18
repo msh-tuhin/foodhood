@@ -137,6 +137,13 @@ public class EmailVerification extends AppCompatActivity {
                 signInWithEmailAndPassword(email, password);
             }
         });
+
+        mainLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OrphanUtilityMethods.hideKeyboard(EmailVerification.this);
+            }
+        });
     }
 
     @Override

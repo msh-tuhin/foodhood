@@ -1,10 +1,12 @@
 package myapp.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.example.tuhin.myapplication.BuildConfig;
@@ -27,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+
+import static android.content.Context.INPUT_METHOD_SERVICE;
 
 public class OrphanUtilityMethods {
 
@@ -221,5 +225,14 @@ public class OrphanUtilityMethods {
             }
         });
         dialogBuilder.create().show();
+    }
+
+    public static void hideKeyboard(Context context){
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+        try{
+            imm.hideSoftInputFromWindow(((Activity)context).getCurrentFocus().getWindowToken(), 0);
+        } catch (NullPointerException e){
+//            e.printStackTrace();
+        }
     }
 }

@@ -124,6 +124,13 @@ public class SignUp extends AppCompatActivity {
                 signUpButtonController.enableOrDisableSignUpButton();
             }
         });
+
+        formLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OrphanUtilityMethods.hideKeyboard(SignUp.this);
+            }
+        });
     }
 
     @Override
