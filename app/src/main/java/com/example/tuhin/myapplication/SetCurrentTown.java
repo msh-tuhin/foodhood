@@ -30,7 +30,7 @@ public class SetCurrentTown extends AppCompatActivity {
         personDataBundle = getIntent().getExtras();
 
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Food Frenzy");
+        toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();

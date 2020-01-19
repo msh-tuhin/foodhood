@@ -68,7 +68,7 @@ public class SetProfilePicture extends AppCompatActivity {
         profilePicture = findViewById(R.id.profile_picture);
         skipOrNext = findViewById(R.id.skip_or_next);
 
-        toolbar.setTitle("Food Frenzy");
+        toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
         // ActionBar actionBar = getSupportActionBar();

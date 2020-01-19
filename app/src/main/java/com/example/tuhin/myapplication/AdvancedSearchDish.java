@@ -111,7 +111,7 @@ public class AdvancedSearchDish extends AppCompatActivity{
         setContentView(R.layout.activity_advanced_search_dish);
 
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Food Frenzy");
+        toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();

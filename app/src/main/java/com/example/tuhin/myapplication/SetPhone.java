@@ -39,7 +39,7 @@ public class SetPhone extends AppCompatActivity {
         phoneEditText = findViewById(R.id.phone_editText);
         skipOrNext = findViewById(R.id.skip_or_next);
 
-        toolbar.setTitle("Food Frenzy");
+        toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();

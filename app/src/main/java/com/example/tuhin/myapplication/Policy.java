@@ -37,7 +37,7 @@ public class Policy extends AppCompatActivity {
         webView = findViewById(R.id.webView);
         toolbar = findViewById(R.id.toolbar);
 
-        toolbar.setTitle("Foodoo");
+        toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();

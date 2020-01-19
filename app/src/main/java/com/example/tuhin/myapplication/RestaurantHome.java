@@ -59,7 +59,7 @@ public class RestaurantHome extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
 
-        toolbar.setTitle("Food Frenzy");
+        toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
