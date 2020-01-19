@@ -1,87 +1,21 @@
 {
   "project_info": {
-    "project_number": "979738572354",
-    "firebase_url": "https://rest-1.firebaseio.com",
-    "project_id": "rest-1",
-    "storage_bucket": "rest-1.appspot.com"
+    "project_number": "749590006859",
+    "firebase_url": "https://foodhood-4a5a9.firebaseio.com",
+    "project_id": "foodhood-4a5a9",
+    "storage_bucket": "foodhood-4a5a9.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:979738572354:android:187aa9858453d7406e1fdb",
-        "android_client_info": {
-          "package_name": "com.example.tuhin.myapplication"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "979738572354-o4eq6hh43peln0b8mqncben8r667nupm.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.tuhin.myapplication",
-            "certificate_hash": "f49168d312ecd323695e17470056601edc575062"
-          }
-        },
-        {
-          "client_id": "979738572354-935hr6hftrs89sg1j9qv1vkq1gonf6sb.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA_WKl71IOnInGuXHJdAt4EizpP3axvTks"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "979738572354-935hr6hftrs89sg1j9qv1vkq1gonf6sb.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:979738572354:android:4ff19760550da7c36e1fdb",
-        "android_client_info": {
-          "package_name": "com.foodoo.bd"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "979738572354-935hr6hftrs89sg1j9qv1vkq1gonf6sb.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA_WKl71IOnInGuXHJdAt4EizpP3axvTks"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "979738572354-935hr6hftrs89sg1j9qv1vkq1gonf6sb.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:979738572354:android:a8155ff44b56217d6e1fdb",
+        "mobilesdk_app_id": "1:749590006859:android:72e667dc10c52a4b1ad1ce",
         "android_client_info": {
           "package_name": "site.sht.bd.foodhood"
         }
       },
       "oauth_client": [
         {
-          "client_id": "979738572354-fo4eth5vuggjc6aeis5rtt6bp22svstd.apps.googleusercontent.com",
+          "client_id": "749590006859-9sm6mujmnm1a6ni59lntmje3ntoogoig.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "site.sht.bd.foodhood",
@@ -89,20 +23,20 @@
           }
         },
         {
-          "client_id": "979738572354-935hr6hftrs89sg1j9qv1vkq1gonf6sb.apps.googleusercontent.com",
+          "client_id": "749590006859-nrcfqalo81l661ldma5mocmtv5iqr9us.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA_WKl71IOnInGuXHJdAt4EizpP3axvTks"
+          "current_key": "AIzaSyB0IhoBLyKh8QNfGHoouOc7eCsmiidCUus"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "979738572354-935hr6hftrs89sg1j9qv1vkq1gonf6sb.apps.googleusercontent.com",
+              "client_id": "749590006859-nrcfqalo81l661ldma5mocmtv5iqr9us.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
