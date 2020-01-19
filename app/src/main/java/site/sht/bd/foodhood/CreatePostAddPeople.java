@@ -215,7 +215,7 @@ public class CreatePostAddPeople extends AppCompatActivity {
                         if(documentSnapshot.exists()){
                             searcher = Searcher.create(documentSnapshot.getString("id"),
                                     documentSnapshot.getString("k"),
-                                    AlgoliaIndexNames.INDEX_RATING_DESC);
+                                    AlgoliaIndexNames.INDEX_MAIN);
                             searcher.addNumericRefinement(new NumericRefinement(AlgoliaAttributeNames.TYPE, 2, 0));
                             instantSearch = new InstantSearch(CreatePostAddPeople.this, searcher);
                             // instantSearch.search();
