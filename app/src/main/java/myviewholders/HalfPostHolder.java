@@ -51,7 +51,7 @@ public class HalfPostHolder extends BaseHomeFeedHolder
         implements PostHolderInterface{
 
     final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    public FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    public FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-east2");
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public Context mContext;

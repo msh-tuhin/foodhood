@@ -508,7 +508,7 @@ public class CommentDetailReplyHolder  extends RecyclerView.ViewHolder
             notification.put(FirestoreFieldNames.NOTIFICATIONS_TYPE, NotificationTypes.NOTIF_LIKE_REPLY);
         }
 
-        FirebaseFunctions.getInstance().getHttpsCallable(cloudFunctionName).call(notification)
+        FirebaseFunctions.getInstance("asia-east2").getHttpsCallable(cloudFunctionName).call(notification)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
                     @Override
                     public void onSuccess(HttpsCallableResult httpsCallableResult) {

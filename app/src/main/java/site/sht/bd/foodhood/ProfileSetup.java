@@ -209,7 +209,7 @@ public class ProfileSetup extends AppCompatActivity {
 
         Map<String, Object> data = new HashMap<>();
         data.put("uid", newUserUid);
-        FirebaseFunctions.getInstance().getHttpsCallable("setupProfile").call(data)
+        FirebaseFunctions.getInstance("asia-east2").getHttpsCallable("setupProfile").call(data)
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {

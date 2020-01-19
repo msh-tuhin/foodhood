@@ -527,7 +527,7 @@ public class CommentDetailHolder extends RecyclerView.ViewHolder
             notification.put(FirestoreFieldNames.NOTIFICATIONS_TYPE, NotificationTypes.NOTIF_LIKE_COMMENT);
         }
 
-        FirebaseFunctions.getInstance()
+        FirebaseFunctions.getInstance("asia-east2")
                 .getHttpsCallable(cloudFunctionName)
                 .call(notification)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {

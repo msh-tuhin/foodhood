@@ -50,7 +50,7 @@ public class RestFeedHolder extends BaseHomeFeedHolder
         implements RestFeedInterface{
 
     final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+    private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance("asia-east2");
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private Context mContext;

@@ -32,14 +32,14 @@ public class SplashScreen extends AppCompatActivity {
 
         FirebaseUser user = mAuth.getCurrentUser();
         if(user!=null){
-            chooseAndLaunchHome(user);
-//            if(user.isEmailVerified()){
-//                Log.i("email", "verified");
-//                chooseAndLaunchHome(user);
-//            }else{
-//                Log.i("email", "not verified");
-//                sendEmailVerification(user, user.getEmail());
-//            }
+            //chooseAndLaunchHome(user);
+            if(user.isEmailVerified()){
+                Log.i("email", "verified");
+                chooseAndLaunchHome(user);
+            }else{
+                Log.i("email", "not verified");
+                sendEmailVerification(user, user.getEmail());
+            }
         }
     }
 

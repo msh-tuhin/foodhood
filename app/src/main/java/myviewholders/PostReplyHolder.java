@@ -480,7 +480,7 @@ public class PostReplyHolder extends HalfPostHolder
         notification.put(FirestoreFieldNames.ACTIVITIES_CREATOR_MAP, who);
         notification.put(FirestoreFieldNames.NOTIFICATIONS_TYPE, NotificationTypes.NOTIF_LIKE_COMMENT);
 
-        FirebaseFunctions.getInstance().getHttpsCallable("sendLikeCommentNotification").call(notification)
+        FirebaseFunctions.getInstance("asia-east2").getHttpsCallable("sendLikeCommentNotification").call(notification)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
                     @Override
                     public void onSuccess(HttpsCallableResult httpsCallableResult) {
@@ -751,7 +751,7 @@ public class PostReplyHolder extends HalfPostHolder
         notification.put(FirestoreFieldNames.ACTIVITIES_CREATOR_MAP, who);
         notification.put(FirestoreFieldNames.NOTIFICATIONS_TYPE, NotificationTypes.NOTIF_LIKE_REPLY);
 
-        FirebaseFunctions.getInstance().getHttpsCallable("sendLikeReplyNotification")
+        FirebaseFunctions.getInstance("asia-east2").getHttpsCallable("sendLikeReplyNotification")
                 .call(notification)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
                     @Override

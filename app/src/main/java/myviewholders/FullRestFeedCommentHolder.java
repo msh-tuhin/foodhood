@@ -453,7 +453,7 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
         notification.put(FirestoreFieldNames.ACTIVITIES_CREATOR_MAP, who);
         notification.put(FirestoreFieldNames.NOTIFICATIONS_TYPE, NotificationTypes.NOTIF_LIKE_COMMENT_RF);
 
-        FirebaseFunctions.getInstance().getHttpsCallable(cloudFunctionName).call(notification)
+        FirebaseFunctions.getInstance("asia-east2").getHttpsCallable(cloudFunctionName).call(notification)
                 .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
                     @Override
                     public void onSuccess(HttpsCallableResult httpsCallableResult) {

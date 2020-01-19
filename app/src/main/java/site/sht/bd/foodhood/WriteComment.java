@@ -630,7 +630,7 @@ public class WriteComment extends AppCompatActivity {
         notification.put(FirestoreFieldNames.NOTIFICATIONS_OLD_REPLY_LINK, parentReplyLink);
         notification.put(FirestoreFieldNames.NOTIFICATIONS_NEW_REPLY_LINK, newReplyLink);
 
-        FirebaseFunctions.getInstance().getHttpsCallable(cloudFunctionName)
+        FirebaseFunctions.getInstance("asia-east2").getHttpsCallable(cloudFunctionName)
                 .call(notification).addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
             @Override
             public void onSuccess(HttpsCallableResult httpsCallableResult) {
@@ -657,7 +657,7 @@ public class WriteComment extends AppCompatActivity {
         notification.put(FirestoreFieldNames.NOTIFICATIONS_COMMENT_LINK, commentLink);
         notification.put(FirestoreFieldNames.NOTIFICATIONS_TYPE, NotificationTypes.NOTIF_COMMENT_ALSO_RF);
 
-        FirebaseFunctions.getInstance().getHttpsCallable("sendCommentByRFNotification")
+        FirebaseFunctions.getInstance("asia-east2").getHttpsCallable("sendCommentByRFNotification")
                 .call(notification).addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
             @Override
             public void onSuccess(HttpsCallableResult httpsCallableResult) {
@@ -686,7 +686,7 @@ public class WriteComment extends AppCompatActivity {
         notification.put(FirestoreFieldNames.NOTIFICATIONS_REPLY_LINK, replyLink);
         notification.put(FirestoreFieldNames.NOTIFICATIONS_TYPE, NotificationTypes.NOTIF_COMMENT_ALSO_RF);
 
-        FirebaseFunctions.getInstance().getHttpsCallable("sendReplyToCommentByRFNotification")
+        FirebaseFunctions.getInstance("asia-east2").getHttpsCallable("sendReplyToCommentByRFNotification")
                 .call(notification).addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
             @Override
             public void onSuccess(HttpsCallableResult httpsCallableResult) {
