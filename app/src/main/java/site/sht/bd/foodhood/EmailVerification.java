@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ import site.sht.bd.foodhood.R;
 public class EmailVerification extends AppCompatActivity {
 
     private String mEmail;
+    FrameLayout parentLayout;
     LinearLayout mainLayout;
     LinearLayout progressLayout;
     TextView resendEmailTextView, emailNotVerifiedTextView;
@@ -53,6 +55,7 @@ public class EmailVerification extends AppCompatActivity {
         mEmail = getIntent().getStringExtra("email");
         mAuth = FirebaseAuth.getInstance();
 
+        parentLayout = findViewById(R.id.parent_layout);
         mainLayout = findViewById(R.id.main_layout);
         progressLayout = findViewById(R.id.progress_layout);
         emailNotVerifiedTextView = findViewById(R.id.not_verified_text);
@@ -121,6 +124,7 @@ public class EmailVerification extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                OrphanUtilityMethods.hideKeyboard(EmailVerification.this);
                 signInButton.setEnabled(false);
                 mainLayout.setVisibility(View.INVISIBLE);
                 progressLayout.setVisibility(View.VISIBLE);
@@ -131,7 +135,7 @@ public class EmailVerification extends AppCompatActivity {
             }
         });
 
-        mainLayout.setOnClickListener(new View.OnClickListener() {
+        parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 OrphanUtilityMethods.hideKeyboard(EmailVerification.this);

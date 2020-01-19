@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -45,6 +46,7 @@ public class SignUp extends AppCompatActivity {
     private String mEntity;
     private boolean forPerson;
 
+    FrameLayout parentLayout;
     LinearLayout formLayout;
     LinearLayout progressLayout;
     TextInputLayout nameLayout;
@@ -72,6 +74,7 @@ public class SignUp extends AppCompatActivity {
         forPerson = mEntity.equals("person");
         mAuth = FirebaseAuth.getInstance();
 
+        parentLayout = findViewById(R.id.parent_layout);
         formLayout = findViewById(R.id.form_layout);
         progressLayout = findViewById(R.id.progress_layout);
         nameLayout = findViewById(R.id.input_layout_name);
@@ -98,6 +101,7 @@ public class SignUp extends AppCompatActivity {
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                OrphanUtilityMethods.hideKeyboard(SignUp.this);
                 signUp.setEnabled(false);
                 formLayout.setVisibility(View.INVISIBLE);
                 progressLayout.setVisibility(View.VISIBLE);
@@ -119,7 +123,7 @@ public class SignUp extends AppCompatActivity {
             }
         });
 
-        formLayout.setOnClickListener(new View.OnClickListener() {
+        parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 OrphanUtilityMethods.hideKeyboard(SignUp.this);

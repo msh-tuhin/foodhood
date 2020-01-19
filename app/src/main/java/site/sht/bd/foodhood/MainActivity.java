@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Task<DocumentSnapshot> mEmailTypeTask;
 
+    FrameLayout parentLayout;
     LinearLayout mainLayout;
     LinearLayout progressLayout;
     TextView errorMessageTextView, signUpTextView, forgotPasswordTextView;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        parentLayout = findViewById(R.id.parent_layout);
         mainLayout = findViewById(R.id.main_layout);
         progressLayout = findViewById(R.id.progress_layout);
         errorMessageTextView = findViewById(R.id.error_message);
@@ -62,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                OrphanUtilityMethods.hideKeyboard(MainActivity.this);
                 signIn.setEnabled(false);
                 mainLayout.setVisibility(View.INVISIBLE);
                 progressLayout.setVisibility(View.VISIBLE);
@@ -103,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mainLayout.setOnClickListener(new View.OnClickListener() {
+        parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 OrphanUtilityMethods.hideKeyboard(MainActivity.this);
