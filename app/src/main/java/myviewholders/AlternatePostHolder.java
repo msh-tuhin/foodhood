@@ -1,25 +1,12 @@
 package myviewholders;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.example.tuhin.myapplication.R;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Map;
-
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
-import de.hdodenhof.circleimageview.CircleImageView;
-import models.PostModel;
-import myapp.utils.PictureBinder;
 import myapp.utils.PostBuilder;
 
 public class AlternatePostHolder extends HalfPostHolder{

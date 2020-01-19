@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.tuhin.myapplication.R;
+import site.sht.bd.foodhood.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

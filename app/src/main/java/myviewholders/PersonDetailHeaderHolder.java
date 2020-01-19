@@ -19,11 +19,11 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.AllDishes;
-import com.example.tuhin.myapplication.AllRestaurants;
-import com.example.tuhin.myapplication.MorePeole;
-import com.example.tuhin.myapplication.R;
-import com.example.tuhin.myapplication.PersonDetail;
+import site.sht.bd.foodhood.AllDishes;
+import site.sht.bd.foodhood.AllRestaurants;
+import site.sht.bd.foodhood.MorePeole;
+import site.sht.bd.foodhood.R;
+import site.sht.bd.foodhood.PersonDetail;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,24 +31,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import myapp.utils.AccountTypes;
 import myapp.utils.DateTimeExtractor;
-import myapp.utils.NotificationTypes;
 import myapp.utils.NullStrings;
 import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PictureBinder;

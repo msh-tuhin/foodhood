@@ -9,10 +9,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.CommentDetail;
-import com.example.tuhin.myapplication.PersonDetail;
-import com.example.tuhin.myapplication.R;
-import com.example.tuhin.myapplication.WriteComment;
+import site.sht.bd.foodhood.CommentDetail;
+import site.sht.bd.foodhood.PersonDetail;
+import site.sht.bd.foodhood.R;
+import site.sht.bd.foodhood.WriteComment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;

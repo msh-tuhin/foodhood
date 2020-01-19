@@ -1,6 +1,5 @@
 package myviewholders;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -12,12 +11,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.AllRestaurants;
-import com.example.tuhin.myapplication.EditPersonProfile;
-import com.example.tuhin.myapplication.EditPersonProfileForm;
-import com.example.tuhin.myapplication.MorePeole;
-import com.example.tuhin.myapplication.PersonDetail;
-import com.example.tuhin.myapplication.R;
+import site.sht.bd.foodhood.AllRestaurants;
+import site.sht.bd.foodhood.EditPersonProfile;
+import site.sht.bd.foodhood.EditPersonProfileForm;
+import site.sht.bd.foodhood.MorePeole;
+import site.sht.bd.foodhood.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.Timestamp;

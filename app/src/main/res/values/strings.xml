@@ -75,14 +75,14 @@
     </string>
 
     <string name="account_type">
-        com.example.tuhin.myapplication.ACCOUNT_TYPE
+        site.sht.bd.foodhood.ACCOUNT_TYPE
     </string>
 
     <string name="vital_info">
-        com.example.tuhin.myapplication.VITAL_INFO
+        site.sht.bd.foodhood.VITAL_INFO
     </string>
 
     <string name="misc_spref">
-        com.example.tuhin.myapplication.MISC_SPREF
+        site.sht.bd.foodhood.MISC_SPREF
     </string>
 </resources>

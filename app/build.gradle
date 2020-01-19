@@ -4,7 +4,7 @@ apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.example.tuhin.myapplication"
+        applicationId "site.sht.bd.foodhood"
         minSdkVersion 16
         targetSdkVersion 28
         multiDexEnabled true

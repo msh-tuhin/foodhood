@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.tuhin.myapplication">
+    package="site.sht.bd.foodhood">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -15,92 +15,92 @@
         android:roundIcon="@mipmap/logo_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Policy"></activity>
-        <activity android:name=".ImageFull" />
-        <activity android:name=".MainActivity">
+        <activity android:name="site.sht.bd.foodhood.Policy"></activity>
+        <activity android:name="site.sht.bd.foodhood.ImageFull" />
+        <activity android:name="site.sht.bd.foodhood.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".home" />
-        <activity android:name=".PersonDetail" />
-        <activity android:name=".DishDetail" />
-        <activity android:name=".RestDetail" />
-        <activity android:name=".AllDishes" />
-        <activity android:name=".MorePeole" />
-        <activity android:name=".CreatePost" />
-        <activity android:name=".CreatePostSelectImages" />
-        <activity android:name=".CreatePostSelectPlace" />
-        <activity android:name=".CreatePostAddDishes" />
-        <activity android:name=".CreatePostDishSelectReview" />
-        <activity android:name=".CreatePostAddPeople" />
-        <activity android:name=".CreatePostPreview" />
-        <activity android:name=".FullPost" />
-        <activity android:name=".WriteComment" />
-        <activity android:name=".CommentDetail" />
-        <activity android:name=".SignUp" />
-        <activity android:name=".EmailVerification" />
-        <activity android:name=".ProfileSetup" />
-        <activity android:name=".PasswordRecovery" />
-        <activity android:name=".SignInAfterPasswordRecovery" />
-        <activity android:name=".SetProfilePicture" />
-        <activity android:name=".SetPhone" />
-        <activity android:name=".AdvancedSearchDish" />
+        <activity android:name="site.sht.bd.foodhood.home" />
+        <activity android:name="site.sht.bd.foodhood.PersonDetail" />
+        <activity android:name="site.sht.bd.foodhood.DishDetail" />
+        <activity android:name="site.sht.bd.foodhood.RestDetail" />
+        <activity android:name="site.sht.bd.foodhood.AllDishes" />
+        <activity android:name="site.sht.bd.foodhood.MorePeole" />
+        <activity android:name="site.sht.bd.foodhood.CreatePost" />
+        <activity android:name="site.sht.bd.foodhood.CreatePostSelectImages" />
+        <activity android:name="site.sht.bd.foodhood.CreatePostSelectPlace" />
+        <activity android:name="site.sht.bd.foodhood.CreatePostAddDishes" />
+        <activity android:name="site.sht.bd.foodhood.CreatePostDishSelectReview" />
+        <activity android:name="site.sht.bd.foodhood.CreatePostAddPeople" />
+        <activity android:name="site.sht.bd.foodhood.CreatePostPreview" />
+        <activity android:name="site.sht.bd.foodhood.FullPost" />
+        <activity android:name="site.sht.bd.foodhood.WriteComment" />
+        <activity android:name="site.sht.bd.foodhood.CommentDetail" />
+        <activity android:name="site.sht.bd.foodhood.SignUp" />
+        <activity android:name="site.sht.bd.foodhood.EmailVerification" />
+        <activity android:name="site.sht.bd.foodhood.ProfileSetup" />
+        <activity android:name="site.sht.bd.foodhood.PasswordRecovery" />
+        <activity android:name="site.sht.bd.foodhood.SignInAfterPasswordRecovery" />
+        <activity android:name="site.sht.bd.foodhood.SetProfilePicture" />
+        <activity android:name="site.sht.bd.foodhood.SetPhone" />
+        <activity android:name="site.sht.bd.foodhood.AdvancedSearchDish" />
         <activity
-            android:name=".Wishlist"
-            android:parentActivityName=".MainActivity">
+            android:name="site.sht.bd.foodhood.Wishlist"
+            android:parentActivityName="site.sht.bd.foodhood.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="site.sht.bd.foodhood.MainActivity" />
         </activity>
-        <activity android:name=".RestaurantAllDishes" />
-        <activity android:name=".FullRestFeed" />
-        <activity android:name=".RestAccountSetup" />
-        <activity android:name=".RestaurantHome" />
-        <activity android:name=".SetCurrentTown" />
+        <activity android:name="site.sht.bd.foodhood.RestaurantAllDishes" />
+        <activity android:name="site.sht.bd.foodhood.FullRestFeed" />
+        <activity android:name="site.sht.bd.foodhood.RestAccountSetup" />
+        <activity android:name="site.sht.bd.foodhood.RestaurantHome" />
+        <activity android:name="site.sht.bd.foodhood.SetCurrentTown" />
         <activity
-            android:name=".EditPersonProfile"
-            android:parentActivityName=".home">
+            android:name="site.sht.bd.foodhood.EditPersonProfile"
+            android:parentActivityName="site.sht.bd.foodhood.home">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".home" />
+                android:value="site.sht.bd.foodhood.home" />
         </activity>
         <activity
-            android:name=".EditPersonProfileForm"
-            android:parentActivityName=".EditPersonProfile">
+            android:name="site.sht.bd.foodhood.EditPersonProfileForm"
+            android:parentActivityName="site.sht.bd.foodhood.EditPersonProfile">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".EditPersonProfile" />
+                android:value="site.sht.bd.foodhood.EditPersonProfile" />
         </activity>
         <activity
-            android:name=".EditRestProfile"
-            android:parentActivityName=".RestaurantHome">
+            android:name="site.sht.bd.foodhood.EditRestProfile"
+            android:parentActivityName="site.sht.bd.foodhood.RestaurantHome">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".RestaurantHome" />
+                android:value="site.sht.bd.foodhood.RestaurantHome" />
         </activity>
         <activity
-            android:name=".EditRestProfileForm"
-            android:parentActivityName=".EditRestProfile">
+            android:name="site.sht.bd.foodhood.EditRestProfileForm"
+            android:parentActivityName="site.sht.bd.foodhood.EditRestProfile">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".EditRestProfile" />
+                android:value="site.sht.bd.foodhood.EditRestProfile" />
         </activity>
-        <activity android:name=".ChangeRestCoverPhoto">
+        <activity android:name="site.sht.bd.foodhood.ChangeRestCoverPhoto">
 
             <!-- android:parentActivityName=".EditRestProfile"> -->
             <!-- <meta-data -->
             <!-- android:name="android.support.PARENT_ACTIVITY" -->
             <!-- android:value=".EditRestProfile" /> -->
         </activity>
-        <activity android:name=".FullPostForRestaurant" />
-        <activity android:name=".AllRestaurants" />
-        <activity android:name=".CreateRestFeedPreview" />
-        <activity android:name=".EditDishForm" />
-        <activity android:name=".SplashScreen" />
-        <activity android:name=".UpdateMust" />
+        <activity android:name="site.sht.bd.foodhood.FullPostForRestaurant" />
+        <activity android:name="site.sht.bd.foodhood.AllRestaurants" />
+        <activity android:name="site.sht.bd.foodhood.CreateRestFeedPreview" />
+        <activity android:name="site.sht.bd.foodhood.EditDishForm" />
+        <activity android:name="site.sht.bd.foodhood.SplashScreen" />
+        <activity android:name="site.sht.bd.foodhood.UpdateMust" />
     </application>
 
 </manifest>

@@ -1,9 +1,8 @@
 package myapp.utils;
 
-import android.view.View;
 import android.widget.ImageView;
 
-import com.example.tuhin.myapplication.R;
+import site.sht.bd.foodhood.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Picasso;
 

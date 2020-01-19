@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.algolia.instantsearch.ui.views.Hits;
-import com.example.tuhin.myapplication.R;
+import site.sht.bd.foodhood.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;

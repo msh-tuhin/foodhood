@@ -10,11 +10,11 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.CommentDetail;
-import com.example.tuhin.myapplication.FullPost;
-import com.example.tuhin.myapplication.FullRestFeed;
-import com.example.tuhin.myapplication.PersonDetail;
-import com.example.tuhin.myapplication.R;
+import site.sht.bd.foodhood.CommentDetail;
+import site.sht.bd.foodhood.FullPost;
+import site.sht.bd.foodhood.FullRestFeed;
+import site.sht.bd.foodhood.PersonDetail;
+import site.sht.bd.foodhood.R;
 
 import java.util.Map;
 

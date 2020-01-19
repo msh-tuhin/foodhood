@@ -3,7 +3,7 @@ package myviewholders;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
-import com.example.tuhin.myapplication.FullPostForRestaurant;
+import site.sht.bd.foodhood.FullPostForRestaurant;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import androidx.annotation.NonNull;

@@ -9,7 +9,7 @@
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".EmailVerification"
+        tools:context="site.sht.bd.foodhood.EmailVerification"
         android:orientation="vertical"
         android:padding="16dp">
 

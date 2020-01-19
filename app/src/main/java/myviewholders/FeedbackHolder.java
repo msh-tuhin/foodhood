@@ -2,16 +2,12 @@ package myviewholders;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
+
 import android.view.View;
 import android.widget.TextView;
 
 import models.FeedbackModel;
-import com.example.tuhin.myapplication.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import site.sht.bd.foodhood.R;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 

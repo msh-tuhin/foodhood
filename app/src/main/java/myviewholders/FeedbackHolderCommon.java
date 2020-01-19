@@ -1,6 +1,5 @@
 package myviewholders;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -8,22 +7,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import models.FeedbackModel;
-
-import com.example.tuhin.myapplication.PersonDetail;
-import com.example.tuhin.myapplication.R;
-import com.google.android.gms.tasks.OnCompleteListener;
+import site.sht.bd.foodhood.PersonDetail;
+import site.sht.bd.foodhood.R;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.squareup.picasso.Picasso;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;

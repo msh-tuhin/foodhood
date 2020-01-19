@@ -9,14 +9,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.DishDetail;
-import com.example.tuhin.myapplication.R;
-import com.example.tuhin.myapplication.RestDetail;
+import site.sht.bd.foodhood.R;
+import site.sht.bd.foodhood.RestDetail;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;

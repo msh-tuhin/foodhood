@@ -18,7 +18,7 @@
         android:layout_height="match_parent"
         style="@style/paddingRightLeft24"
         android:layout_marginTop="144dp"
-        tools:context=".MainActivity"
+        tools:context="site.sht.bd.foodhood.MainActivity"
         android:gravity="center_horizontal">
 
         <com.google.android.material.textfield.TextInputLayout

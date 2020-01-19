@@ -8,7 +8,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:979738572354:android:e56e823a9d975f8c",
+        "mobilesdk_app_id": "1:979738572354:android:187aa9858453d7406e1fdb",
         "android_client_info": {
           "package_name": "com.example.tuhin.myapplication"
         }
@@ -33,20 +33,79 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "979738572354-935hr6hftrs89sg1j9qv1vkq1gonf6sb.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:979738572354:android:4ff19760550da7c36e1fdb",
+        "android_client_info": {
+          "package_name": "com.foodoo.bd"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "979738572354-935hr6hftrs89sg1j9qv1vkq1gonf6sb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_WKl71IOnInGuXHJdAt4EizpP3axvTks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "979738572354-935hr6hftrs89sg1j9qv1vkq1gonf6sb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:979738572354:android:a8155ff44b56217d6e1fdb",
+        "android_client_info": {
+          "package_name": "site.sht.bd.foodhood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "979738572354-fo4eth5vuggjc6aeis5rtt6bp22svstd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "site.sht.bd.foodhood",
+            "certificate_hash": "f49168d312ecd323695e17470056601edc575062"
+          }
         },
-        "ads_service": {
-          "status": 2
+        {
+          "client_id": "979738572354-935hr6hftrs89sg1j9qv1vkq1gonf6sb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_WKl71IOnInGuXHJdAt4EizpP3axvTks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "979738572354-935hr6hftrs89sg1j9qv1vkq1gonf6sb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

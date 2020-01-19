@@ -1,26 +1,11 @@
 package myapp.utils;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Typeface;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import models.PostModel;
 
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.TextPaint;
-import android.text.style.ClickableSpan;
-import android.text.style.StyleSpan;
 import android.util.Log;
-import android.view.View;
 
-import com.example.tuhin.myapplication.AllDishes;
-import com.example.tuhin.myapplication.DishDetail;
-import com.example.tuhin.myapplication.MorePeole;
-import com.example.tuhin.myapplication.PersonDetail;
-import com.example.tuhin.myapplication.RestDetail;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 

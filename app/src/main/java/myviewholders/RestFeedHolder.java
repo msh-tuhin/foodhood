@@ -24,11 +24,11 @@ import android.widget.TextView;
 
 import models.ActualActivity;
 
-import com.example.tuhin.myapplication.FullRestFeed;
-import com.example.tuhin.myapplication.MorePeole;
-import com.example.tuhin.myapplication.R;
-import com.example.tuhin.myapplication.RestDetail;
-import com.example.tuhin.myapplication.WriteComment;
+import site.sht.bd.foodhood.FullRestFeed;
+import site.sht.bd.foodhood.MorePeole;
+import site.sht.bd.foodhood.R;
+import site.sht.bd.foodhood.RestDetail;
+import site.sht.bd.foodhood.WriteComment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;

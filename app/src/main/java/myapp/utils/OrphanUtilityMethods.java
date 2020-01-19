@@ -7,12 +7,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
-import com.example.tuhin.myapplication.BuildConfig;
-import com.example.tuhin.myapplication.R;
-import com.example.tuhin.myapplication.UpdateMust;
-import com.example.tuhin.myapplication.home;
+import site.sht.bd.foodhood.BuildConfig;
+import site.sht.bd.foodhood.R;
+import site.sht.bd.foodhood.UpdateMust;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;

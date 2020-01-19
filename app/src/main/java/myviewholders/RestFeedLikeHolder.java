@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.tuhin.myapplication.R;
+import site.sht.bd.foodhood.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 import java.util.Map;
 
