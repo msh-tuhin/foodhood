@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import myapp.utils.AlgoliaAttributeNames;
 import myapp.utils.AlgoliaIndexNames;
 import myapp.utils.AnimationUtils;
+import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.SearchHitBinder;
 
 import android.Manifest;
@@ -245,6 +246,31 @@ public class AdvancedSearchDish extends AppCompatActivity{
         }
 
         checkAskLocationPermissions();
+
+        filterLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // even if the line below is deleted, this onclick method should
+                // be left here empty to avoid clicking on search hits through
+                // the filter layout
+                OrphanUtilityMethods.hideKeyboard(AdvancedSearchDish.this);
+            }
+        });
+
+        coordinatorLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OrphanUtilityMethods.hideKeyboard(AdvancedSearchDish.this);
+            }
+        });
+
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OrphanUtilityMethods.hideKeyboard(AdvancedSearchDish.this);
+            }
+        });
+
     }
 
     @Override
@@ -282,6 +308,7 @@ public class AdvancedSearchDish extends AppCompatActivity{
                 } else{
                     collapseFilterOptions();
                 }
+                OrphanUtilityMethods.hideKeyboard(AdvancedSearchDish.this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
