@@ -127,6 +127,7 @@ public class ProfileSetup extends AppCompatActivity {
                             .build();
                     user.updateProfile(profileUpdates);
                     Intent intent = new Intent(ProfileSetup.this, home.class);
+                    intent.putExtra("source", SourceHomePage.PROFILE_SETUP);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
@@ -143,6 +144,7 @@ public class ProfileSetup extends AppCompatActivity {
         } else {
             Log.i("upload_uri", "null");
             Intent intent = new Intent(ProfileSetup.this, home.class);
+            intent.putExtra("source", SourceHomePage.PROFILE_SETUP);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }

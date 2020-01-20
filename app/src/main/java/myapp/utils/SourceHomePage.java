@@ -6,4 +6,5 @@ public class SourceHomePage {
     public static final int POST_CREATION_FAILED = 2;
     // used if profile photo is not uploaded successfully during person profile setup
     public static final int PHOTO_UPLOAD_FAILED = 3;
+    public static final int PROFILE_SETUP = 4;
 }

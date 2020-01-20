@@ -79,6 +79,7 @@ public class home extends AppCompatActivity {
         }
 
         showMyDialog(source);
+        showWelcomeDialog(source);
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -202,7 +203,7 @@ public class home extends AppCompatActivity {
     }
 
     private void showMyDialog(final int source){
-        if(source==SourceHomePage.UNKNOWN) return;
+        if(source==SourceHomePage.UNKNOWN || source==SourceHomePage.PROFILE_SETUP) return;
         String message = "";
         switch (source){
             case SourceHomePage.POST_CREATION_SUCCESSFUL:
@@ -226,6 +227,29 @@ public class home extends AppCompatActivity {
                         "It might take some time to show your" +
                         " review in your timeline! Please refresh in a few moments.",
                         Toast.LENGTH_LONG).show();
+            }
+        });
+        dialogBuilder.create().show();
+    }
+
+    private void showWelcomeDialog(int source){
+        if(!(source == SourceHomePage.PROFILE_SETUP ||
+                source == SourceHomePage.PHOTO_UPLOAD_FAILED)){
+            return;
+
+        }
+        String message = "Hey there! Welcome to " + getResources().getString(R.string.app_name)
+                + ". Search for finding a friend or a restaurant you would like to follow";
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setMessage(message);
+        dialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                TabLayout.Tab searchTab = tabLayout.getTabAt(2);
+                if(searchTab != null){
+                    searchTab.select();
+                }
             }
         });
         dialogBuilder.create().show();
