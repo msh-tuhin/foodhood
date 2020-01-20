@@ -25,6 +25,8 @@ import com.algolia.instantsearch.ui.utils.ItemClickSupport;
 import com.algolia.instantsearch.ui.views.Hits;
 import com.algolia.instantsearch.ui.views.SearchBox;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import site.sht.bd.foodhood.R;
@@ -48,6 +50,7 @@ import myapp.utils.SearchHitBinder;
 //     "dishFeedbacks": ArrayList<DishFeedback>
 public class CreatePostAddPeople extends AppCompatActivity {
 
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
     ArrayList<String> addedPeople = new ArrayList<>();
     ArrayList<SelectedPerson> addedPeopleList = new ArrayList<>();
 
@@ -103,6 +106,14 @@ public class CreatePostAddPeople extends AppCompatActivity {
             public void onChildViewAttachedToWindow(@NonNull View view) {
                 SearchHitBinder.refreshView(view);
                 int position = hits.getChildAdapterPosition(view);
+                try{
+                    if(hits.get(position).getString(AlgoliaAttributeNames.ID)
+                            .equals(mAuth.getCurrentUser().getUid())){
+                        hits.removeViewAt(position);
+                    }
+                }catch (JSONException e){
+                    Log.e("error", "objectID not found");
+                }
                 Log.i("position", Integer.toString(position));
                 SearchHitBinder searchHitBinder = new SearchHitBinder(hits, position, view);
                 searchHitBinder.bind(true, true, false, false,
