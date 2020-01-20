@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 import myapp.utils.AlgoliaAttributeNames;
 import myapp.utils.AlgoliaIndexNames;
+import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.SearchHitBinder;
 
 import android.util.Log;
@@ -124,6 +125,16 @@ public class SearchFragment extends Fragment {
             }
         });
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        try{
+            OrphanUtilityMethods.hideKeyboard(getActivity());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
