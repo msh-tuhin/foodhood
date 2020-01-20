@@ -2,11 +2,15 @@ package site.sht.bd.foodhood;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import myapp.utils.AccountTypes;
 import myapp.utils.InputValidator;
 import myapp.utils.OrphanUtilityMethods;
 import myapp.utils.PolicyType;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.SpannableString;
@@ -157,6 +161,8 @@ public class SignUp extends AppCompatActivity {
                         FirebaseFirestore.getInstance()
                                 .collection("email_type")
                                 .document(email).set(emailType);
+
+                        addAccountTypeToSPref(forPerson);
 
                         UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
                                 .setDisplayName(name).build();
@@ -338,8 +344,9 @@ public class SignUp extends AppCompatActivity {
     }
 
     private SpannableString getAskPolicyText(){
-        String text = "I agree to Food Frenzy's Terms of Use and I have read and I comply with " +
-                "Food Frenzy's Privacy Policy";
+        String text = "I agree to " + getResources().getString(R.string.app_name) +
+                "'s Terms of Use and I have read and I comply with " +
+                getResources().getString(R.string.app_name) + "'s Privacy Policy";
         SpannableString sp = new SpannableString(text);
         int start = text.indexOf("Terms of Use");
         int end = start + "Terms of Use".length();
@@ -348,6 +355,18 @@ public class SignUp extends AppCompatActivity {
         end = start + "Privacy Policy".length();
         sp.setSpan(new MyClickableSpan("Privacy Policy"), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return sp;
+    }
+
+    private void addAccountTypeToSPref(boolean forPerson){
+        SharedPreferences sPref = getSharedPreferences(getString(R.string.account_type),
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sPref.edit();
+        if(forPerson){
+            editor.putInt(mAuth.getCurrentUser().getEmail(), AccountTypes.PERSON);
+        }else{
+            editor.putInt(mAuth.getCurrentUser().getEmail(), AccountTypes.RESTAURANT);
+        }
+        editor.apply();
     }
 
     private class SignUpButtonController{
