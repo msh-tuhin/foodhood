@@ -84,6 +84,8 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
     ProgressBar progressBar;
     TextView progressTV;
     FrameLayout frameLayoutImage;
+    LinearLayout imageLayout;
+    LinearLayout progressLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +104,8 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         progressTV = findViewById(R.id.progress_text);
         frameLayoutImage = findViewById(R.id.framelayout_image);
+        imageLayout = findViewById(R.id.image_layout);
+        progressLayout = findViewById(R.id.progress_layout);
 
         mPersonOrRestaurantLink = mAuth.getCurrentUser().getUid();
 
@@ -193,9 +197,8 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
                 }else{
                     uploadPhotoAndAddUrlToDB(uploadUri);
                 }
-                frameLayoutImage.setVisibility(View.INVISIBLE);
-                progressBar.setVisibility(View.VISIBLE);
-                progressTV.setVisibility(View.VISIBLE);
+                imageLayout.setVisibility(View.INVISIBLE);
+                progressLayout.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -340,9 +343,8 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
             .addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    progressTV.setVisibility(View.INVISIBLE);
-                    frameLayoutImage.setVisibility(View.VISIBLE);
+                    progressLayout.setVisibility(View.INVISIBLE);
+                    imageLayout.setVisibility(View.VISIBLE);
                     Toast.makeText(ChangeRestCoverPhoto.this, "Couldn't upload image!",
                             Toast.LENGTH_LONG).show();
                     enableOrDisableSaveButton();
@@ -350,9 +352,8 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
             });
         } else {
             Log.i("upload_uri", "null");
-            progressBar.setVisibility(View.INVISIBLE);
-            progressTV.setVisibility(View.INVISIBLE);
-            frameLayoutImage.setVisibility(View.VISIBLE);
+            progressLayout.setVisibility(View.INVISIBLE);
+            imageLayout.setVisibility(View.VISIBLE);
             Toast.makeText(ChangeRestCoverPhoto.this, "Update Failed!",
                     Toast.LENGTH_LONG).show();
             enableOrDisableSaveButton();
@@ -404,9 +405,8 @@ public class ChangeRestCoverPhoto extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.e("vital_info_update", e.getMessage());
-//                        progressBar.setVisibility(View.INVISIBLE);
-//                        progressTV.setVisibility(View.INVISIBLE);
-//                        frameLayoutImage.setVisibility(View.VISIBLE);
+//                        progressLayout.setVisibility(View.INVISIBLE);
+//                        imageLayout.setVisibility(View.VISIBLE);
 //                        Toast.makeText(ChangeRestCoverPhoto.this, "Update Failed!",
 //                                Toast.LENGTH_LONG).show();
 //                        enableOrDisableSaveButton();
