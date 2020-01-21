@@ -328,7 +328,11 @@ public class AdapterCreator {
                         if(task.isSuccessful()){
                             final DocumentSnapshot documentSnapshot = task.getResult();
                             if(documentSnapshot.exists()){
-                                ((BaseHomeFeedHolder)holder1).bindTo(context, documentSnapshot);
+                                if(holder1 instanceof PostTagHolder){
+                                    ((PostTagHolder) holder1).bindTo(context, documentSnapshot, model);
+                                }else{
+                                    ((BaseHomeFeedHolder)holder1).bindTo(context, documentSnapshot);
+                                }
                             }
 
                         }
@@ -499,7 +503,11 @@ public class AdapterCreator {
                         if(task.isSuccessful()){
                             final DocumentSnapshot documentSnapshot = task.getResult();
                             if(documentSnapshot.exists()){
-                                ((BaseHomeFeedHolder)holder1).bindTo(context, documentSnapshot);
+                                if(holder1 instanceof PostTagHolder){
+                                    ((PostTagHolder) holder1).bindTo(context, documentSnapshot, model);
+                                }else{
+                                    ((BaseHomeFeedHolder)holder1).bindTo(context, documentSnapshot);
+                                }
                             }
 
                         }
