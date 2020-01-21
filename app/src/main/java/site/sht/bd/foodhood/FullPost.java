@@ -205,7 +205,7 @@ public class FullPost extends AppCompatActivity {
                         Log.i("comments", "downloaded");
                         List<String> comments = (List<String>)post.get("coms");
                         switch(mEntryPoint){
-                            case EntryPoints.NOTIF_COMMENT_RF:
+                            case EntryPoints.NOTIF_COMMENT_POST:
                                 comments.remove(mCommentLink);
                                 break;
                         }
