@@ -93,22 +93,21 @@ public class AllNotificationsFragment extends Fragment {
     public void onStart() {
         Log.i("LIFECYCLE-TEST", "onstart");
         super.onStart();
-//        adapter.startListening();
+        adapter.startListening();
     }
 
     @Override
     public void onStop() {
         Log.i("LIFECYCLE-TEST", "oncstop");
         super.onStop();
-//        adapter.stopListening();
+        adapter.stopListening();
     }
 
     @Override
     public void onResume() {
         Log.i("LIFECYCLE-TEST", "onresume");
         super.onResume();
-        adapter.refresh();
-//        adapter.notifyDataSetChanged();
+        // adapter.refresh();
     }
 
     @Override

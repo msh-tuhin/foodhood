@@ -99,4 +99,16 @@ public class PeoplePosts extends Fragment {
 
         return adapter;
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
 }
