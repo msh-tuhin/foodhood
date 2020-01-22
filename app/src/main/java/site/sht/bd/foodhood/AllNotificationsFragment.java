@@ -107,7 +107,7 @@ public class AllNotificationsFragment extends Fragment {
     public void onResume() {
         Log.i("LIFECYCLE-TEST", "onresume");
         super.onResume();
-//        adapter.refresh();
+        adapter.refresh();
 //        adapter.notifyDataSetChanged();
     }
 
