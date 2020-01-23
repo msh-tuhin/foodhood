@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "749590006859-filo8qqbuim31dv6ohffuthercclo419.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "site.sht.bd.foodhood",
+            "certificate_hash": "15f19913f4e05359fd2ca5cbbdeb6aeacb7d3adc"
+          }
+        },
+        {
           "client_id": "749590006859-9sm6mujmnm1a6ni59lntmje3ntoogoig.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
