@@ -1,5 +1,6 @@
 package myviewholders;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import myapp.utils.PictureBinder;
 import site.sht.bd.foodhood.CommentDetail;
 import site.sht.bd.foodhood.MorePeole;
 import site.sht.bd.foodhood.PersonDetail;
@@ -164,7 +166,28 @@ public class FullRestFeedCommentHolder extends RecyclerView.ViewHolder
 
     @Override
     public void bindCommentByAvatar() {
-
+        if(isCommenterAPerson()){
+            db.collection("person_vital")
+                    .document(mLinkCommentBy)
+                    .get()
+                    .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot personVitalSnapshot) {
+                            PictureBinder.bindProfilePicture(commenterImage, personVitalSnapshot);
+                        }
+                    });
+        }
+        else{
+            db.collection("rest_vital")
+                    .document(mLinkCommentBy)
+                    .get()
+                    .addOnSuccessListener((Activity)mContext, new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot restVitalSnapshot) {
+                            PictureBinder.bindCoverPicture(commenterImage, restVitalSnapshot);
+                        }
+                    });
+        }
     }
 
     @Override

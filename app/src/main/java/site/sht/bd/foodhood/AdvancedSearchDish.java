@@ -624,7 +624,7 @@ public class AdvancedSearchDish extends AppCompatActivity{
         }
 
         if(checkBox.isChecked()){
-            searcher.addFacetRefinement(AlgoliaAttributeNames.DISTRICT, selectedDistrict);
+            searcher.addFacetRefinement(AlgoliaAttributeNames.CITY, selectedDistrict);
         }
 
         if(foodCategoryCheckbox.isChecked()){
