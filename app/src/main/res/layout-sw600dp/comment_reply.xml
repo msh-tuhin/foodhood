@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/comment_reply_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingEnd="16dp"
+    android:paddingRight="16dp">
+
+    <include
+        android:id="@+id/included_comment"
+        layout="@layout/a_comment"/>
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/included_reply"
+        layout="@layout/a_reply"
+        android:layout_marginLeft="40dp"
+        android:layout_marginStart="40dp"/>
+
+
+</LinearLayout>

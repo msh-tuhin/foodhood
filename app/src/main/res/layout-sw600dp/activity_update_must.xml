@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="600dp"
+    android:layout_height="match_parent"
+    tools:context="site.sht.bd.foodhood.UpdateMust"
+    android:padding="24dp"
+    android:gravity="center"
+    android:layout_gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/textView"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="You are using an outdated version of this app. Please update from playstore."/>
+
+</LinearLayout>

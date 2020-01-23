@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="600dp"
+    android:layout_gravity="center_horizontal"
+    android:id="@+id/coordinatorLayout">
+
+    <!-- if theme not set, title textcolor will be black-->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:padding="16dp">
+
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Caption"
+            android:textColor="#000000"
+            android:textStyle="normal"
+            android:textSize="24sp"/>
+
+        <!--<EditText-->
+            <!--android:id="@+id/caption"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="400dp"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:ems="10"-->
+            <!--android:inputType="textMultiLine"-->
+            <!--android:hint="Say Something"-->
+            <!--android:gravity="start"/>-->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/caption_layout"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginTop="8dp"
+            app:errorEnabled="true"
+            app:hintTextAppearance="@style/HintText">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/caption"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Say something"
+                android:text=""
+                android:ems="10"
+                android:inputType="textMultiLine"
+                android:gravity="start"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
