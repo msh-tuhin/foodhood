@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="food_categories">
-        <item>Chicken</item>
         <item>Beef</item>
-        <item>Mutton</item>
+        <item>Beverage</item>
         <item>Biriyani</item>
         <item>Coffee</item>
-        <item>Beverage</item>
-        <item>Juice</item>
+        <item>Chicken</item>
+        <item>Fried Rice</item>
         <item>Ice Cream</item>
-        <item>Salad</item>
+        <item>Juice</item>
+        <item>Meat</item>
+        <item>Mutton</item>
         <item>Rice</item>
+        <item>Salad</item>
+        <item>Tea</item>
+        <item>Other</item>
     </string-array>
 </resources>
