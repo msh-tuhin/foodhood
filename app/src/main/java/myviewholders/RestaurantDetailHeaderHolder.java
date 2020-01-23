@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import site.sht.bd.foodhood.ImageFull;
 import site.sht.bd.foodhood.MorePeole;
 import site.sht.bd.foodhood.R;
 import site.sht.bd.foodhood.RestDetail;
@@ -106,6 +107,7 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
                     if(restaurantVital.exists()){
                         setCollapsedTitle(context, restaurantVital);
                         bindCoverPhoto(context, restaurantVital);
+                        setCoverPictureOnClickListener(context, restaurantVital);
                         bindName(restaurantVital);
                         bindAddress(restaurantVital);
                         bindPhone(restaurantVital);
@@ -124,6 +126,22 @@ public class RestaurantDetailHeaderHolder extends RecyclerView.ViewHolder{
 
     private void bindCoverPhoto(Context context, DocumentSnapshot dishVitalSnapshot){
         PictureBinder.bindCoverPicture(((RestDetail)context).coverPhoto, dishVitalSnapshot);
+    }
+
+    private void setCoverPictureOnClickListener(final Context context, final DocumentSnapshot documentSnapshot){
+        String link = documentSnapshot.getString("cp");
+        if(link == null || link.equals("")) return;
+        (((RestDetail)context).coverPhoto).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<String> imageUris = new ArrayList<>();
+                imageUris.add(documentSnapshot.getString("cp"));
+                Intent intent = new Intent(context, ImageFull.class);
+                intent.putExtra("position", 0);
+                intent.putStringArrayListExtra("imageUris", imageUris);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     private void bindName(DocumentSnapshot restVitalSnapshot){

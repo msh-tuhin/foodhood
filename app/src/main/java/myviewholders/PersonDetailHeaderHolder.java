@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import site.sht.bd.foodhood.AllDishes;
 import site.sht.bd.foodhood.AllRestaurants;
+import site.sht.bd.foodhood.ImageFull;
 import site.sht.bd.foodhood.MorePeole;
 import site.sht.bd.foodhood.R;
 import site.sht.bd.foodhood.PersonDetail;
@@ -109,7 +110,9 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
                     mPersonVitalSnapshot = personVitalSnapshot;
                     if(personVitalSnapshot.exists()){
                         bindCoverPhoto(context, personVitalSnapshot);
+                        setCoverPictureOnClickListener(context, personVitalSnapshot);
                         bindProfilePicture(context, personVitalSnapshot);
+                        setProfilePictureOnClickListener(context, personVitalSnapshot);
                         setCollapsedTitle(personVitalSnapshot);
                         bindName(personVitalSnapshot);
                         bindBio(personVitalSnapshot);
@@ -136,8 +139,40 @@ public class PersonDetailHeaderHolder extends RecyclerView.ViewHolder {
         PictureBinder.bindProfilePicture(((PersonDetail)context).profilePicture, personVitalSnapshot);
     }
 
+    private void setProfilePictureOnClickListener(final Context context, final DocumentSnapshot documentSnapshot){
+        String link = documentSnapshot.getString("pp");
+        if(link == null || link.equals("")) return;
+        (((PersonDetail)context).profilePicture).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<String> imageUris = new ArrayList<>();
+                imageUris.add(documentSnapshot.getString("pp"));
+                Intent intent = new Intent(context, ImageFull.class);
+                intent.putExtra("position", 0);
+                intent.putStringArrayListExtra("imageUris", imageUris);
+                mContext.startActivity(intent);
+            }
+        });
+    }
+
     private void bindCoverPhoto(Context context, DocumentSnapshot personVitalSnapshot){
         PictureBinder.bindCoverPicture(((PersonDetail)context).coverPhoto, personVitalSnapshot);
+    }
+
+    private void setCoverPictureOnClickListener(final Context context, final DocumentSnapshot documentSnapshot){
+        String link = documentSnapshot.getString("cp");
+        if(link == null || link.equals("")) return;
+        (((PersonDetail)context).coverPhoto).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<String> imageUris = new ArrayList<>();
+                imageUris.add(documentSnapshot.getString("cp"));
+                Intent intent = new Intent(context, ImageFull.class);
+                intent.putExtra("position", 0);
+                intent.putStringArrayListExtra("imageUris", imageUris);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     private void bindName(DocumentSnapshot personVitalSnapshot){
